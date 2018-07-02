@@ -2,25 +2,52 @@ import React, { Component } from 'react';
 import './App.css';
 import ReactGridLayout from 'react-grid-layout';
 import Kpi from './components/kpi';
+import Filter from './components/filter';
 
 class App extends Component {
   state={
     uiComponents:['KPI', 'Filter'],
     layout : [
     {i: 'a', x: 0, y: 0, w: 1, h: 1,item:""},
-    {i: 'b', x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4,item:""},
+    {i: 'b', x: 1, y: 0, w: 3, h: 3, minW: 2, maxW: 4,item:""},
     {i: 'c', x: 4, y: 0, w: 1, h: 2,item:""}
-    ],
-    comps: {
-      'KPI':   <Kpi measure={[{Expression:"sum(VacationHours)"}]} label="KPI Label"></Kpi>
-    }
+    ],   
+    filters: []
+  }
+
+  comps= {
+  'KPI': (filters)=> {return ( <Kpi label="KPI Label" filters={filters}  onFilterChange={(filter)=>this.onFilterChange(filter)}></Kpi>)} ,
+  'Filter' : (filters)=> {return (<Filter title="Filter"  filters={filters}   onFilterChange={(filter)=>this.onFilterChange(filter)}></Filter> )} 
+  }
+
+  onFilterChange = (filter) =>{
+    console.log('filter1111',filter)
+    var filters=[];
+    filters.push({ColName: filter.colName, Values: filter.values});
+   
+
+    let layouts = this.state.layout;
+
+    layouts.map((l) =>{
+      if(l.itemType){
+        l.item  = this.comps[l.itemType](filters);
+      }
+      return l;
+    })
+
+    this.setState({     
+      filters : filters ,
+      layout : layouts     
+    });
   }
 
   onDrop = (ev,box) => {       
     let c = ev.dataTransfer.getData("text/plain");
+    console.log("component dropped: ", c);
     let layout = this.state.layout.map((l) => {
         if(l.i == box.i){
-          l.item = c;
+          l.item = this.comps[c](this.state.filters);
+          l.itemType = c;
         }
         return l;
     });
@@ -49,8 +76,8 @@ class App extends Component {
         <div key={l.i} 
           onDragOver={(e)=>this.onDragOver(e)}  
           onDrop={(e)=>this.onDrop(e, l)}>
-            <a href="#">Edit</a>
-             {this.state.comps[l.item]}
+            {/* <a href="#">Edit</a> */}
+             {l.item}
             
        </div>
       );
