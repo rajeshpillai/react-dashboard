@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import Dimension from '../models/dimension';
-import Measure from '../models/measure';
 import axios from 'axios';
 
 export default class Filter extends Component {

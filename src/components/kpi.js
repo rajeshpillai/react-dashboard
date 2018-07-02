@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import Measure from "../models/measure";
 import axios from "axios";
 
 export default class Kpi extends Component {
