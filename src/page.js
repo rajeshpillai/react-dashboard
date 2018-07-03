@@ -3,6 +3,8 @@ import ReactGridLayout from "react-grid-layout";
 import Kpi from "./components/kpi";
 import Filter from "./components/filter";
 import BarChart from './components/barchart';
+import LineChart from './components/linechart';
+
 import axios from 'axios';
 
 class Page extends Component {
@@ -26,7 +28,7 @@ class Page extends Component {
   // }
 
   state = {   
-    uiComponents: ["KPI", "Filter","BarChart"],
+    uiComponents: ["KPI", "Filter","BarChart", "LineChart"],
     layout: [
       { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
       { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
@@ -85,6 +87,19 @@ class Page extends Component {
         />
       );
     },
+
+    LineChart: (config) => {
+      return (
+        <LineChart layoutId={config.layoutId}
+          measure = {config.measure}
+          label="Bar Chart"
+          filters={config.filters}
+          onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          onConfigurationChange ={c => this.onConfigurationChange(c)}
+        />
+      );
+    },
+
     Filter: (config) => {
       return (
         <Filter layoutId={config.layoutId}
