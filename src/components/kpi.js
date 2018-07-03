@@ -19,6 +19,9 @@ export default class Kpi extends Component {
   serviceBaseUrl = "http://localhost:57387/api/";
 
   fetchData() {
+      if(null == this.state.expression || this.state.expression == ""){
+        return;
+      }
     var name = this.state.measureText;
     var widgetModel = {
       Dimension: this.state.dimensions,

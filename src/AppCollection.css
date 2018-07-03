@@ -1,0 +1,9 @@
+.app-container {
+  display: flex;
+}
+.app {
+  width: 200px;
+  height: 100px;
+  background-color: lightgray;
+  margin: 2px;
+}

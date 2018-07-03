@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+var _ = require('lodash');
 
 export default class Filter extends Component {
    
@@ -22,6 +23,16 @@ export default class Filter extends Component {
     serviceBaseUrl = "http://localhost:57387/api/";
    fetchData() {
     var name = this.state.dimensionText;
+
+    var sameFilterRequestList = _.filter(this.state.filters, { 'ColName': name });
+    //debugger;
+    //if (!isFirstTime && scope.type == "dropdown" && sameFilterRequestList.length > 0) {
+    if (sameFilterRequestList.length > 0) {
+
+        //moveSelectedOptionOnTop();
+        return false;
+    }
+
     //debugger;
     var widgetModel = {
         Dimension: this.state.dimensions,
@@ -157,7 +168,7 @@ export default class Filter extends Component {
 
         return (
             <React.Fragment>
-                <h2>{this.state.title} - </h2>
+                <span>{this.state.title} - </span>
                 {this.state.dimensions.length == 0 && defaultView}
                 {this.state.dimensions.length > 0 && view}
                 {this.state.isFormVisible && this.ShowConfigForm()}
