@@ -8,7 +8,7 @@ export default class Filter extends Component {
         super(props);
         this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
         this.fetchData = this.fetchData.bind(this);
-       
+       this.test = "testData";
     }
 
     state ={
@@ -22,7 +22,16 @@ export default class Filter extends Component {
 
     serviceBaseUrl = "http://localhost:57387/api/";
    fetchData() {
-    var name = this.state.dimensionText;
+    var name = this.state.dimensionText ? this.state.dimensionText :"";
+    if(!name){
+      if (this.state.dimensions && this.state.dimensions.length >0){
+        name = this.state.dimensions[0].Name;
+      }
+    }
+
+    // if (this.state.dimensions.length == 0){
+
+    // }
 
     var sameFilterRequestList = _.filter(this.state.filters, { 'ColName': name });
     //debugger;
@@ -86,11 +95,28 @@ export default class Filter extends Component {
     //     measure: props.measure
     //   };
     // }
-    if (props && props.filters != null && props.filters.length > 0) {
+    //if (props && props.filters != null && props.filters.length > 0) {
         return {
-          filters: props.filters
+          filters: props.filters,
+          layoutId: props.layoutId,
+          dimensions: props.dimensions ?  props.dimensions : (state.dimensions? state.dimensions:[]),
+          filters: props.filters//,
+          //dimensionText: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name : props.dimensionText
         };       
-      }
+     // }
+      // if (props && props.layoutId != null) {
+      //   return {
+      //     layoutId: props.layoutId,
+      //     dimensions: props.dimensions,
+      //     filters: props.filters,
+      //     dimensionText: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name :""
+      //   };       
+      // }
+      // if (props && props.dimensions != null && props.dimensions.length > 0) {
+      //   return {
+      //     dimensions: props.dimensions
+      //   };       
+      // }
     return null;
   }
 
@@ -103,7 +129,7 @@ export default class Filter extends Component {
     console.log("componentDidUpdate state", this.state);
   }
 
-  handleChange = e => {
+  handleChange = e => {    
     this.setState({
         dimensionText: e.target.value
     });
@@ -117,7 +143,7 @@ export default class Filter extends Component {
     var filter = {colName: this.state.dimensionText,
                   values : [e.target.value]};
 
-    this.props.onFilterChange(filter);
+    this.props.onFilterChange(filter,this);
   };
 
   saveForm = () => {
@@ -129,7 +155,8 @@ export default class Filter extends Component {
 
     this.setState({
         dimensions: [dimension]
-    }, () => {
+    }, () => {      
+        this.props.onConfigurationChange({dimensions: [dimension], title: this.state.title,layoutId: this.state.layoutId, filters: this.state.filters  });
         this.fetchData();
     });
 
@@ -141,6 +168,10 @@ export default class Filter extends Component {
       isFormVisible: !prevState.isFormVisible
     }));
   };
+
+  getDataToSave = () =>{
+    return this.state;
+  }
 
     render(){
         console.log("Filter: Render");

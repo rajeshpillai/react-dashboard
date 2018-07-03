@@ -6,6 +6,8 @@ export default class Kpi extends Component {
     super();
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
     this.fetchData = this.fetchData.bind(this);
+
+    this.test = "testData";
   }
 
   state = {
@@ -19,9 +21,9 @@ export default class Kpi extends Component {
   serviceBaseUrl = "http://localhost:57387/api/";
 
   fetchData() {
-      if(null == this.state.expression || this.state.expression == ""){
-        return;
-      }
+    if (null == this.state.expression || this.state.expression == "") {
+      return;
+    }
     var name = this.state.measureText;
     var widgetModel = {
       Dimension: this.state.dimensions,
@@ -30,12 +32,12 @@ export default class Kpi extends Component {
           Expression: this.state.expression,
           DisplayName: this.state.Expression
         }
-      ],      
-        Type: 'kpi'
+      ],
+      Type: "kpi"
     };
 
-    if(this.state.filters){
-        widgetModel.FilterList=this.state.filters;    
+    if (this.state.filters) {
+      widgetModel.FilterList = this.state.filters;
     }
 
     axios
@@ -54,53 +56,62 @@ export default class Kpi extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (state && state.measure != null && state.measure.length === 0) {
+    //if (state && state.measure != null && state.measure.length === 0) {
       return {
-        measure: props.measure
-      };
-    }
-    if (props && props.filters != null && props.filters.length > 0) {
-        return {
-          filters: props.filters
-        };
-      }
+        measure: props.measure,
+        filters: props.filters,
+        layoutId: props.layoutId,        
+        filters: props.filters
+      };       
+    
+    //}
+    // if (props && props.filters != null && props.filters.length > 0) {
+    //   return {
+    //     filters: props.filters
+    //   };
+    // }
+    // if (props && props.layoutId != null) {
+    //   return {
+    //     layoutId: props.layoutId
+    //   };
+    // }
     return null;
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if(prevProps.filters != this.props.filters){
+    if (prevProps.filters != this.props.filters) {
       this.fetchData();
     }
-  //
-  let test=0;
-  console.log("componentDidUpdate state", this.state);
-}
+    //
+    let test = 0;
+    console.log("componentDidUpdate state", this.state);
+  }
 
   componentDidMount() {
     this.fetchData();
   }
 
-//   onInputChange = event => {
-//     event.preventDefault();
-//     let measureValue = event.target.value;
+  //   onInputChange = event => {
+  //     event.preventDefault();
+  //     let measureValue = event.target.value;
 
-//     this.setState({
-//       measureText: measureValue
-//     });
+  //     this.setState({
+  //       measureText: measureValue
+  //     });
 
-//     this.setState(
-//       {
-//         measure: [
-//           {
-//             Expression: measureValue
-//           }
-//         ]
-//       },
-//       () => {
-//         this.fetchData();
-//       }
-//     );
-//   };
+  //     this.setState(
+  //       {
+  //         measure: [
+  //           {
+  //             Expression: measureValue
+  //           }
+  //         ]
+  //       },
+  //       () => {
+  //         this.fetchData();
+  //       }
+  //     );
+  //   };
 
   ShowConfigForm = () => {
     let form = (
@@ -129,11 +140,27 @@ export default class Kpi extends Component {
       Expression: this.state.expression
     };
 
-    this.setState({
-      measure: [measure]
-    });
+    // this.setState({
+    //   measure: [measure]
+    // });
 
-    this.fetchData();
+    // //measure
+    // this.fetchData();
+
+    this.setState(
+      {
+        measure: [measure]
+      },
+      () => {
+        this.props.onConfigurationChange({
+          measure: [measure],
+          title: this.state.title,
+          layoutId: this.state.layoutId,
+          filters: this.state.filters
+        });
+        this.fetchData();
+      }
+    );
   };
 
   toggleConfirmForm = () => {
@@ -152,8 +179,8 @@ export default class Kpi extends Component {
 
     var view = (
       <div>
-        <label>KPI - </label>        
-          <span>{this.state.value}</span>        
+        <label>KPI - </label>
+        <span>{this.state.value}</span>
       </div>
     );
 

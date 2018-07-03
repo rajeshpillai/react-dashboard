@@ -1,10 +1,29 @@
 import React, { Component } from "react";
-import "./App.css";
 import ReactGridLayout from "react-grid-layout";
 import Kpi from "./components/kpi";
 import Filter from "./components/filter";
+import axios from 'axios';
 
 class Page extends Component {
+  serviceBaseUrl = "http://localhost:57387/api/";
+
+  // componentDidMount(){
+  //    axios
+  //   .post(this.serviceBaseUrl + "data/getPageData")
+  //   .then(response => {
+  //     console.log("response-getPageData", response);
+  //     this.setState({
+  //       uiComponents: response.data.uiComponents,
+  //       layout:  response.data.layout,
+  //       filters:  response.data.filters
+  //     });
+  //     //alert("Page Data Saved Sucessfully !");
+  //   })
+  //   .catch(function(error) {
+  //     console.log("error", error);
+  //   });
+  // }
+
   state = {   
     uiComponents: ["KPI", "Filter"],
     layout: [
@@ -23,27 +42,66 @@ class Page extends Component {
   };
 
   comps = {
-    KPI: filters => {
+    // KPI: (filters,id) => {
+    //   return (
+    //     <Kpi ref={(id)=>this.id = id} 
+    //       label="KPI Label"
+    //       filters={filters}
+    //       onFilterChange={filter => this.onFilterChange(filter)} 
+    //     />
+    //   );
+    // },
+    // Filter: (filters,id) => {
+    //   return (
+    //     <Filter layoutId={id} 
+    //       title="Filter"
+    //       filters={filters}
+    //       onFilterChange={filter => this.onFilterChange(filter)} 
+    //       onConfigurationChange ={config => this.onConfigurationChange(config)}
+    //     />      
+    //   );
+    // }
+    KPI: (config) => {
       return (
-        <Kpi
+        <Kpi layoutId={config.layoutId}
+          measure = {config.measure}
           label="KPI Label"
-          filters={filters}
-          onFilterChange={filter => this.onFilterChange(filter)}
+          filters={config.filters}
+          onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          onConfigurationChange ={c => this.onConfigurationChange(c)}
         />
       );
     },
-    Filter: filters => {
+    Filter: (config) => {
       return (
-        <Filter
+        <Filter layoutId={config.layoutId}
+          dimensions = {config.dimensions} 
           title="Filter"
-          filters={filters}
-          onFilterChange={filter => this.onFilterChange(filter)}
-        />
+          filters={config.filters}
+          onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          onConfigurationChange ={c => this.onConfigurationChange(c)}
+        />      
       );
     }
   };
 
-  onFilterChange = filter => {
+  onConfigurationChange = config =>{
+   console.log('config', config);
+    var layout = this.state.layout.map((l) => {
+      if(l.i == config.layoutId){
+         //l.item = this.comps[l.itemType](config);
+         l.item = config;
+      }
+      return l;
+    })
+
+    this.setState({
+      layout
+    });
+    
+  }
+
+  onFilterChange = (filter, item) => {
     console.log("filter1111", filter);
     var filters = [];
     filters.push({ ColName: filter.colName, Values: filter.values });
@@ -52,8 +110,13 @@ class Page extends Component {
 
     layouts.map(l => {
       if (l.itemType) {
-        l.item = this.comps[l.itemType](filters);
-      }
+        //l.item = this.comps[l.itemType](filters, l.i);
+        //var config = this.comps[l.itemType];
+        var config = l.item;
+        config.filters = filters;
+        //l.item = this.comps[l.itemType](config);
+        l.item = config;
+      }      
       return l;
     });
 
@@ -67,8 +130,14 @@ class Page extends Component {
     let c = ev.dataTransfer.getData("text/plain");
     console.log("component dropped: ", c);
     let layout = this.state.layout.map(l => {
-      if (l.i == box.i) {
-        l.item = this.comps[c](this.state.filters);
+      if (l.i == box.i) {       
+        // l.item = this.comps[c]({filters: this.state.filters,
+        //                         layoutId: 'comp' + l.i.toString()
+        //                       });
+        l.item = {  
+                    filters: this.state.filters,
+                    layoutId: l.i.toString()
+                  };
         l.itemType = c;
       }
       return l;
@@ -87,11 +156,27 @@ class Page extends Component {
     ev.dataTransfer.setData("text/plain", c);
   };
 
+  onSave = (e) => {
+    //alert(); 
+    console.log("SaveState", this.state);
+
+    axios
+    .post(this.serviceBaseUrl + "data/savePageData", this.state)
+    .then(response => {
+      console.log("response", response);
+      alert("Page Data Saved Sucessfully !");
+    })
+    .catch(function(error) {
+      console.log("error", error);
+    });
+  };
+
   render() {
+  if(!this.state){
+    return (<h2>Loading ...</h2>);
+  }
 
-    //var pages = this.state.dashboard.pages.map(d=>)
-
-    // layout is an array of objects, see the demo for more complete usage
+    // layout is an array of objects, see the demo for more complete usage11
     var layout = this.state.layout;
     var li = this.state.uiComponents.map(c => {
       return (
@@ -106,9 +191,9 @@ class Page extends Component {
           key={l.i}
           onDragOver={e => this.onDragOver(e)}
           onDrop={e => this.onDrop(e, l)}
-        >
-          {/* <a href="#">Edit</a> */}
-          {l.item}
+        >         
+          {/* {l.item} */}
+          {l.itemType && this.comps[l.itemType](l.item)}
         </div>
       );
     });
@@ -118,6 +203,7 @@ class Page extends Component {
         <div>
           <ul>{li}</ul>
         </div>
+        <input type="button" value="Save" onClick={e=>{this.onSave(e)}} />
         <ReactGridLayout
           draggableCancel="input,textarea"
           className="layout"
@@ -133,4 +219,4 @@ class Page extends Component {
   }
 }
 
-export default App;
+export default Page;
