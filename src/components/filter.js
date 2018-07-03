@@ -1,30 +1,29 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-var _ = require('lodash');
+import React, { Component } from "react";
+import axios from "axios";
+var _ = require("lodash");
 
 export default class Filter extends Component {
-   
-    constructor(props){
-        super(props);
-        this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
-        this.fetchData = this.fetchData.bind(this);
-       this.test = "testData";
-    }
+  constructor(props) {
+    super(props);
+    this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
+    this.fetchData = this.fetchData.bind(this);
+    this.test = "testData";
+  }
 
-    state ={
-        dimensions: [],      
-        data :[],
-        title: this.props.title,
-        dimensionText: "",
-        isFormVisible: false,
-        selectedValue : ""
-    }
+  state = {
+    dimensions: [],
+    data: [],
+    title: this.props.title,
+    dimensionText: "",
+    isFormVisible: false,
+    selectedValue: ""
+  };
 
-    serviceBaseUrl = "http://localhost:57387/api/";
-   fetchData() {
-    var name = this.state.dimensionText ? this.state.dimensionText :"";
-    if(!name){
-      if (this.state.dimensions && this.state.dimensions.length >0){
+  serviceBaseUrl = "http://localhost:57387/api/";
+  fetchData() {
+    var name = this.state.dimensionText ? this.state.dimensionText : "";
+    if (!name) {
+      if (this.state.dimensions && this.state.dimensions.length > 0) {
         name = this.state.dimensions[0].Name;
       }
     }
@@ -33,23 +32,22 @@ export default class Filter extends Component {
 
     // }
 
-    var sameFilterRequestList = _.filter(this.state.filters, { 'ColName': name });
+    var sameFilterRequestList = _.filter(this.state.filters, { ColName: name });
     //debugger;
     //if (!isFirstTime && scope.type == "dropdown" && sameFilterRequestList.length > 0) {
     if (sameFilterRequestList.length > 0) {
-
-        //moveSelectedOptionOnTop();
-        return false;
+      //moveSelectedOptionOnTop();
+      return false;
     }
 
     //debugger;
     var widgetModel = {
-        Dimension: this.state.dimensions,
-        Type: 'filter'
-    }
-    
-    if(this.state.filters){
-        widgetModel.FilterList=this.state.filters;    
+      Dimension: this.state.dimensions,
+      Type: "filter"
+    };
+
+    if (this.state.filters) {
+      widgetModel.FilterList = this.state.filters;
     }
 
     axios
@@ -72,15 +70,15 @@ export default class Filter extends Component {
     this.fetchData();
   }
 
-
   ShowConfigForm = () => {
     let form = (
       <div>
         <input
+          ref={(inpDim)=>this.inpDim = inpDim}
           type="text"
           placeholder="Enter Dimension"
-          onChange={this.handleChange}
-          value={this.state.dimensionText}
+          // onChange={this.handleChange}
+          defaultValue={this.state.dimensionText}
         />
         <button onClick={this.saveForm}>Apply</button>
       </div>
@@ -89,78 +87,91 @@ export default class Filter extends Component {
   };
 
   static getDerivedStateFromProps(props, state) {
-      console.log('filter:gds');
+    console.log("filter:gds");
     // if (state && state.measure != null && state.measure.length === 0) {
     //   return {
     //     measure: props.measure
     //   };
     // }
     //if (props && props.filters != null && props.filters.length > 0) {
-        return {
-          filters: props.filters,
-          layoutId: props.layoutId,
-          dimensions: props.dimensions ?  props.dimensions : (state.dimensions? state.dimensions:[]),
-          filters: props.filters//,
-          //dimensionText: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name : props.dimensionText
-        };       
-     // }
-      // if (props && props.layoutId != null) {
-      //   return {
-      //     layoutId: props.layoutId,
-      //     dimensions: props.dimensions,
-      //     filters: props.filters,
-      //     dimensionText: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name :""
-      //   };       
-      // }
-      // if (props && props.dimensions != null && props.dimensions.length > 0) {
-      //   return {
-      //     dimensions: props.dimensions
-      //   };       
-      // }
+    return {
+      filters: props.filters,
+      layoutId: props.layoutId,
+      dimensions: props.dimensions
+        ? props.dimensions
+        : state.dimensions
+          ? state.dimensions
+          : [],
+      filters: props.filters //,
+      //dimensionText: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name : props.dimensionText
+    };
+    // }
+    // if (props && props.layoutId != null) {
+    //   return {
+    //     layoutId: props.layoutId,
+    //     dimensions: props.dimensions,
+    //     filters: props.filters,
+    //     dimensionText: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name :""
+    //   };
+    // }
+    // if (props && props.dimensions != null && props.dimensions.length > 0) {
+    //   return {
+    //     dimensions: props.dimensions
+    //   };
+    // }
     return null;
   }
 
   componentDidUpdate(prevProps, prevState) {
-      if(prevProps.filters != this.props.filters){
-        this.fetchData();
-      }
+    if (prevProps.filters != this.props.filters) {
+      this.fetchData();
+    }
     //
-    let test=0;
+    let test = 0;
     console.log("componentDidUpdate state", this.state);
   }
 
-  handleChange = e => {    
+  handleChange = e => {
     this.setState({
-        dimensionText: e.target.value
+      dimensionText: e.target.value
     });
   };
 
-  handleSelectChange = e =>{
+  handleSelectChange = e => {
     this.setState({
-        selectedValue: e.target.value
+      selectedValue: e.target.value
     });
 
-    var filter = {colName: this.state.dimensionText,
-                  values : [e.target.value]};
+    var filter = {
+      colName: this.state.dimensionText,
+      values: [e.target.value]
+    };
 
-    this.props.onFilterChange(filter,this);
+    this.props.onFilterChange(filter, this);
   };
 
   saveForm = () => {
-     //debugger;
     this.toggleConfirmForm();
+
     let dimension = {
-        Name: this.state.dimensionText
+      Name: this.inpDim.value // this.state.dimensionText
     };
 
-    this.setState({
+    this.setState(
+      {
+        dimensionText: this.inpDim.value,
         dimensions: [dimension]
-    }, () => {      
-        this.props.onConfigurationChange({dimensions: [dimension], title: this.state.title,layoutId: this.state.layoutId, filters: this.state.filters  });
+      },
+      () => {
+        this.props.onConfigurationChange({
+          dimensions: [dimension],
+          title: this.state.title,
+          layoutId: this.state.layoutId,
+          filters: this.state.filters
+        });
         this.fetchData();
-    });
-
-    
+      }
+    );
   };
 
   toggleConfirmForm = () => {
@@ -169,41 +180,50 @@ export default class Filter extends Component {
     }));
   };
 
-  getDataToSave = () =>{
+  getDataToSave = () => {
     return this.state;
+  };
+
+  render() {
+    console.log("Filter: Render");
+    var defaultView = (
+      <div>
+        <button onClick={this.toggleConfirmForm}>Add Dimension</button>
+      </div>
+    );
+
+    var options = this.state.data.map(v => {
+      return (
+        <option
+          key={v[this.state.dimensionText]}
+          value={v[this.state.dimensionText]}
+        >
+          {v[this.state.dimensionText]}
+        </option>
+      );
+    });
+
+    var view = (
+      <div>
+        <label>Filter - </label>
+        <span>
+          <select
+            value={this.state.selectedValue}
+            onChange={this.handleSelectChange}
+          >
+            <option value="">Select</option>
+            {options}
+          </select>
+        </span>
+      </div>
+    );
+
+    return (
+      <React.Fragment>
+        {this.state.dimensions.length == 0 && defaultView}
+        {this.state.dimensions.length > 0 && view}
+        {this.state.isFormVisible && this.ShowConfigForm()}
+      </React.Fragment>
+    );
   }
-
-    render(){
-        console.log("Filter: Render");
-        var defaultView = (
-            <div>
-              <button onClick={this.toggleConfirmForm}>Add Dimension</button>
-            </div>
-          );
-
-          var options = this.state.data.map((v)=>{
-            return <option key={v[this.state.dimensionText]} value={v[this.state.dimensionText]}>{v[this.state.dimensionText]}</option>
-          })
-      
-          var view = (
-            <div>
-              <label>Filter - </label>        
-            <span>
-                <select value={this.state.selectedValue} onChange={this.handleSelectChange}>
-                    <option value="">Select</option>
-                    {options}
-                </select>
-            </span>        
-            </div>
-          );
-
-        return (
-            <React.Fragment>
-                <span>{this.state.title} - </span>
-                {this.state.dimensions.length == 0 && defaultView}
-                {this.state.dimensions.length > 0 && view}
-                {this.state.isFormVisible && this.ShowConfigForm()}
-            </React.Fragment>
-            )
-    }
 }
