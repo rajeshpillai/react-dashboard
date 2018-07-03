@@ -83,7 +83,6 @@ export default class Kpi extends Component {
       this.fetchData();
     }
     //
-    let test = 0;
     console.log("componentDidUpdate state", this.state);
   }
 
@@ -117,10 +116,10 @@ export default class Kpi extends Component {
     let form = (
       <div>
         <input
+          ref={(inpExpr)=>this.inpExpr = inpExpr}
           type="text"
           placeholder="Enter expression"
-          onChange={this.handleChange}
-          value={this.state.expression}
+          defaultValue={this.state.expression}
         />
         <button onClick={this.saveForm}>Apply</button>
       </div>
@@ -128,27 +127,15 @@ export default class Kpi extends Component {
     return form;
   };
 
-  handleChange = e => {
-    this.setState({
-      expression: e.target.value
-    });
-  };
-
   saveForm = () => {
     this.toggleConfirmForm();
     let measure = {
-      Expression: this.state.expression
+      Expression: this.inpExpr.value, // this.state.expression
     };
-
-    // this.setState({
-    //   measure: [measure]
-    // });
-
-    // //measure
-    // this.fetchData();
 
     this.setState(
       {
+        expression: this.inpExpr.value,
         measure: [measure]
       },
       () => {
