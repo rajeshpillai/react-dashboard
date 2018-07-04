@@ -20,6 +20,7 @@ export default class Filter extends Component {
   };
 
   serviceBaseUrl = "http://localhost:57387/api/";
+
   fetchData() {
     var name = this.state.dimensionText ? this.state.dimensionText : "";
     if (!name) {
@@ -77,7 +78,6 @@ export default class Filter extends Component {
           ref={(inpDim)=>this.inpDim = inpDim}
           type="text"
           placeholder="Enter Dimension"
-          // onChange={this.handleChange}
           defaultValue={this.state.dimensionText}
         />
         <button onClick={this.saveForm}>Apply</button>
@@ -88,12 +88,6 @@ export default class Filter extends Component {
 
   static getDerivedStateFromProps(props, state) {
     console.log("filter:gds");
-    // if (state && state.measure != null && state.measure.length === 0) {
-    //   return {
-    //     measure: props.measure
-    //   };
-    // }
-    //if (props && props.filters != null && props.filters.length > 0) {
     return {
       filters: props.filters,
       layoutId: props.layoutId,
@@ -130,12 +124,6 @@ export default class Filter extends Component {
     let test = 0;
     console.log("componentDidUpdate state", this.state);
   }
-
-  handleChange = e => {
-    this.setState({
-      dimensionText: e.target.value
-    });
-  };
 
   handleSelectChange = e => {
     this.setState({
