@@ -21,10 +21,11 @@ export default class Kpi extends Component {
   serviceBaseUrl = "http://localhost:57387/api/";
 
   fetchData() {
-    if (null == this.state.expression || this.state.expression == "") {
-      return;
-    }
-    var name = this.state.measureText;
+    //if (!this.state.measure || (this.state.measure && this.state.measure.length == 0 && ( null == this.state.expression || this.state.expression == ""))) {
+    // if(this.state.isFirstTime) {
+    //   return;
+    // }
+    
     var widgetModel = {
       Dimension: this.state.dimensions,
       Measure: [
@@ -35,6 +36,8 @@ export default class Kpi extends Component {
       ],
       Type: "kpi"
     };
+
+   
 
     if (this.state.filters) {
       widgetModel.FilterList = this.state.filters;
@@ -57,25 +60,33 @@ export default class Kpi extends Component {
 
   static getDerivedStateFromProps(props, state) {
     //if (state && state.measure != null && state.measure.length === 0) {
-      return {
-        measure: props.measure,
-        filters: props.filters,
-        layoutId: props.layoutId,        
-        filters: props.filters
-      };       
+    var obj ={};
+    //var isPropChanged = false;
+    if(props.measure != state.measure){
+      obj.measure = props.measure;
+    }
+    if(props.filters != state.filters){
+      obj.filters = props.filters;
+    }
+    if(props.layoutId != state.layoutId){
+      obj.layoutId = props.layoutId;
+    }
+    if(props.isFirstTime != state.isFirstTime){
+      obj.isFirstTime = props.isFirstTime;
+    }
     
-    //}
-    // if (props && props.filters != null && props.filters.length > 0) {
-    //   return {
-    //     filters: props.filters
-    //   };
-    // }
-    // if (props && props.layoutId != null) {
-    //   return {
-    //     layoutId: props.layoutId
-    //   };
-    // }
-    return null;
+    obj.expression = (props.measure && props.measure.length>0)?props.measure[0].Expression:state.expression;
+
+      // return {
+      //   measure: props.measure,
+      //   expression : (props.measure && props.measure.length>0)?props.measure[0].Expression:state.expression,
+      //   filters: props.filters,
+      //   layoutId: props.layoutId,        
+      //   filters: props.filters
+      // };       
+    
+    return obj;
+    //return null;
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -87,6 +98,9 @@ export default class Kpi extends Component {
   }
 
   componentDidMount() {
+    if(this.state.isFirstTime) {
+      return;
+    }
     this.fetchData();
   }
 
@@ -135,15 +149,17 @@ export default class Kpi extends Component {
 
     this.setState(
       {
-        expression: this.inpExpr.value,
-        measure: [measure]
+        expression: measure.Expression,
+        measure: [measure],
+        isFirstTime: false
       },
       () => {
         this.props.onConfigurationChange({
           measure: [measure],
           title: this.state.title,
           layoutId: this.state.layoutId,
-          filters: this.state.filters
+          filters: this.state.filters,
+          isFirstTime: false
         });
         this.fetchData();
       }

@@ -10,39 +10,39 @@ import axios from 'axios';
 class Page extends Component {
   serviceBaseUrl = "http://localhost:57387/api/";
 
-  // componentDidMount(){
-  //    axios
-  //   .post(this.serviceBaseUrl + "data/getPageData")
-  //   .then(response => {
-  //     console.log("response-getPageData", response);
-  //     this.setState({
-  //       uiComponents: response.data.uiComponents,
-  //       layout:  response.data.layout,
-  //       filters:  response.data.filters
-  //     });
-  //     //alert("Page Data Saved Sucessfully !");
-  //   })
-  //   .catch(function(error) {
-  //     console.log("error", error);
-  //   });
-  // }
+  componentDidMount(){
+     axios
+    .post(this.serviceBaseUrl + "data/getPageData")
+    .then(response => {
+      console.log("response-getPageData", response);
+      this.setState({
+        uiComponents: response.data.uiComponents,
+        layout:  response.data.layout,
+        filters:  response.data.filters
+      });
+      //alert("Page Data Saved Sucessfully !");
+    })
+    .catch(function(error) {
+      console.log("error", error);
+    });
+  }
 
-  state = {   
-    uiComponents: ["KPI", "Filter","BarChart", "LineChart"],
-    layout: [
-      // { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
-      // { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
-      // { i: "c", x: 4, y: 0, w: 2, h: 2, item: "" },
-      // { i: "d", x: 6, y: 0, w: 2, h: 2, item: "" },
-      // { i: "e", x: 8, y: 0, w: 2, h: 2, item: "" },
-      // { i: "f", x: 0, y: 2, w: 2, h: 2, item: "" },
-      // { i: "g", x: 2, y: 2, w: 2, h: 2, item: "" },
-      // { i: "h", x: 4, y: 2, w: 2, h: 2, item: "" },
-      // { i: "i", x: 6, y: 2, w: 2, h: 2, item: "" },
-      // { i: "k", x: 8, y: 2, w: 2, h: 2, item: "" }
-    ],
-    filters: []
-  };
+  // state = {   
+  //   uiComponents: ["KPI", "Filter","BarChart", "LineChart"],
+  //   layout: [
+  //     { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
+  //     { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
+  //     { i: "c", x: 4, y: 0, w: 2, h: 2, item: "" },
+  //     { i: "d", x: 6, y: 0, w: 2, h: 2, item: "" },
+  //     { i: "e", x: 8, y: 0, w: 2, h: 2, item: "" },
+  //     { i: "f", x: 0, y: 2, w: 2, h: 2, item: "" },
+  //     { i: "g", x: 2, y: 2, w: 2, h: 2, item: "" },
+  //     { i: "h", x: 4, y: 2, w: 2, h: 2, item: "" },
+  //     { i: "i", x: 6, y: 2, w: 2, h: 2, item: "" },
+  //     { i: "k", x: 8, y: 2, w: 2, h: 2, item: "" }
+  //   ],
+  //   filters: []
+  // };
 
   comps = {
     // KPI: (filters,id) => {
@@ -66,7 +66,8 @@ class Page extends Component {
     // }
     KPI: (config) => {
       return (
-        <Kpi layoutId={config.layoutId}
+        <Kpi layoutId={config.layoutId} 
+          isFirstTime={config.isFirstTime}
           measure = {config.measure}
           label="KPI Label"
           filters={config.filters}
@@ -154,53 +155,66 @@ class Page extends Component {
     });
   };
 
-  onDrop = (ev) => {
-    //debugger;
-    var layout = this.state.layout;
-    var count = this.state.layout.length;
-    let c = ev.dataTransfer.getData("text/plain");
-
-    var xpx = ev.pageX;
-    var ypx = ev.pageY;
-
-    //containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2) / cols
-
-    var box = { i: count.toString(), x: ev.pageX/24, y: ev.pageY/24, w: 4, h: 4, item: {  
-          filters: this.state.filters,
-          layoutId: count.toString()
-        },itemType:c};
-    
-    console.log("component dropped: ", c);
-    var layout = this.state.layout;
-    layout.push(box);
-    this.setState({
-      ...this.state,
-      layout
-    });
-  }
-
-  // onDrop = (ev, box) => {
-    
+  // onDrop = (ev) => {
+  //   //debugger;
+  //   var layout = this.state.layout;
+  //   var count = this.state.layout.length;
   //   let c = ev.dataTransfer.getData("text/plain");
+
+  //   var xpx = ev.pageX;
+  //   var ypx = ev.pageY;
+
+  //   var x=0;
+  //   var y =0;
+  //   var h=2;
+  //   var w= 2;
+
+
+  //   //containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2) / cols
+
+  //   // var box = { i: count.toString(), x: ev.pageX/24, y: ev.pageY/24, w: 4, h: 4, item: {  
+  //   //       filters: this.state.filters,
+  //   //       layoutId: count.toString(),
+  //   //       isFirstTime: true
+  //   //     },itemType:c};
+  //   var box = { i: count.toString(), x: x, y:y, w: w, h: h, item: {  
+  //     filters: this.state.filters,
+  //     layoutId: count.toString(),
+  //     isFirstTime: true
+  //   },itemType:c};
+    
   //   console.log("component dropped: ", c);
-  //   let layout = this.state.layout.map(l => {
-  //     if (l.i == box.i) {       
-  //       // l.item = this.comps[c]({filters: this.state.filters,
-  //       //                         layoutId: 'comp' + l.i.toString()
-  //       //                       });
-  //       l.item = {  
-  //                   filters: this.state.filters,
-  //                   layoutId: l.i.toString()
-  //                 };
-  //       l.itemType = c;
-  //     }
-  //     return l;
-  //   });
+  //   var layout = this.state.layout;
+  //   layout.push(box);
   //   this.setState({
   //     ...this.state,
   //     layout
   //   });
-  // };
+  // }
+
+  onDrop = (ev, box) => {
+    
+    let c = ev.dataTransfer.getData("text/plain");
+    console.log("component dropped: ", c);
+    let layout = this.state.layout.map(l => {
+      if (l.i == box.i) {       
+        // l.item = this.comps[c]({filters: this.state.filters,
+        //                         layoutId: 'comp' + l.i.toString()
+        //                       });
+        l.item = {  
+                    filters: this.state.filters,
+                    layoutId: l.i.toString(),
+                    isFirstTime: true
+                  };
+        l.itemType = c;
+      }
+      return l;
+    });
+    this.setState({
+      ...this.state,
+      layout
+    });
+  };
 
   onDragOver = ev => {
     ev.preventDefault();
@@ -213,15 +227,34 @@ class Page extends Component {
   onSave = (e) => {
     //alert(); 
     console.log("SaveState", this.state);
+    var stateData = this.state;
+    if(stateData.newLayout){
+      stateData.newLayout.map(function(newL,i){
+        var item = stateData.layout[i].item;
+        var itemType = stateData.layout[i].itemType;
+        stateData.layout[i] = newL;
+        if(item){          
+          stateData.layout[i].item = item;
+          stateData.layout[i].itemType = itemType;
+        }
+      })
+    }
 
     axios
-    .post(this.serviceBaseUrl + "data/savePageData", this.state)
+    .post(this.serviceBaseUrl + "data/savePageData", stateData) //this.state
     .then(response => {
       console.log("response", response);
       alert("Page Data Saved Sucessfully !");
     })
     .catch(function(error) {
       console.log("error", error);
+    });
+  };
+
+  onLayoutChange = (layout, layouts) => {
+    //this.props.onLayoutChange(layout, layouts);
+    this.setState({     
+       newLayout:  layout
     });
   };
 
@@ -258,7 +291,7 @@ class Page extends Component {
           <ul>{li}</ul>
         </div>
         <input type="button" value="Save" onClick={e=>{this.onSave(e)}} />
-          <div  onDragOver={e => this.onDragOver(e)} onDrop={e => this.onDrop(e) } >
+          {/* <div  onDragOver={e => this.onDragOver(e)} onDrop={e => this.onDrop(e) } > */}
 
             <ReactGridLayout                    
               draggableCancel="input,textarea"
@@ -266,11 +299,12 @@ class Page extends Component {
               layout={layout}
               cols={12}
               rowHeight={100}
-              width={1200}
+              width={1200} 
+              onLayoutChange={this.onLayoutChange}
             >
               {box}
             </ReactGridLayout>
-        </div>
+        {/* </div> */}
       </div>
     );
   }

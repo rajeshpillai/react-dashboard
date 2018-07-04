@@ -14,7 +14,7 @@ export default class Filter extends Component {
     dimensions: [],
     data: [],
     title: this.props.title,
-    dimensionText: "",
+    dimensionName: "",
     isFormVisible: false,
     selectedValue: ""
   };
@@ -22,24 +22,21 @@ export default class Filter extends Component {
   serviceBaseUrl = "http://localhost:57387/api/";
 
   fetchData() {
-    var name = this.state.dimensionText ? this.state.dimensionText : "";
-    if (!name) {
+    //var name =  this.inpDim.value ? this.inpDim.value : "";
+    //if (!name) {
+      var name ="";
       if (this.state.dimensions && this.state.dimensions.length > 0) {
-        name = this.state.dimensions[0].Name;
+        name = this.state.dimensions[0].Name;        
       }
-    }
+   // }
 
-    // if (this.state.dimensions.length == 0){
-
+    // var sameFilterRequestList = _.filter(this.state.filters, { ColName: name });
+    // //debugger;
+    // //if (!isFirstTime && scope.type == "dropdown" && sameFilterRequestList.length > 0) {
+    // if (sameFilterRequestList.length > 0) {
+    //   //moveSelectedOptionOnTop();
+    //   return false;
     // }
-
-    var sameFilterRequestList = _.filter(this.state.filters, { ColName: name });
-    //debugger;
-    //if (!isFirstTime && scope.type == "dropdown" && sameFilterRequestList.length > 0) {
-    if (sameFilterRequestList.length > 0) {
-      //moveSelectedOptionOnTop();
-      return false;
-    }
 
     //debugger;
     var widgetModel = {
@@ -57,7 +54,8 @@ export default class Filter extends Component {
         console.log("response", response);
         if (response && response.data) {
           this.setState({
-            data: response.data
+            data: response.data,
+            dimensionName : name
           });
         }
       })
@@ -78,7 +76,7 @@ export default class Filter extends Component {
           ref={(inpDim)=>this.inpDim = inpDim}
           type="text"
           placeholder="Enter Dimension"
-          defaultValue={this.state.dimensionText}
+          defaultValue={this.state.dimensionName}
         />
         <button onClick={this.saveForm}>Apply</button>
       </div>
@@ -97,7 +95,7 @@ export default class Filter extends Component {
           ? state.dimensions
           : [],
       filters: props.filters //,
-      //dimensionText: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name : props.dimensionText
+      //dimensionName: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name : props.dimensionName
     };
     // }
     // if (props && props.layoutId != null) {
@@ -105,7 +103,7 @@ export default class Filter extends Component {
     //     layoutId: props.layoutId,
     //     dimensions: props.dimensions,
     //     filters: props.filters,
-    //     dimensionText: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name :""
+    //     dimensionName: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name :""
     //   };
     // }
     // if (props && props.dimensions != null && props.dimensions.length > 0) {
@@ -131,7 +129,7 @@ export default class Filter extends Component {
     });
 
     var filter = {
-      colName: this.state.dimensionText,
+      colName: this.state.dimensionName,
       values: [e.target.value]
     };
 
@@ -142,12 +140,12 @@ export default class Filter extends Component {
     this.toggleConfirmForm();
 
     let dimension = {
-      Name: this.inpDim.value // this.state.dimensionText
+      Name: this.inpDim.value // this.state.dimensionName
     };
 
     this.setState(
       {
-        dimensionText: this.inpDim.value,
+        dimensionName: this.inpDim.value,
         dimensions: [dimension]
       },
       () => {
@@ -183,10 +181,10 @@ export default class Filter extends Component {
     var options = this.state.data.map(v => {
       return (
         <option
-          key={v[this.state.dimensionText]}
-          value={v[this.state.dimensionText]}
+          key={v[this.state.dimensionName]}
+          value={v[this.state.dimensionName]}
         >
-          {v[this.state.dimensionText]}
+          {v[this.state.dimensionName]}
         </option>
       );
     });
