@@ -1,22 +1,28 @@
 import React, { Component } from "react";
 import axios from "axios";
+import _ from "lodash";
 
 export default class Kpi extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
     this.fetchData = this.fetchData.bind(this);
 
     this.test = "testData";
+    this.isFirstTime= props.isFirstTime;
+
+    this.state = {
+      measure: props.measure,
+      value: "",
+      expression: "",
+      measureText: "",
+      isFormVisible: false,
+      layoutId: props.layoutId
+      
+    };
   }
 
-  state = {
-    measure: [],
-    value: "",
-    expression: "",
-    measureText: "",
-    isFormVisible: false
-  };
+  
 
   serviceBaseUrl = "http://localhost:57387/api/";
 
@@ -39,9 +45,20 @@ export default class Kpi extends Component {
 
    
 
-    if (this.state.filters) {
-      widgetModel.FilterList = this.state.filters;
+    //debugger;
+    //Derive filtesr from Global filters.
+    var filterList =[]
+    if(this.props.globalFilters){
+      filterList = _.clone(this.props.globalFilters);                
+        // this.props.globalFilters.map(function(filter,i){
+        //   if(filter.ColName == dimName){
+        //     _.remove(filterList, { 'ColName': dimName });
+        //   }
+        // })    
     }
+    //if (this.state.filters) {
+      widgetModel.FilterList = filterList;
+    //}
 
     axios
       .post(this.serviceBaseUrl + "data/getData", widgetModel)
@@ -49,7 +66,8 @@ export default class Kpi extends Component {
         console.log("response", response);
         if (response && response.data) {
           this.setState({
-            value: response.data[0][this.state.expression]
+            value: response.data[0][this.state.expression],            
+            measureText : this.state.expression
           });
         }
       })
@@ -58,39 +76,8 @@ export default class Kpi extends Component {
       });
   }
 
-  static getDerivedStateFromProps(props, state) {
-    //if (state && state.measure != null && state.measure.length === 0) {
-    var obj ={};
-    //var isPropChanged = false;
-    if(props.measure != state.measure){
-      obj.measure = props.measure;
-    }
-    if(props.filters != state.filters){
-      obj.filters = props.filters;
-    }
-    if(props.layoutId != state.layoutId){
-      obj.layoutId = props.layoutId;
-    }
-    if(props.isFirstTime != state.isFirstTime){
-      obj.isFirstTime = props.isFirstTime;
-    }
-    
-    obj.expression = (props.measure && props.measure.length>0)?props.measure[0].Expression:state.expression;
-
-      // return {
-      //   measure: props.measure,
-      //   expression : (props.measure && props.measure.length>0)?props.measure[0].Expression:state.expression,
-      //   filters: props.filters,
-      //   layoutId: props.layoutId,        
-      //   filters: props.filters
-      // };       
-    
-    return obj;
-    //return null;
-  }
-
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.filters != this.props.filters) {
+    if (prevProps.globalFilters != this.props.globalFilters) {
       this.fetchData();
     }
     //
@@ -98,33 +85,11 @@ export default class Kpi extends Component {
   }
 
   componentDidMount() {
-    if(this.state.isFirstTime) {
+    if(this.isFirstTime) {
       return;
     }
     this.fetchData();
   }
-
-  //   onInputChange = event => {
-  //     event.preventDefault();
-  //     let measureValue = event.target.value;
-
-  //     this.setState({
-  //       measureText: measureValue
-  //     });
-
-  //     this.setState(
-  //       {
-  //         measure: [
-  //           {
-  //             Expression: measureValue
-  //           }
-  //         ]
-  //       },
-  //       () => {
-  //         this.fetchData();
-  //       }
-  //     );
-  //   };
 
   ShowConfigForm = () => {
     let form = (
@@ -150,15 +115,15 @@ export default class Kpi extends Component {
     this.setState(
       {
         expression: measure.Expression,
-        measure: [measure],
-        isFirstTime: false
+        measure: [measure]//,
+        //isFirstTime: false
       },
       () => {
         this.props.onConfigurationChange({
           measure: [measure],
           title: this.state.title,
           layoutId: this.state.layoutId,
-          filters: this.state.filters,
+          //filters: this.state.filters,
           isFirstTime: false
         });
         this.fetchData();
@@ -189,8 +154,8 @@ export default class Kpi extends Component {
 
     return (
       <React.Fragment>
-        {this.state.measure == null && defaultView}
-        {this.state.measure != null && view}
+        {(this.state.measure == null || this.state.measure.length == 0)  && defaultView}
+        {(this.state.measure != null && this.state.measure.length > 0) && view}
         {this.state.isFormVisible && this.ShowConfigForm()}
       </React.Fragment>
     );

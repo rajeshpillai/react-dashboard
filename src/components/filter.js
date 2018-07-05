@@ -8,45 +8,56 @@ export default class Filter extends Component {
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
     this.fetchData = this.fetchData.bind(this);
     this.test = "testData";
-  }
 
-  state = {
-    dimensions: [],
-    data: [],
-    title: this.props.title,
-    dimensionName: "",
-    isFormVisible: false,
-    selectedValue: ""
-  };
+    this.id =  this.props.id;
+    this.globalFilters = this.props.globalFilters
+    this.filters =[];
+
+    this.state = {
+      dimensions: props.dimensions,
+      data: [],
+      title: this.props.title,
+      dimensionName: "",
+      isFormVisible: false,
+      selectedValue: "",
+      //filters: [],
+      layoutId: this.props.layoutId,
+      showSettings: false
+    };
+  }
 
   serviceBaseUrl = "http://localhost:57387/api/";
 
   fetchData() {
-    //var name =  this.inpDim.value ? this.inpDim.value : "";
-    //if (!name) {
+   
       var name ="";
       if (this.state.dimensions && this.state.dimensions.length > 0) {
         name = this.state.dimensions[0].Name;        
       }
-   // }
+   
 
-    // var sameFilterRequestList = _.filter(this.state.filters, { ColName: name });
-    // //debugger;
-    // //if (!isFirstTime && scope.type == "dropdown" && sameFilterRequestList.length > 0) {
-    // if (sameFilterRequestList.length > 0) {
-    //   //moveSelectedOptionOnTop();
-    //   return false;
-    // }
-
-    //debugger;
     var widgetModel = {
       Dimension: this.state.dimensions,
       Type: "filter"
     };
+    //debugger;
+    //Derive filtesr from Global filters.
+    var filterList = [];
+    if(this.props.globalFilters){
+      filterList = _.clone(this.props.globalFilters);
+      if (this.state.dimensions && this.state.dimensions.length > 0){ 
+        var dimName = this.state.dimensions[0].Name;     
+        this.props.globalFilters.map(function(filter,i){
+          if(filter.ColName == dimName){
+            _.remove(filterList, { 'ColName': dimName });
+          }
+        })
 
-    if (this.state.filters) {
-      widgetModel.FilterList = this.state.filters;
+     }
     }
+    //if (this.state.filters) {
+      widgetModel.FilterList = filterList;
+    //}
 
     axios
       .post(this.serviceBaseUrl + "data/getData", widgetModel)
@@ -79,58 +90,69 @@ export default class Filter extends Component {
           defaultValue={this.state.dimensionName}
         />
         <button onClick={this.saveForm}>Apply</button>
+        &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
       </div>
     );
     return form;
   };
 
-  static getDerivedStateFromProps(props, state) {
-    console.log("filter:gds");
-    return {
-      filters: props.filters,
-      layoutId: props.layoutId,
-      dimensions: props.dimensions
-        ? props.dimensions
-        : state.dimensions
-          ? state.dimensions
-          : [],
-      filters: props.filters //,
-      //dimensionName: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name : props.dimensionName
-    };
-    // }
-    // if (props && props.layoutId != null) {
-    //   return {
-    //     layoutId: props.layoutId,
-    //     dimensions: props.dimensions,
-    //     filters: props.filters,
-    //     dimensionName: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name :""
-    //   };
-    // }
-    // if (props && props.dimensions != null && props.dimensions.length > 0) {
-    //   return {
-    //     dimensions: props.dimensions
-    //   };
-    // }
-    return null;
-  }
+  // static getDerivedStateFromProps(props, state) {
+  //   console.log("filter:gds");
+  //   var obj={};
+  //   var isChanged=false;
+  //   if(props.filters != state.filters){
+  //     obj.filters = props.filters;
+  //     isChanged = true;
+  //   }
+  //   if(props.layoutId != state.layoutId){
+  //     obj.layoutId = props.layoutId;
+  //     isChanged = true;
+  //   }
+  //   if(props.dimensions != state.dimensions){     
+  //     obj.dimensions = props.dimensions;
+  //     if(!props.dimensions && state.dimensions){
+  //       obj.dimensions = state.dimensions;
+  //     }
+  //     isChanged = true;
+  //   }
+  //   if(isChanged){
+  //     return obj;
+  //   }
+   
+  //   // return {
+  //   //   filters: props.filters,
+  //   //   layoutId: props.layoutId,
+  //   //   dimensions: props.dimensions
+  //   //     ? props.dimensions
+  //   //     : state.dimensions
+  //   //       ? state.dimensions
+  //   //       : []
+  //   //   //dimensionName: (props.dimensions && props.dimensions.length) > 0? props.dimensions[0].Name : props.dimensionName
+  //   // };
+    
+  //   return null;
+  // }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.filters != this.props.filters) {
+    if (prevProps.globalFilters != this.props.globalFilters) {
       this.fetchData();
     }
     //
-    let test = 0;
+   // let test = 0;
     console.log("componentDidUpdate state", this.state);
   }
 
   handleSelectChange = e => {
+    e.stopPropagation();
     this.setState({
       selectedValue: e.target.value
     });
 
     var filter = {
       colName: this.state.dimensionName,
-      values: [e.target.value]
+      values: [e.target.value],
+      type: 'filter'//,
+      //operationType: 
     };
 
     this.props.onFilterChange(filter, this);
@@ -153,16 +175,22 @@ export default class Filter extends Component {
           dimensions: [dimension],
           title: this.state.title,
           layoutId: this.state.layoutId,
-          filters: this.state.filters
+          //filters: this.state.filters,
+          id: this.id
         });
         this.fetchData();
       }
     );
   };
 
-  toggleConfirmForm = () => {
+  toggleConfirmForm = (e) => {
+    if(e){
+      e.preventDefault();
+    }
+   
     this.setState(prevState => ({
-      isFormVisible: !prevState.isFormVisible
+      isFormVisible: !prevState.isFormVisible,
+      showSettings: prevState.isFormVisible
     }));
   };
 
@@ -172,16 +200,18 @@ export default class Filter extends Component {
 
   render() {
     console.log("Filter: Render");
+    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a></span>);
+
     var defaultView = (
       <div>
-        <button onClick={this.toggleConfirmForm}>Add Dimension</button>
+        <button onClick={(e) => this.toggleConfirmForm(e)}>Add Dimension</button>                 
       </div>
     );
 
-    var options = this.state.data.map(v => {
+    var options = this.state.data.map((v,i) => {
       return (
         <option
-          key={v[this.state.dimensionName]}
+          key={i}
           value={v[this.state.dimensionName]}
         >
           {v[this.state.dimensionName]}
@@ -205,9 +235,10 @@ export default class Filter extends Component {
     );
 
     return (
-      <React.Fragment>
-        {this.state.dimensions.length == 0 && defaultView}
-        {this.state.dimensions.length > 0 && view}
+      <React.Fragment>       
+        {(!this.state.dimensions || (this.state.dimensions && this.state.dimensions.length == 0)) && defaultView}
+        {this.state.showSettings && showSettingLinkUI }
+        {!this.state.isFormVisible && this.state.dimensions && this.state.dimensions.length > 0 && view}
         {this.state.isFormVisible && this.ShowConfigForm()}
       </React.Fragment>
     );

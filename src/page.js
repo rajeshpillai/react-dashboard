@@ -4,8 +4,8 @@ import Kpi from "./components/kpi";
 import Filter from "./components/filter";
 import BarChart from './components/barchart';
 import LineChart from './components/linechart';
-
 import axios from 'axios';
+var _ = require('lodash');
 
 class Page extends Component {
   serviceBaseUrl = "http://localhost:57387/api/";
@@ -18,7 +18,7 @@ class Page extends Component {
       this.setState({
         uiComponents: response.data.uiComponents,
         layout:  response.data.layout,
-        filters:  response.data.filters
+        globalFilters:  response.data.filters
       });
       //alert("Page Data Saved Sucessfully !");
     })
@@ -30,19 +30,19 @@ class Page extends Component {
   // state = {   
   //   uiComponents: ["KPI", "Filter","BarChart", "LineChart"],
   //   layout: [
-  //     { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
-  //     { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
-  //     { i: "c", x: 4, y: 0, w: 2, h: 2, item: "" },
-  //     { i: "d", x: 6, y: 0, w: 2, h: 2, item: "" },
-  //     { i: "e", x: 8, y: 0, w: 2, h: 2, item: "" },
-  //     { i: "f", x: 0, y: 2, w: 2, h: 2, item: "" },
-  //     { i: "g", x: 2, y: 2, w: 2, h: 2, item: "" },
-  //     { i: "h", x: 4, y: 2, w: 2, h: 2, item: "" },
-  //     { i: "i", x: 6, y: 2, w: 2, h: 2, item: "" },
-  //     { i: "k", x: 8, y: 2, w: 2, h: 2, item: "" }
+  //     // { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
+  //     // { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
+  //     // { i: "c", x: 4, y: 0, w: 2, h: 2, item: "" },
+  //     // { i: "d", x: 6, y: 0, w: 2, h: 2, item: "" },
+  //     // { i: "e", x: 8, y: 0, w: 2, h: 2, item: "" },
+  //     // { i: "f", x: 0, y: 2, w: 2, h: 2, item: "" },
+  //     // { i: "g", x: 2, y: 2, w: 2, h: 2, item: "" },
+  //     // { i: "h", x: 4, y: 2, w: 2, h: 2, item: "" },
+  //     // { i: "i", x: 6, y: 2, w: 2, h: 2, item: "" },
+  //     // { i: "k", x: 8, y: 2, w: 2, h: 2, item: "" }
   //   ],
   //   filters: []
-  // };
+  //  };
 
   comps = {
     // KPI: (filters,id) => {
@@ -64,18 +64,7 @@ class Page extends Component {
     //     />      
     //   );
     // }
-    KPI: (config) => {
-      return (
-        <Kpi layoutId={config.layoutId} 
-          isFirstTime={config.isFirstTime}
-          measure = {config.measure}
-          label="KPI Label"
-          filters={config.filters}
-          onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
-          onConfigurationChange ={c => this.onConfigurationChange(c)}
-        />
-      );
-    },
+  
 
     BarChart: (config) => {
       return (
@@ -101,12 +90,24 @@ class Page extends Component {
       );
     },
 
+    KPI: (config) => {
+      return (
+        <Kpi layoutId={config.layoutId}  id={config.id}
+          isFirstTime={config.isFirstTime}
+          measure = {config.measure}
+          label="KPI Label"
+          globalFilters={this.state.globalFilters}
+          onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          onConfigurationChange ={c => this.onConfigurationChange(c)}
+        />
+      );
+    },
     Filter: (config) => {
       return (
-        <Filter layoutId={config.layoutId}
+        <Filter layoutId={config.layoutId} id={config.id}
           dimensions = {config.dimensions} 
           title="Filter"
-          filters={config.filters}
+          globalFilters={this.state.globalFilters}
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
         />      
@@ -135,86 +136,91 @@ class Page extends Component {
     var filters = [];
     filters.push({ ColName: filter.colName, Values: filter.values });
 
-    let layouts = this.state.layout;
+    //let layouts = this.state.layout;
 
-    layouts.map(l => {
-      if (l.itemType) {
-        //l.item = this.comps[l.itemType](filters, l.i);
-        //var config = this.comps[l.itemType];
-        var config = l.item;
-        config.filters = filters;
-        //l.item = this.comps[l.itemType](config);
-        l.item = config;
-      }      
-      return l;
-    });
+    // layouts.map(l => {
+    //   if (l.itemType) {
+    //     //l.item = this.comps[l.itemType](filters, l.i);
+    //     //var config = this.comps[l.itemType];
+    //     //debugger;
+    //     var config = l.item;
+    //     //if(config.id != item.props.id){
+    //      //config.filters = filters;
+    //     //}
+        
+    //     //l.item = this.comps[l.itemType](config);
+    //     l.item = config;
+    //   }      
+    //   return l;
+    // });
 
     this.setState({
-      filters: filters,
-      layout: layouts
+      globalFilters: filters//,
+//      layout: layouts
     });
   };
 
-  // onDrop = (ev) => {
-  //   //debugger;
-  //   var layout = this.state.layout;
-  //   var count = this.state.layout.length;
-  //   let c = ev.dataTransfer.getData("text/plain");
-
-  //   var xpx = ev.pageX;
-  //   var ypx = ev.pageY;
-
-  //   var x=0;
-  //   var y =0;
-  //   var h=2;
-  //   var w= 2;
-
-
-  //   //containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2) / cols
-
-  //   // var box = { i: count.toString(), x: ev.pageX/24, y: ev.pageY/24, w: 4, h: 4, item: {  
-  //   //       filters: this.state.filters,
-  //   //       layoutId: count.toString(),
-  //   //       isFirstTime: true
-  //   //     },itemType:c};
-  //   var box = { i: count.toString(), x: x, y:y, w: w, h: h, item: {  
-  //     filters: this.state.filters,
-  //     layoutId: count.toString(),
-  //     isFirstTime: true
-  //   },itemType:c};
-    
-  //   console.log("component dropped: ", c);
-  //   var layout = this.state.layout;
-  //   layout.push(box);
-  //   this.setState({
-  //     ...this.state,
-  //     layout
-  //   });
-  // }
-
-  onDrop = (ev, box) => {
-    
+  onDrop = (ev) => {
+    //debugger;
+    var layout = this.state.layout;
+    var count = this.state.layout.length;
     let c = ev.dataTransfer.getData("text/plain");
+
+    var xpx = ev.pageX;
+    var ypx = ev.pageY;
+
+    var x=0;
+    var y =0;
+    var h=2;
+    var w= 2;
+
+
+    //containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2) / cols
+
+    // var box = { i: count.toString(), x: ev.pageX/24, y: ev.pageY/24, w: 4, h: 4, item: {  
+    //       filters: this.state.filters,
+    //       layoutId: count.toString(),
+    //       isFirstTime: true
+    //     },itemType:c};
+    var box = { i: count.toString(), x: x, y:y, w: w, h: h, item: {  
+      //filters: this.state.filters,
+      layoutId: count.toString(),
+      isFirstTime: true,
+      id: 'c' +(Math.ceil(Math.random() * 4) + 1).toString(),
+    },itemType:c};
+    
     console.log("component dropped: ", c);
-    let layout = this.state.layout.map(l => {
-      if (l.i == box.i) {       
-        // l.item = this.comps[c]({filters: this.state.filters,
-        //                         layoutId: 'comp' + l.i.toString()
-        //                       });
-        l.item = {  
-                    filters: this.state.filters,
-                    layoutId: l.i.toString(),
-                    isFirstTime: true
-                  };
-        l.itemType = c;
-      }
-      return l;
-    });
+    var layout = this.state.layout;
+    layout.push(box);
     this.setState({
       ...this.state,
       layout
     });
-  };
+  }
+
+  // onDrop = (ev, box) => {
+    
+  //   let c = ev.dataTransfer.getData("text/plain");
+  //   console.log("component dropped: ", c);
+  //   let layout = this.state.layout.map(l => {
+  //     if (l.i == box.i) {       
+  //       // l.item = this.comps[c]({filters: this.state.filters,
+  //       //                         layoutId: 'comp' + l.i.toString()
+  //       //                       });
+  //       l.item = {  id: 'c' +(Math.ceil(Math.random() * 4) + 1).toString(),
+  //                   filters: this.state.filters,
+  //                   layoutId: l.i.toString(),
+  //                   isFirstTime: true
+  //                 };
+  //       l.itemType = c;
+  //     }
+  //     return l;
+  //   });
+  //   this.setState({
+  //     ...this.state,
+  //     layout
+  //   });
+  // };
 
   onDragOver = ev => {
     ev.preventDefault();
@@ -280,7 +286,7 @@ class Page extends Component {
           onDrop={e => this.onDrop(e, l)}
         >         
           {/* {l.item} */}
-          {l.itemType && this.comps[l.itemType](l.item)}
+          {l.itemType && _.clone(this.comps[l.itemType](l.item))}
         </div>
       );
     });
@@ -291,7 +297,7 @@ class Page extends Component {
           <ul>{li}</ul>
         </div>
         <input type="button" value="Save" onClick={e=>{this.onSave(e)}} />
-          {/* <div  onDragOver={e => this.onDragOver(e)} onDrop={e => this.onDrop(e) } > */}
+          <div  onDragOver={e => this.onDragOver(e)} onDrop={e => this.onDrop(e) } >
 
             <ReactGridLayout                    
               draggableCancel="input,textarea"
@@ -304,7 +310,7 @@ class Page extends Component {
             >
               {box}
             </ReactGridLayout>
-        {/* </div> */}
+        </div>
       </div>
     );
   }
