@@ -66,6 +66,7 @@ export default class Filter extends Component {
         if (response && response.data) {
           this.setState({
             data: response.data,
+            count: response.data.length,
             dimensionName : name
           });
         }
@@ -212,16 +213,16 @@ export default class Filter extends Component {
       return (
         <option
           key={i}
-          value={v[this.state.dimensionName]}
+          value={v["'" + this.state.dimensionName + "'"]}
         >
-          {v[this.state.dimensionName]}
+          {v["'" + this.state.dimensionName + "'"]}
         </option>
       );
     });
 
     var view = (
       <div>
-        <label>Filter - </label>
+        <label>Filter - ({this.state.count})</label>
         <span>
           <select
             value={this.state.selectedValue}

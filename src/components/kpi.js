@@ -17,7 +17,8 @@ export default class Kpi extends Component {
       expression: "",
       measureText: "",
       isFormVisible: false,
-      layoutId: props.layoutId
+      layoutId: props.layoutId,
+      showSettings: false
       
     };
   }
@@ -101,6 +102,7 @@ export default class Kpi extends Component {
           defaultValue={this.state.expression}
         />
         <button onClick={this.saveForm}>Apply</button>
+        &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
       </div>
     );
     return form;
@@ -133,12 +135,15 @@ export default class Kpi extends Component {
 
   toggleConfirmForm = () => {
     this.setState(prevState => ({
-      isFormVisible: !prevState.isFormVisible
+      isFormVisible: !prevState.isFormVisible,
+      showSettings: prevState.isFormVisible
     }));
   };
 
   render() {
     console.log("KPI: Render");
+    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a></span>);
+
     var defaultView = (
       <div>
         <button onClick={this.toggleConfirmForm}>Add Measure</button>
@@ -155,6 +160,7 @@ export default class Kpi extends Component {
     return (
       <React.Fragment>
         {(this.state.measure == null || this.state.measure.length == 0)  && defaultView}
+        {this.state.showSettings && showSettingLinkUI }
         {(this.state.measure != null && this.state.measure.length > 0) && view}
         {this.state.isFormVisible && this.ShowConfigForm()}
       </React.Fragment>

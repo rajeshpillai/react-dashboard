@@ -10,68 +10,47 @@ var _ = require('lodash');
 class Page extends Component {
   serviceBaseUrl = "http://localhost:57387/api/";
 
-  componentDidMount(){
-     axios
-    .post(this.serviceBaseUrl + "data/getPageData")
-    .then(response => {
-      console.log("response-getPageData", response);
-      this.setState({
-        uiComponents: response.data.uiComponents,
-        layout:  response.data.layout,
-        globalFilters:  response.data.filters
-      });
-      //alert("Page Data Saved Sucessfully !");
-    })
-    .catch(function(error) {
-      console.log("error", error);
-    });
-  }
+  // componentDidMount(){
+  //    axios
+  //   .post(this.serviceBaseUrl + "data/getPageData")
+  //   .then(response => {
+  //     console.log("response-getPageData", response);
+  //     this.setState({
+  //       uiComponents: response.data.uiComponents,
+  //       layout:  response.data.layout,
+  //       globalFilters:  response.data.filters
+  //     });
+  //     //alert("Page Data Saved Sucessfully !");
+  //   })
+  //   .catch(function(error) {
+  //     console.log("error", error);
+  //   });
+  // }
 
-  // state = {   
-  //   uiComponents: ["KPI", "Filter","BarChart", "LineChart"],
-  //   layout: [
-  //     // { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
-  //     // { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
-  //     // { i: "c", x: 4, y: 0, w: 2, h: 2, item: "" },
-  //     // { i: "d", x: 6, y: 0, w: 2, h: 2, item: "" },
-  //     // { i: "e", x: 8, y: 0, w: 2, h: 2, item: "" },
-  //     // { i: "f", x: 0, y: 2, w: 2, h: 2, item: "" },
-  //     // { i: "g", x: 2, y: 2, w: 2, h: 2, item: "" },
-  //     // { i: "h", x: 4, y: 2, w: 2, h: 2, item: "" },
-  //     // { i: "i", x: 6, y: 2, w: 2, h: 2, item: "" },
-  //     // { i: "k", x: 8, y: 2, w: 2, h: 2, item: "" }
-  //   ],
-  //   filters: []
-  //  };
+  state = {   
+    uiComponents: ["KPI", "Filter","BarChart", "LineChart"],
+    layout: [
+      // { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
+      // { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
+      // { i: "c", x: 4, y: 0, w: 2, h: 2, item: "" },
+      // { i: "d", x: 6, y: 0, w: 2, h: 2, item: "" },
+      // { i: "e", x: 8, y: 0, w: 2, h: 2, item: "" },
+      // { i: "f", x: 0, y: 2, w: 2, h: 2, item: "" },
+      // { i: "g", x: 2, y: 2, w: 2, h: 2, item: "" },
+      // { i: "h", x: 4, y: 2, w: 2, h: 2, item: "" },
+      // { i: "i", x: 6, y: 2, w: 2, h: 2, item: "" },
+      // { i: "k", x: 8, y: 2, w: 2, h: 2, item: "" }
+    ],
+    filters: []
+   };
 
   comps = {
-    // KPI: (filters,id) => {
-    //   return (
-    //     <Kpi ref={(id)=>this.id = id} 
-    //       label="KPI Label"
-    //       filters={filters}
-    //       onFilterChange={filter => this.onFilterChange(filter)} 
-    //     />
-    //   );
-    // },
-    // Filter: (filters,id) => {
-    //   return (
-    //     <Filter layoutId={id} 
-    //       title="Filter"
-    //       filters={filters}
-    //       onFilterChange={filter => this.onFilterChange(filter)} 
-    //       onConfigurationChange ={config => this.onConfigurationChange(config)}
-    //     />      
-    //   );
-    // }
-  
-
     BarChart: (config) => {
       return (
         <BarChart layoutId={config.layoutId}
           measure = {config.measure}
           label="Bar Chart"
-          filters={config.filters}
+          globalFilters={this.state.globalFilters}
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
         />
@@ -133,8 +112,17 @@ class Page extends Component {
 
   onFilterChange = (filter, item) => {
     console.log("filter1111", filter);
-    var filters = [];
-    filters.push({ ColName: filter.colName, Values: filter.values });
+    var filters = this.state.globalFilters ? this.state.globalFilters :[];
+
+    
+
+    if(filter.values && filter.values.length == 1 && filter.values[0].trim().length == 0){
+      filters =[];
+    } else {
+      filters =[];
+      filters.push({ ColName: filter.colName, Values: filter.values });
+    }
+    
 
     //let layouts = this.state.layout;
 
