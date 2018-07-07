@@ -114,8 +114,6 @@ class Page extends Component {
     console.log("filter1111", filter);
     var filters = this.state.globalFilters ? this.state.globalFilters :[];
 
-    
-
     if(filter.values && filter.values.length == 1 && filter.values[0].trim().length == 0){
       filters =[];
     } else {

@@ -15,10 +15,11 @@ export default class BarChart extends Component {
     var dim = {Name:'ProductInventory.Shelf'};
 
     var measure = {Expression:'sum(ProductInventory.Quantity)'};
+    var measure2 = {Expression:'sum(Product.Weight)'};
 
     this.state = {
       dimensions:[dim],
-      measure: [measure],   
+      measure: [measure,measure2],   
       isFormVisible: false,
       showSettings: false
     };
@@ -27,26 +28,41 @@ export default class BarChart extends Component {
   }
 
 
+  // data = [
+  //   {
+  //     label: "India",
+  //     data: [{ x: 'A', y: 10 }, { x: 'B', y: 10 }, { x: 'C', y: 10 }]
+  //   },
+  //   {
+  //     label: "US",
+  //     data: [{ x: 'sas', y: 10 }, { x: 'T2', y: 10 }, { x: 'T3', y: 10 }]
+  //   },
+  //   {
+  //     label: "Germani",
+  //     data: [{ x: 'aA', y: 10 }, { x: 'C2', y: 10 }, { x: 'C3', y: 10 }]
+  //   }
+  // ];
+  
   
 
 //   data=[
-//     // {
-//     //     label: "Series 1",
-//     //     data: [[0, 1], [1, 2], [2, 4], [3, 2], [4, 7]]
-//     // },
-//     // {
-//     //     label: "Series 2",
-//     //     data: [[0, 3], [1, 1], [2, 5], [3, 6], [4, 4]]
-//     // }
+//     {
+//         label: "Series 1",
+//         data: [[0, 1], [1, 2], [2, 4], [3, 2], [4, 7]]
+//     },
+//     {
+//         label: "Series 2",
+//         data: [[0, 3], [1, 1], [2, 5], [3, 6], [4, 4]]
+//     }
 //   //   {
 //   //     label: "Series 1",
 //   //     data: [['P1', 1], ['P2', 2], ['P3', 4], ['P4', 2], ['P5', 7]]
-//   // }
-//   {
-//     label: "Series 1",
-//     data: [{x:'P1',y:1},{x:'P2',y:3},{x:'P3',y:10}]
-// }
- //];
+//   // },
+// //   {
+// //     //label: "Series 1",
+// //     data: [{'key': 'S',x:'P1',y:1},{'key': 'S',x:'P2',y:3},{'key': 'S',x:'P3',y:10}]
+// // }
+//  ];
 
 
   serviceBaseUrl = "http://localhost:57387/api/";
@@ -92,19 +108,47 @@ export default class BarChart extends Component {
       .then(response => {
         console.log("response", response);
         if (response && response.data) {
+          // var graphData = [];
+          // _.each(response.data, function (item) {
+          //       var yValue = item[that.state.measure[0].Expression];
+          //       var xValue = item[that.state.dimensions[0].Name];
+          //       graphData.push({x:xValue, y:yValue});
+          //     })
+
           //debugger;
           var graphData = [];
-          _.each(response.data, function (item) {
-            var yValue = item[that.state.measure[0].Expression];
-            var xValue = item[that.state.dimensions[0].Name];
-            graphData.push({x:xValue, y:yValue});
-          })
+          if(that.state.measure.length == 1){
+            var obj = { 'label': that.state.dimensions[0].Name, 'data': [] };
+            _.each(response.data, function (item) {
+              var yValue = item[that.state.measure[0].Expression];
+              var xValue = item[that.state.dimensions[0].Name];
+              obj.data.push({x:xValue, y:yValue});
+            })
+            graphData.push(obj);
+          } else if(that.state.measure.length > 1){
+            _.each(that.state.measure, function (ms) {   
+              var obj = { 'label': ms.Expression, 'data': [] };
+              var dimName = that.state.dimensions[0].Name;
+
+              _.each(response.data, function (item) {
+                var yValue = item[ms.Expression];
+                var xValue = item[that.state.dimensions[0].Name];
+                obj.data.push({x:xValue, y:yValue});               
+              })
+              graphData.push(obj);
+            })
+          }
+
+         
           this.setState({
-            data: [
-              {
-                label: "Series 1",
-                data: graphData
-              }],
+            // data: [
+            //   {
+            //     label: that.state.dimensions[0].Name,
+            //     data: graphData
+            //   }
+            // ]
+            data: graphData
+            ,
               showSettings:true             
           });
         }
@@ -139,7 +183,7 @@ export default class BarChart extends Component {
     let dims = this.state.dimensions.map((dim,i)=>{
       return( <div  key={i}>
         <label>Dimension:</label>
-         <input         
+         <input        
            type="text"
            placeholder="Enter Dimention"
            value= {dim.Name} 
@@ -161,7 +205,7 @@ export default class BarChart extends Component {
            </div>)
       })
 
-      let save = (<div><button onClick={this.saveForm}>Apply</button> 
+      let save = (<div key="button"><button onClick={this.saveForm}>Apply</button> 
                   <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
                   </div>)
    
