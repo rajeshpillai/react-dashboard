@@ -12,6 +12,7 @@ export default class Filter extends Component {
     this.id =  this.props.id;
     this.globalFilters = this.props.globalFilters
     this.filters =[];
+    this.type="dropdown";
 
     this.state = {
       dimensions: props.dimensions,
@@ -220,18 +221,33 @@ export default class Filter extends Component {
       );
     });
 
+    var dropdownView =(
+        <select 
+              value={this.state.selectedValue}
+              onChange={this.handleSelectChange}
+            >
+            {options}
+        </select>
+      ); 
+
+    var checkboxView = this.state.data.map((v,i) => {
+      return (
+        <div>
+          <input type="checkbox"
+            key={i} name={this.state.dimensionName} 
+            value={v["'" + this.state.dimensionName + "'"]}
+          ></input> {v["'" + this.state.dimensionName + "'"]}
+         </div>
+      );
+    });
+
     var view = (
       <div>
-        <label>Filter - ({this.state.count})</label>
-        <span>
-          <select
-            value={this.state.selectedValue}
-            onChange={this.handleSelectChange}
-          >
-            <option value="">Select</option>
-            {options}
-          </select>
-        </span>
+        <label>{this.state.dimensionName} - ({this.state.count})</label>
+        <div>
+          {this.type == 'checkbox' && checkboxView }
+          {this.type == 'dropdown' && dropdownView }
+        </div>
       </div>
     );
 

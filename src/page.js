@@ -4,6 +4,7 @@ import Kpi from "./components/kpi";
 import Filter from "./components/filter";
 import BarChart from './components/barchart';
 import LineChart from './components/linechart';
+import DataGrid from './components/datagrid';
 import axios from 'axios';
 var _ = require('lodash');
 
@@ -28,7 +29,7 @@ class Page extends Component {
   // }
 
   state = {   
-    uiComponents: ["KPI", "Filter","BarChart", "LineChart"],
+    uiComponents: ["KPI", "Filter","BarChart", "LineChart","DataGrid"],
     layout: [
       // { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
       // { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
@@ -91,6 +92,17 @@ class Page extends Component {
           onConfigurationChange ={c => this.onConfigurationChange(c)}
         />      
       );
+    },
+    DataGrid: (config) => {    
+      return (
+      <DataGrid layoutId={config.layoutId}
+          measure = {config.measure}
+          label="Table"
+          globalFilters={this.state.globalFilters}
+          onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          onConfigurationChange ={c => this.onConfigurationChange(c)} 
+        />
+      );
     }
   };
 
@@ -112,14 +124,30 @@ class Page extends Component {
 
   onFilterChange = (filter, item) => {
     console.log("filter1111", filter);
-    var filters = this.state.globalFilters ? this.state.globalFilters :[];
-
-    if(filter.values && filter.values.length == 1 && filter.values[0].trim().length == 0){
-      filters =[];
-    } else {
-      filters =[];
+    var filters = this.state.globalFilters ? _.clone(this.state.globalFilters) :[];
+    //debugger;
+     var existingFilter = _.find(filters,{'ColName':filter.colName});
+     if(existingFilter){
+      if(filter.type=="filter" && filter.values && filter.values.length == 1 
+         && filter.values[0].trim().length == 0){
+           //Remove that filter from list
+           filters =  _.filter(filters,function(v){
+             return v.ColName != filter.colName              
+           })
+      } else {
+        existingFilter.Values = filter.values;
+      }
+      
+     } else {
       filters.push({ ColName: filter.colName, Values: filter.values });
-    }
+     }
+
+    // if(filter.values && filter.values.length == 1 && filter.values[0].trim().length == 0){
+    //   filters =[];
+    // } else {
+    //   filters =[];
+    //   filters.push({ ColName: filter.colName, Values: filter.values });
+    // }
     
 
     //let layouts = this.state.layout;
@@ -140,6 +168,8 @@ class Page extends Component {
     //   return l;
     // });
 
+    console.log('globalFilters',filters);
+
     this.setState({
       globalFilters: filters//,
 //      layout: layouts
@@ -157,8 +187,8 @@ class Page extends Component {
 
     var x=0;
     var y =0;
-    var h=2;
-    var w= 2;
+    var h=4;
+    var w=4;
 
 
     //containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2) / cols
@@ -271,7 +301,7 @@ class Page extends Component {
           onDragOver={e => this.onDragOver(e)}
           onDrop={e => this.onDrop(e, l)}
         >         
-          {/* {l.item} */}
+       
           {l.itemType && _.clone(this.comps[l.itemType](l.item))}
         </div>
       );
@@ -292,8 +322,7 @@ class Page extends Component {
               cols={12}
               rowHeight={100}
               width={1200} 
-              onLayoutChange={this.onLayoutChange}
-            >
+              onLayoutChange={this.onLayoutChange}>
               {box}
             </ReactGridLayout>
         </div>

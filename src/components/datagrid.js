@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { Chart, Axis, Series, Tooltip, Cursor, Line, Bar } from "react-charts";
 var _ = require("lodash");
 
-export default class BarChart extends Component {
+export default class DataGrid extends Component {
   constructor(props) {
+      //debugger;
     super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
     this.fetchData = this.fetchData.bind(this);
@@ -13,73 +13,39 @@ export default class BarChart extends Component {
     this.filters =[];
 
     var dim = {Name:'ProductInventory.Shelf'};
+    //var dim = {Name:'Product.Name'};
+    var dim1 = {Name:'ProductVendor.VendorId'};
+    var dim2 = {Name:'PurchaseOrderHeader.ShipMethodId'};
 
     var measure = {Expression:'sum(ProductInventory.Quantity)'};
-    var measure2 = {Expression:'sum(Product.Weight)'};
+    var measure2 = {Expression:'count(PurchaseOrderDetail.PurchaseOrderId)'};
+
+    var cols =[];
+    cols.push(dim.Name);
+    cols.push(dim1.Name);
+    cols.push(dim2.Name);
+    cols.push(measure.Expression);
+    cols.push(measure2.Expression);
 
     this.state = {
-      dimensions:[dim],
-      measure: [measure,measure2],   
+      dimensions:[dim,dim1,dim2], //dim2
+      measure: [measure,measure2],    //measure2
+      cols: cols,
       isFormVisible: false,
-      showSettings: false
+      showSettings: false,
+      data:[]
     };
 
-    this.fetchData();
+    //this.fetchData();
   }
-
-
-  // data = [
-  //   {
-  //     label: "India",
-  //     data: [{ x: 'A', y: 10 }, { x: 'B', y: 10 }, { x: 'C', y: 10 }]
-  //   },
-  //   {
-  //     label: "US",
-  //     data: [{ x: 'sas', y: 10 }, { x: 'T2', y: 10 }, { x: 'T3', y: 10 }]
-  //   },
-  //   {
-  //     label: "Germani",
-  //     data: [{ x: 'aA', y: 10 }, { x: 'C2', y: 10 }, { x: 'C3', y: 10 }]
-  //   }
-  // ];
-  
-  
-
-//   data=[
-//     {
-//         label: "Series 1",
-//         data: [[0, 1], [1, 2], [2, 4], [3, 2], [4, 7]]
-//     },
-//     {
-//         label: "Series 2",
-//         data: [[0, 3], [1, 1], [2, 5], [3, 6], [4, 4]]
-//     }
-//   //   {
-//   //     label: "Series 1",
-//   //     data: [['P1', 1], ['P2', 2], ['P3', 4], ['P4', 2], ['P5', 7]]
-//   // },
-// //   {
-// //     //label: "Series 1",
-// //     data: [{'key': 'S',x:'P1',y:1},{'key': 'S',x:'P2',y:3},{'key': 'S',x:'P3',y:10}]
-// // }
-//  ];
 
 
   serviceBaseUrl = "http://localhost:57387/api/";
 
   fetchData() {
-    // if (null == this.state.expression || this.state.expression == "") {
-    //   return;
-    // }
-    // var name = this.state.measureText;
+  
     var widgetModel = {
-      Dimension: this.state.dimensions,
-      // Measure: [
-      //   {
-      //     Expression: this.state.expression,
-      //     DisplayName: this.state.Expression
-      //   }
-      // ],
+      Dimension: this.state.dimensions,     
       Measure: this.state.measure,
       Type: "chart"
     };
@@ -108,48 +74,11 @@ export default class BarChart extends Component {
       .then(response => {
         console.log("response", response);
         if (response && response.data) {
-          // var graphData = [];
-          // _.each(response.data, function (item) {
-          //       var yValue = item[that.state.measure[0].Expression];
-          //       var xValue = item[that.state.dimensions[0].Name];
-          //       graphData.push({x:xValue, y:yValue});
-          //     })
-
-          //debugger;
-          var graphData = [];
-          if(that.state.measure.length == 1){
-            var obj = { 'label': that.state.dimensions[0].Name, 'data': [] };
-            _.each(response.data, function (item) {
-              var yValue = item[that.state.measure[0].Expression];
-              var xValue = item[that.state.dimensions[0].Name];
-              obj.data.push({x:xValue, y:yValue});
-            })
-            graphData.push(obj);
-          } else if(that.state.measure.length > 1){
-            _.each(that.state.measure, function (ms) {   
-              var obj = { 'label': ms.Expression, 'data': [] };
-              var dimName = that.state.dimensions[0].Name;
-
-              _.each(response.data, function (item) {
-                var yValue = item[ms.Expression] == null? 0: item[ms.Expression];
-                var xValue = item[that.state.dimensions[0].Name];
-                obj.data.push({x:xValue, y:yValue});               
-              })
-              graphData.push(obj);
-            })
-          }
-
-         
-          this.setState({
-            // data: [
-            //   {
-            //     label: that.state.dimensions[0].Name,
-            //     data: graphData
-            //   }
-            // ]
-            data: graphData
-            ,
-              showSettings:true             
+            console.log("response", response.data);
+            //debugger;
+          this.setState({            
+            data: response.data,
+            showSettings:true             
           });
         }
       })
@@ -224,25 +153,7 @@ export default class BarChart extends Component {
       filters: this.state.filters
     });
     this.fetchData();
-    // let measure = {
-    //   Expression: this.inpExpr.value // this.state.expression
-    // };
-
-    // this.setState(
-    //   {
-    //     expression: this.inpExpr.value,
-    //     measure: [measure]
-    //   },
-    //   () => {
-    //     this.props.onConfigurationChange({
-    //       measure: [measure],
-    //       title: this.state.title,
-    //       layoutId: this.state.layoutId,
-    //       filters: this.state.filters
-    //     });
-    //     this.fetchData();
-    //   }
-    // );
+    
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -262,8 +173,9 @@ export default class BarChart extends Component {
     }));
   };
 
+  
   render() {
-    console.log("KPI: Render");
+    console.log("DataGrid: Render");
     var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a></span>);
 
     var defaultView = (
@@ -272,15 +184,40 @@ export default class BarChart extends Component {
       </div>
     );
 
+    var thDim = this.state.dimensions.map((dim)=>{
+            return (<th>{dim.Name}</th>)
+        });
+        
+    var thMeasure = this.state.measure.map((measure)=>{
+        return  (<th>{measure.Expression}</th>)
+    });
+
+var td = (row)=>{        
+   return  this.state.cols.map((col,i)=>{
+        return  (<td> {this.state.data[row][col]}           
+                 </td>)
+    });
+
+};
+
+
+    var tr = this.state.data.map((d,i)=>{
+        return  (<tr> 
+                    {td(i)}           
+                 </tr>)
+    });
+
+
     var view = (
-      <Chart data={this.state.data}>
-            <Axis primary type="ordinal" />
-            <Axis type="linear" stacked />
-            <Series type={Bar} />
-            <Cursor primary />
-            <Cursor />
-            <Tooltip />
-         </Chart>
+        <table>
+            <thead>
+                {thDim}
+                {thMeasure}
+            </thead>
+            <tbody>
+                {tr}
+            </tbody>
+        </table>        
     );
 
     return (
