@@ -12,14 +12,17 @@ export default class BarChart extends Component {
     this.globalFilters = this.props.globalFilters
     this.filters =[];
 
-    var dim = {Name:'ProductInventory.Shelf'};
+    // var dim = {Name:'ProductInventory.Shelf'};
 
-    var measure = {Expression:'sum(ProductInventory.Quantity)'};
-    var measure2 = {Expression:'sum(Product.Weight)'};
+    // var measure = {Expression:'sum(ProductInventory.Quantity)'};
+
+    var dim = {Name:'employee.city'};
+    var measure = {Expression:'count(employee.ename)'};
+    //var measure2 = {Expression:'sum(Product.Weight)'};
 
     this.state = {
       dimensions:[dim],
-      measure: [measure,measure2],   
+      measure: [measure],//,measure2],   
       isFormVisible: false,
       showSettings: false
     };
@@ -27,7 +30,12 @@ export default class BarChart extends Component {
     this.fetchData();
   }
 
-
+  componentDidCatch(error, info){
+     // Display fallback UI
+     this.setState({ hasError: true });
+     // You can also log the error to an error reporting service
+    console.log("Error in bar chart", error);
+  }
   // data = [
   //   {
   //     label: "India",
@@ -283,7 +291,9 @@ export default class BarChart extends Component {
          </Chart>
     );
 
-    return (
+    console.log("barchart render called");
+
+    return (      
       <React.Fragment>
         {(!this.state.data || (this.state.data && this.state.data.length == 0)) && defaultView}
         {this.state.showSettings && showSettingLinkUI }

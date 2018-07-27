@@ -7,12 +7,21 @@ export default class Filter extends Component {
     super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
     this.fetchData = this.fetchData.bind(this);
+    this.nextPage = this.nextPage.bind(this);  
+    this.previousPage = this.previousPage.bind(this);
+    this.getData = this.getData.bind(this);
     this.test = "testData";
 
     this.id =  this.props.id;
     this.globalFilters = this.props.globalFilters
     this.filters =[];
     this.type="dropdown";
+    this.pageSize =25;
+    this.totalRecords = 0;
+    this.enablePagination=true;
+    this.isFirstTime = true;
+    this.currentPage = 0;
+    this.totalPageCount = 0;
 
     this.state = {
       dimensions: props.dimensions,
@@ -59,23 +68,82 @@ export default class Filter extends Component {
     //if (this.state.filters) {
       widgetModel.FilterList = filterList;
     //}
-
-    axios
-      .post(this.serviceBaseUrl + "data/getData", widgetModel)
+    widgetModel.PageSize = this.pageSize;
+    widgetModel.EnablePagination = this.enablePagination;
+    if(this.enablePagination == true && this.isFirstTime){
+      //widgetModel.PageSize = this.pageSize;
+      widgetModel.IsRecordCountReq = true;
+      //Get Total Records count
+      axios
+      .post(this.serviceBaseUrl + "data/getTotalRecordsCount", widgetModel)
       .then(response => {
         console.log("response", response);
+        //debugger;
         if (response && response.data) {
-          this.setState({
-            data: response.data,
-            count: response.data.length,
-            dimensionName : name
-          });
+          //console.log("response.data************", JSON.parse(response.data));
+          this.totalRecords = parseInt(response.data[0]["totalrowscount"]) ;
+          if(this.totalRecords  <= this.pageSize){
+            this.enablePagination = false;
+          }
+          this.currentPage = 1; 
+          this.getData(widgetModel);
         }
       })
       .catch(function(error) {
         console.log("error", error);
       });
+    } else {
+      this.getData(widgetModel);
+    }
+
+    
   }
+  
+  getData(widgetModel) {
+ //debugger;
+    var name ="";
+      if (this.state.dimensions && this.state.dimensions.length > 0) {
+        name = this.state.dimensions[0].Name;        
+      }
+      widgetModel.PageSize = this.pageSize;
+      if(this.isFirstTime){
+        this.startRowNum = 0;        
+      } 
+    this.totalPageCount = Math.floor(this.totalRecords/this.pageSize);
+   
+    //widgetModel.curentPage = this.state.currentPage;
+
+    // if(this.isFirstTime){
+    //   this.startRowNum = 0;        
+    // } else {
+    //   this.startRowNum = parseInt(this.startRowNum) + parseInt(this.pageSize);
+    //   if (this.startRowNum < 0) { this.startRowNum = 0; }             
+    // }
+      widgetModel.IsRecordCountReq = false;
+    widgetModel.startRowNum = this.startRowNum;   
+
+    if(this.startRowNum <= this.totalRecords){    
+        axios
+        .post(this.serviceBaseUrl + "data/getData", widgetModel)
+        .then(response => {
+          console.log("response", response);
+          this.isFirstTime = false;
+          if (response && response.data) {
+            //console.log("response.data************", JSON.parse(response.data));
+            this.setState({
+              data: response.data,
+              //count: response.data.length,
+              count: this.totalRecords,
+              dimensionName : name
+            });
+          }
+        })
+        .catch(function(error) {
+          console.log("error", error);
+        });
+    }
+  }
+
 
   componentDidMount() {
     console.log("componentDidMount");
@@ -144,20 +212,60 @@ export default class Filter extends Component {
     console.log("componentDidUpdate state", this.state);
   }
 
-  handleSelectChange = e => {
+  handleSelectChange = (e,value) => {
     e.stopPropagation();
+    var selectedValue ="";
+    if(value){      
+        selectedValue= value;      
+    } else {
+      selectedValue= e.target.value;
+    }
     this.setState({
-      selectedValue: e.target.value
+      selectedValue: selectedValue
     });
 
     var filter = {
       colName: this.state.dimensionName,
-      values: [e.target.value],
+      values: [selectedValue],
       type: 'filter'//,
       //operationType: 
     };
 
     this.props.onFilterChange(filter, this);
+  };
+
+  nextPage(e){
+    e.stopPropagation();
+    this.currentPage = this.currentPage +1;
+    if(this.currentPage > this.totalPageCount){
+      this.curentPage  = this.totalPageCount;
+    } else {
+      if(this.isFirstTime){
+        this.startRowNum = 0;        
+      } else {
+        this.startRowNum = parseInt(this.startRowNum) + parseInt(this.pageSize);
+        if (this.startRowNum > this.totalRecords) { this.startRowNum = this.totalRecords - parseInt(this.pageSize); }      
+      }
+      this.fetchData();  
+    }
+     
+  };
+
+  previousPage(e){
+    e.stopPropagation();
+    this.currentPage = this.currentPage -1;
+    if(this.currentPage < 1){
+      this.curentPage  = 1;
+    } else {
+      if(this.isFirstTime){
+        this.startRowNum = 0;        
+      } else {
+        this.startRowNum = parseInt(this.startRowNum) - parseInt(this.pageSize);
+        if (this.startRowNum < 0) { this.startRowNum = 0; }             
+      }
+      this.fetchData();  
+    }
+       
   };
 
   saveForm = () => {
@@ -211,32 +319,61 @@ export default class Filter extends Component {
     );
 
     var options = this.state.data.map((v,i) => {
+      //var dimName = //this.state.dimensionName.substring(this.state.dimensionName.indexOf(".")+1);
       return (
         <option
           key={i}
-          value={v["'" + this.state.dimensionName + "'"]}
+          //value={v["'" + this.state.dimensionName + "'"]}
+          value={v[this.state.dimensionName]}
         >
-          {v["'" + this.state.dimensionName + "'"]}
+          {v[this.state.dimensionName]}
         </option>
       );
     });
+
+    var lis = this.state.data.map((v,i) => {     
+      return (
+        <li key={i} >
+        <a href="#" onClick={(e) => {this.handleSelectChange(e,v[this.state.dimensionName])}}>
+          {v[this.state.dimensionName]}
+        </a>
+          
+        </li>
+      );
+    });
+
+    var listView =(
+      <ul>
+         {lis}
+      </ul>      
+    ); 
 
     var dropdownView =(
         <select 
               value={this.state.selectedValue}
               onChange={this.handleSelectChange}
             >
+            <option value="">Select</option>
             {options}
         </select>
       ); 
 
+      var paginationButtonView =(
+        <div>
+          <input type="button" onClick={this.previousPage} value="Previous" />
+          <input type="button" onClick={this.nextPage} value="Next" />
+        </div>
+      );
+
     var checkboxView = this.state.data.map((v,i) => {
+      //var dimName = this.state.dimensionName.substring(this.state.dimensionName.indexOf(".")+1);
       return (
         <div>
           <input type="checkbox"
             key={i} name={this.state.dimensionName} 
-            value={v["'" + this.state.dimensionName + "'"]}
-          ></input> {v["'" + this.state.dimensionName + "'"]}
+            //value={v["'" + this.state.dimensionName + "'"]}           
+            value={v[this.state.dimensionName]}
+          ></input> {v[this.state.dimensionName]}
          </div>
       );
     });
@@ -247,6 +384,7 @@ export default class Filter extends Component {
         <div>
           {this.type == 'checkbox' && checkboxView }
           {this.type == 'dropdown' && dropdownView }
+          {this.type == 'list' && listView }
         </div>
       </div>
     );
@@ -256,6 +394,7 @@ export default class Filter extends Component {
         {(!this.state.dimensions || (this.state.dimensions && this.state.dimensions.length == 0)) && defaultView}
         {this.state.showSettings && showSettingLinkUI }
         {!this.state.isFormVisible && this.state.dimensions && this.state.dimensions.length > 0 && view}
+        {!this.state.isFormVisible && this.state.dimensions && this.state.dimensions.length > 0 && this.enablePagination && paginationButtonView}
         {this.state.isFormVisible && this.ShowConfigForm()}
       </React.Fragment>
     );

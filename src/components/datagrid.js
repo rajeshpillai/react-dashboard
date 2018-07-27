@@ -12,23 +12,31 @@ export default class DataGrid extends Component {
     this.globalFilters = this.props.globalFilters
     this.filters =[];
 
-    var dim = {Name:'ProductInventory.Shelf'};
-    //var dim = {Name:'Product.Name'};
-    var dim1 = {Name:'ProductVendor.VendorId'};
-    var dim2 = {Name:'PurchaseOrderHeader.ShipMethodId'};
+    // var dim = {Name:'ProductInventory.Shelf'};
+    // //var dim = {Name:'Product.Name'};
+    // var dim1 = {Name:'ProductVendor.VendorId'};
+    // //var dim2 = {Name:'PurchaseOrderHeader.ShipMethodId'};
 
-    var measure = {Expression:'sum(ProductInventory.Quantity)'};
-    var measure2 = {Expression:'count(PurchaseOrderDetail.PurchaseOrderId)'};
+    // var measure = {Expression:'sum(ProductInventory.Quantity)'};
+    // var measure2 = {Expression:'count(PurchaseOrderDetail.PurchaseOrderId)'};
+
+    var dim = {Name:'skills.skill'};
+    //var dim = {Name:'Product.Name'};
+    var dim1 = {Name:'employee.city'};
+    //var dim2 = {Name:'PurchaseOrderHeader.ShipMethodId'};
+
+    var measure = {Expression:'sum(employee.salary)'};
+    var measure2 = {Expression:'count(employee.ename)'};
 
     var cols =[];
     cols.push(dim.Name);
     cols.push(dim1.Name);
-    cols.push(dim2.Name);
+    //cols.push(dim2.Name);
     cols.push(measure.Expression);
     cols.push(measure2.Expression);
 
     this.state = {
-      dimensions:[dim,dim1,dim2], //dim2
+      dimensions:[dim,dim1], //dim2
       measure: [measure,measure2],    //measure2
       cols: cols,
       isFormVisible: false,
