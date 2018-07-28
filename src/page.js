@@ -3,8 +3,10 @@ import ReactGridLayout from "react-grid-layout";
 import Kpi from "./components/kpi";
 import Filter from "./components/filter";
 import BarChart from './components/barchart';
+//import NewBarChart from './components/newbarchart';
 import LineChart from './components/linechart';
 import DataGrid from './components/datagrid';
+import Pivot from './components/pivot';
 import axios from 'axios';
 var _ = require('lodash');
 
@@ -29,7 +31,7 @@ class Page extends Component {
   // }
 
   state = {   
-    uiComponents: ["KPI", "Filter","BarChart", "LineChart","DataGrid"],
+    uiComponents: ["KPI", "Filter","BarChart", "LineChart","DataGrid","Pivot"],
     layout: [
       // { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
       // { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
@@ -52,11 +54,25 @@ class Page extends Component {
           measure = {config.measure}
           label="Bar Chart"
           globalFilters={this.state.globalFilters}
-          onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          onFilterChange={(filter,item) => this.onFilterChange(filter,item)}
+          filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
         />
       );
     },
+
+    // NewBarChart: (config) => {
+    //   return (
+    //     <NewBarChart layoutId={config.layoutId}
+    //       measure = {config.measure}
+    //       label="Bar Chart"
+    //       globalFilters={this.state.globalFilters}
+    //       onFilterChange={(filter,item) => this.onFilterChange(filter,item)}
+    //       filterChanged = {this.state.filterChanged} 
+    //       onConfigurationChange ={c => this.onConfigurationChange(c)}
+    //     />
+    //   );
+    // },
 
     LineChart: (config) => {
       return (
@@ -65,6 +81,7 @@ class Page extends Component {
           label="Bar Chart"
           filters={config.filters}
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
         />
       );
@@ -78,6 +95,7 @@ class Page extends Component {
           label="KPI Label"
           globalFilters={this.state.globalFilters}
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
         />
       );
@@ -89,6 +107,7 @@ class Page extends Component {
           title="Filter"
           globalFilters={this.state.globalFilters}
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
         />      
       );
@@ -100,7 +119,21 @@ class Page extends Component {
           label="Table"
           globalFilters={this.state.globalFilters}
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)} 
+        />
+      );
+    },
+    Pivot: (config) => {
+      return (
+        <Pivot layoutId={config.layoutId}  id={config.id}
+          isFirstTime={config.isFirstTime}
+          measure = {config.measure}
+          label="KPI Label"
+          globalFilters={this.state.globalFilters}
+          onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          filterChanged = {this.state.filterChanged} 
+          onConfigurationChange ={c => this.onConfigurationChange(c)}
         />
       );
     }
@@ -171,17 +204,33 @@ class Page extends Component {
     console.log('globalFilters',filters);
 
     this.setState({
-      globalFilters: filters//,
+      globalFilters: filters,
+      filterChanged: true
 //      layout: layouts
     });
   };
 
   onDrop = (ev) => {
+   
     //debugger;
     var layout = this.state.layout;
     var count = this.state.layout.length;
     let c = ev.dataTransfer.getData("text/plain");
-
+    // console.log("_.find(this.state.uiComponents, c)",_.find(this.state.uiComponents, c));
+    // if(_.find(this.state.uiComponents, c).length == 0){
+    //   return;
+    // }
+    var isCompExist = false;
+    this.state.uiComponents.forEach(element => {
+      if(element == c){
+        isCompExist = true;
+        return;
+      }
+    });
+    
+    if(!isCompExist){
+      return;
+    }
     var xpx = ev.pageX;
     var ypx = ev.pageY;
 
@@ -295,6 +344,7 @@ class Page extends Component {
       );
     });
     var box = layout.map(l => {
+      console.log("this.comps",this.comps);
       return (
         <div
           key={l.i}

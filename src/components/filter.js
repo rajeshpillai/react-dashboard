@@ -22,6 +22,7 @@ export default class Filter extends Component {
     this.isFirstTime = true;
     this.currentPage = 0;
     this.totalPageCount = 0;
+   //this.filterChanged = this.props.filterChanged;
 
     this.state = {
       dimensions: props.dimensions,
@@ -39,7 +40,9 @@ export default class Filter extends Component {
   serviceBaseUrl = "http://localhost:57387/api/";
 
   fetchData() {
-   
+    
+    //this.filterChanged = this.props.filterChanged;
+
       var name ="";
       if (this.state.dimensions && this.state.dimensions.length > 0) {
         name = this.state.dimensions[0].Name;        
@@ -70,6 +73,9 @@ export default class Filter extends Component {
     //}
     widgetModel.PageSize = this.pageSize;
     widgetModel.EnablePagination = this.enablePagination;
+    // if(this.filterChanged){
+    //   this.isFirstTime = true;
+    // }
     if(this.enablePagination == true && this.isFirstTime){
       //widgetModel.PageSize = this.pageSize;
       widgetModel.IsRecordCountReq = true;
@@ -105,7 +111,7 @@ export default class Filter extends Component {
       if (this.state.dimensions && this.state.dimensions.length > 0) {
         name = this.state.dimensions[0].Name;        
       }
-      widgetModel.PageSize = this.pageSize;
+      widgetModel.PageSize = this.pageSize;     
       if(this.isFirstTime){
         this.startRowNum = 0;        
       } 
@@ -128,6 +134,7 @@ export default class Filter extends Component {
         .then(response => {
           console.log("response", response);
           this.isFirstTime = false;
+          //this.filterChanged = false;
           if (response && response.data) {
             //console.log("response.data************", JSON.parse(response.data));
             this.setState({
@@ -205,6 +212,7 @@ export default class Filter extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.globalFilters != this.props.globalFilters) {
+      this.isFirstTime = true;
       this.fetchData();
     }
     //
@@ -361,6 +369,7 @@ export default class Filter extends Component {
       var paginationButtonView =(
         <div>
           <input type="button" onClick={this.previousPage} value="Previous" />
+          <label>Current Page: {this.currentPage}</label>
           <input type="button" onClick={this.nextPage} value="Next" />
         </div>
       );
