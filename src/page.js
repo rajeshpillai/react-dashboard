@@ -62,24 +62,7 @@ class Page extends Component {
       // { i: "k", x: 8, y: 2, w: 2, h: 2, item: "" }
     ],
     filters: [],
-    isPropertyWindowVisible :false,
-    schema:[
-      {
-        type: "filter",
-        dimensions :{
-          appl:true,
-          min:0,
-          max:1
-        } ,
-        measureAppl:{
-          appl:false,
-          min:0,
-          max:0
-        }
-      }
-
-
-    ]
+    isPropertyWindowVisible :false
    };
 
   comps = {
@@ -135,7 +118,9 @@ class Page extends Component {
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
-          onDeleteBox = {d=> this.onDeleteBox(d)}
+          onDeleteBox = {d=> this.onDeleteBox(d)} 
+          onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
+          isFormVisible= {config.isFormVisible} 
         />
       );
     },
@@ -148,7 +133,9 @@ class Page extends Component {
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
-          onDeleteBox = {d=> this.onDeleteBox(d)}  
+          onDeleteBox = {d=> this.onDeleteBox(d)} 
+          onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
+          isFormVisible= {config.isFormVisible}
         />      
       );
     },
@@ -162,6 +149,8 @@ class Page extends Component {
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)} 
           onDeleteBox = {d=> this.onDeleteBox(d)}
+          onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)}  
+          isFormVisible= {config.isFormVisible}
         />
       );
     },
@@ -304,6 +293,7 @@ class Page extends Component {
       layoutId: count.toString(),
       isFirstTime: true,
       id: 'c' +(Math.ceil(Math.random() * 4) + 1).toString(),
+      isFormVisible: false
     },itemType:c};
     
     console.log("component dropped: ", c);
@@ -381,39 +371,53 @@ class Page extends Component {
     });
   };
 
-  onSetPropertyForm =(data) =>{
-  //   this.setState({     
-  //     propForm:  form
-  //  });
-   
-  var form = null;
-  
-   var layout = this.state.layout.map(l=>{
-     if(l.item.layoutId == data.layoutId){
-       if(data.form){
-        l.item.propForm = data.form;
-       }        
-        form = l.item.propForm;
-     }
-     return l;
-   })
-
-    this.setState(prevState => ({
-      isPropertyWindowVisible: true,
-      layout,
-      propForm:  form
-    })); 
+  onSetPropertyWindowActive= (layoutId) =>{
+    var layout = this.state.layout.map(l=>{
+      if(l.item.layoutId == layoutId){
+        l.item.isFormVisible = true;
+      } else {
+        l.item.isFormVisible = false;
+      }
+      return l;
+    })
+    this.setState({     
+      layout
+   });
   }
 
-  togglePropertyWindow = (e) => {
-    if(e){
-      e.preventDefault();
-    }
+  // onSetPropertyForm =(data) =>{
+  // //   this.setState({     
+  // //     propForm:  form
+  // //  });
    
-    this.setState(prevState => ({
-      isPropertyWindowVisible: !prevState.isPropertyWindowVisible
-    }));    
-  };
+  // var form = null;
+  
+  //  var layout = this.state.layout.map(l=>{
+  //    if(l.item.layoutId == data.layoutId){
+  //      if(data.form){
+  //       l.item.propForm = data.form;
+  //      }        
+  //       form = l.item.propForm;
+  //    }
+  //    return l;
+  //  })
+
+  //   this.setState(prevState => ({
+  //     isPropertyWindowVisible: true,
+  //     layout,
+  //     propForm:  form
+  //   })); 
+  // }
+
+  // togglePropertyWindow = (e) => {
+  //   if(e){
+  //     e.preventDefault();
+  //   }
+   
+  //   this.setState(prevState => ({
+  //     isPropertyWindowVisible: !prevState.isPropertyWindowVisible
+  //   }));    
+  // };
 
   
 

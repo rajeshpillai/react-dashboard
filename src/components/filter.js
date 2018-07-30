@@ -31,9 +31,9 @@ export default class Filter extends Toolbox {
     this.state = {
       dimensions: props.dimensions,
       data: [],
-      title: this.props.title,
+      title: props.title,
       dimensionName: "",
-      isFormVisible: false,
+      isFormVisible: props.isFormVisible,
       selectedValue: "",
       //filters: [],      
       showSettings: false
@@ -41,6 +41,8 @@ export default class Filter extends Toolbox {
   }
 
   serviceBaseUrl = "http://localhost:57387/api/";
+
+ 
 
   fetchData() {
     

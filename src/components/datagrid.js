@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import axios from "axios";
+import PropertyWindow from "./propertywindow";
+import Toolbox from "./toolbox.js"
 var _ = require("lodash");
 
-export default class DataGrid extends Component {
+export default class DataGrid extends Toolbox {
   constructor(props) {
       //debugger;
     super(props);
@@ -52,15 +54,15 @@ export default class DataGrid extends Component {
     this.isFirstTime = true;
     this.currentPage = 0;
     this.totalPageCount = 0;
+    this.layoutId= this.props.layoutId,
 
     this.state = {
       dimensions:[dim,dim1], //dim2
       measure: [measure],//,measure2],    //measure2
       cols: cols,
-      isFormVisible: false,
+      isFormVisible: props.isFormVisible,
       showSettings: false,
-      data:[],
-      layoutId: this.props.layoutId
+      data:[]
     };
 
     //this.fetchData();
@@ -197,7 +199,8 @@ export default class DataGrid extends Component {
   ShowConfigForm = () => {
    
     let dims = this.state.dimensions.map((dim,i)=>{
-      return( <div  key={i}>
+      return( 
+      <div  key={i}>
         <label>Dimension:</label>
          <input        
            type="text"
@@ -225,7 +228,15 @@ export default class DataGrid extends Component {
                   <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
                   </div>)
    
-      let ui=[dims,measures,save];     
+      let ui=(
+          <PropertyWindow>
+            <div style={this.property_window}>
+              {dims}
+              {measures}
+              {save}
+            </div>
+          </PropertyWindow>
+        );     
 
     return ui;
   };
@@ -236,31 +247,31 @@ export default class DataGrid extends Component {
       measure: this.state.measure,
       dimensions: this.state.dimensions,
       title: this.state.title,
-      layoutId: this.state.layoutId,
+      layoutId: this.layoutId,
       filters: this.state.filters
     });
     this.fetchData();
     
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.globalFilters != this.props.globalFilters) {
-      this.isFirstTime = true;     
-      this.fetchData();
-    } 
-  }
-  componentDidMount() {
-    console.log("componentDidMount");
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (prevProps.globalFilters != this.props.globalFilters) {
+  //     this.isFirstTime = true;     
+  //     this.fetchData();
+  //   } 
+  // }
+  // componentDidMount() {
+  //   console.log("componentDidMount");
 
-    this.fetchData();
-  }
+  //   this.fetchData();
+  // }
 
-  toggleConfirmForm = () => {
-    this.setState(prevState => ({
-      isFormVisible: !prevState.isFormVisible,
-      showSettings: prevState.isFormVisible
-    }));
-  };
+  // toggleConfirmForm = () => {
+  //   this.setState(prevState => ({
+  //     isFormVisible: !prevState.isFormVisible,
+  //     showSettings: prevState.isFormVisible
+  //   }));
+  // };
 
   nextPage(e){
     e.stopPropagation();
@@ -296,12 +307,12 @@ export default class DataGrid extends Component {
        
   };
 
-  onDeleteBox = () => {
-    this.props.onDeleteBox({
-      layoutId: this.state.layoutId,
-      id: this.id
-    });
-  }
+  // onDeleteBox = () => {
+  //   this.props.onDeleteBox({
+  //     layoutId: this.state.layoutId,
+  //     id: this.id
+  //   });
+  // }
 
   render() {
     console.log("DataGrid: Render");
@@ -362,8 +373,8 @@ export default class DataGrid extends Component {
       <React.Fragment>
         {(!this.state.data || (this.state.data && this.state.data.length == 0)) && defaultView}
         {this.state.showSettings && showSettingLinkUI }
-        {!this.state.isFormVisible && this.state.data && this.state.data.length > 0 && view}
-        {!this.state.isFormVisible && this.state.data && this.state.data.length > 0 && this.enablePagination && paginationButtonView}
+        {this.state.data && this.state.data.length > 0 && view}
+        {this.state.data && this.state.data.length > 0 && this.enablePagination && paginationButtonView}
         {this.state.isFormVisible && this.ShowConfigForm()}
       </React.Fragment>
     );

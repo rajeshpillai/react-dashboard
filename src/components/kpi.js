@@ -19,7 +19,7 @@ export default class Kpi extends Toolbox {
       value: "",
       expression: "",
       measureText: "",
-      isFormVisible: false,      
+      isFormVisible: props.isFormVisible,      
       showSettings: false
       
     };

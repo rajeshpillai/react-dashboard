@@ -36,7 +36,7 @@ export default class Toolbox extends Component {
         }
        
         this.setState(prevState => ({
-          isFormVisible: !prevState.isFormVisible,
+          isFormVisible:  !prevState.isFormVisible,
           showSettings: true //prevState.isFormVisible
         }));
 
@@ -47,8 +47,19 @@ export default class Toolbox extends Component {
         //   }
 
         // this.onSetPropertyForm(data);
+
+        this.onSetPropertyWindowActive(this.layoutId);
     };
+
+    onSetPropertyWindowActive(layoutId){
+        this.props.onSetPropertyWindowActive(layoutId);
+    }
     
+    setFormVisibility(flag){
+        this.setState({
+          isFormVisible: flag
+        });
+    }
 
     componentDidMount() {
         console.log("componentDidMount");
@@ -59,6 +70,8 @@ export default class Toolbox extends Component {
         if (prevProps.globalFilters != this.props.globalFilters) {
           this.isFirstTime = true;
           this.fetchData();
+        } else if (prevProps.isFormVisible != this.props.isFormVisible){
+            this.setFormVisibility(this.props.isFormVisible);
         }
         //
        // let test = 0;
