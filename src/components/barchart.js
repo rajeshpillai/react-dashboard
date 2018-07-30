@@ -16,8 +16,8 @@ export default class BarChart extends Component {
 
     // var measure = {Expression:'sum(ProductInventory.Quantity)'};
 
-    var dim = {Name:'employee.city'};
-    var measure = {Expression:'count(employee.ename)'};
+    var dim = {Name:'employee1.city'};
+    var measure = {Expression:'count(employee1.ename)'};
     //var measure2 = {Expression:'sum(Product.Weight)'};
 
     this.state = {

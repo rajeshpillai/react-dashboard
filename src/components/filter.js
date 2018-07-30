@@ -166,12 +166,14 @@ export default class Filter extends Toolbox {
     let form = (
       <PropertyWindow>
         <div style={this.property_window}>
+          <label>Dimension: </label> 
           <input
             ref={(inpDim)=>this.inpDim = inpDim}
             type="text"
             placeholder="Enter Dimension"
             defaultValue={this.state.dimensionName}
           />
+          <br/>
           <button onClick={this.saveForm}>Apply</button>
           &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
         </div>

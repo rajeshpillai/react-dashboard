@@ -1,8 +1,15 @@
 import React, { Component } from "react";
+import ReactDOM from 'react-dom';
 import axios from "axios";
 import PropertyWindow from "./propertywindow";
 import Toolbox from "./toolbox.js"
 var _ = require("lodash");
+
+const table_Scroll={
+  width: "500px",
+  height: "400px",
+  overflow: "scroll"
+}
 
 export default class DataGrid extends Toolbox {
   constructor(props) {
@@ -33,12 +40,12 @@ export default class DataGrid extends Toolbox {
     // var measure = {Expression:'sum(employee.salary)'};
     // var measure2 = {Expression:'count(employee.ename)'};
 
-    var dim = {Name:'employee.ename'};
+    var dim = {Name:'employee1.ename'};
     //var dim = {Name:'Product.Name'};
-    var dim1 = {Name:'skills.skill'};
+    var dim1 = {Name:'skills1.skill'};
     //var dim2 = {Name:'PurchaseOrderHeader.ShipMethodId'};
 
-    var measure = {Expression:'sum(employee.salary)'};
+    var measure = {Expression:'sum(employee1.salary)'};
     //var measure2 = {Expression:'count(employee.ename)'};
 
     var cols =[];
@@ -260,11 +267,28 @@ export default class DataGrid extends Toolbox {
   //     this.fetchData();
   //   } 
   // }
-  // componentDidMount() {
-  //   console.log("componentDidMount");
-
-  //   this.fetchData();
-  // }
+  componentDidMount() {
+    console.log("componentDidMount");
+   
+    this.fetchData();
+    let timeout;
+    this.iScroll.addEventListener("scroll", () => {      
+        clearTimeout(timeout);
+        timeout = setTimeout(()=>{
+          if(this.iScroll.scrollTop == 0){
+            //alert("reached top");
+            const node = ReactDOM.findDOMNode(this.iScroll);
+            node.scrollTop = this.iScroll.scrollTop+10;
+            this.previousPage();
+          } else if (this.iScroll.scrollTop + this.iScroll.clientHeight >= this.iScroll.scrollHeight) {            
+            //alert("load items)");
+            const node = ReactDOM.findDOMNode(this.iScroll);
+            node.scrollTop = this.iScroll.scrollTop-15;
+            this.nextPage();
+          }
+        }, 200);       
+    });  
+}
 
   // toggleConfirmForm = () => {
   //   this.setState(prevState => ({
@@ -274,7 +298,9 @@ export default class DataGrid extends Toolbox {
   // };
 
   nextPage(e){
+    if(e){ 
     e.stopPropagation();
+    }
     this.currentPage = this.currentPage +1;
     if(this.currentPage > this.totalPageCount){
       this.curentPage  = this.totalPageCount;
@@ -291,7 +317,10 @@ export default class DataGrid extends Toolbox {
   };
 
   previousPage(e){
-    e.stopPropagation();
+    if(e){
+      e.stopPropagation();
+    }
+   
     this.currentPage = this.currentPage -1;
     if(this.currentPage < 1){
       this.curentPage  = 1;
@@ -355,9 +384,9 @@ export default class DataGrid extends Toolbox {
           <input type="button" onClick={this.nextPage} value="Next" />        
         </div>
       );
-    var view = (
-        <table>
-            <thead>
+    var view = (     
+        <table className="table table-sm table-bordered table-striped">
+            <thead className="thead-dark">
               <tr>
                 {thDim}
                 {thMeasure}
@@ -366,15 +395,18 @@ export default class DataGrid extends Toolbox {
             <tbody>
                 {tr}
             </tbody>
-        </table>        
+        </table>            
     );
 
     return (
       <React.Fragment>
         {(!this.state.data || (this.state.data && this.state.data.length == 0)) && defaultView}
         {this.state.showSettings && showSettingLinkUI }
-        {this.state.data && this.state.data.length > 0 && view}
-        {this.state.data && this.state.data.length > 0 && this.enablePagination && paginationButtonView}
+        <div ref={(iScroll)=>this.iScroll = iScroll} style={table_Scroll}>
+          {this.state.data && this.state.data.length > 0 && view}
+          {/* {this.state.loadingState ? <p className="loading"> loading More Items..</p> : ""} */}
+        </div>   
+        {/* {this.state.data && this.state.data.length > 0 && this.enablePagination && paginationButtonView} */}
         {this.state.isFormVisible && this.ShowConfigForm()}
       </React.Fragment>
     );

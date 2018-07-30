@@ -98,12 +98,14 @@ export default class Kpi extends Toolbox {
     let form = (
       <PropertyWindow>
         <div style={this.property_window}>
+         <label>Expression: </label>  
           <input
             ref={(inpExpr)=>this.inpExpr = inpExpr}
             type="text"
             placeholder="Enter expression"
             defaultValue={this.state.expression}
           />
+          <br />
           <button onClick={this.saveForm}>Apply</button>
           &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
         </div>
