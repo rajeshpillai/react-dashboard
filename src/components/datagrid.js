@@ -59,7 +59,8 @@ export default class DataGrid extends Component {
       cols: cols,
       isFormVisible: false,
       showSettings: false,
-      data:[]
+      data:[],
+      layoutId: this.props.layoutId
     };
 
     //this.fetchData();
@@ -295,28 +296,35 @@ export default class DataGrid extends Component {
        
   };
 
-  
+  onDeleteBox = () => {
+    this.props.onDeleteBox({
+      layoutId: this.state.layoutId,
+      id: this.id
+    });
+  }
+
   render() {
     console.log("DataGrid: Render");
-    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a></span>);
+    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a href="#" onClick={this.onDeleteBox}>X</a></span> );
 
     var defaultView = (
       <div>
-        <button onClick={this.toggleConfirmForm}>Add Measure</button>
+        <button onClick={this.toggleConfirmForm}>Add Dimensions/Measure</button>
+        <a href="#" onClick={this.onDeleteBox}>X</a> 
       </div>
     );
 
     var thDim = this.state.dimensions.map((dim)=>{
-            return (<th>{dim.Name}</th>)
+            return (<th key={dim.Name}>{dim.Name}</th>)
         });
         
     var thMeasure = this.state.measure.map((measure)=>{
-        return  (<th>{measure.Expression}</th>)
+        return  (<th  key={measure.Expression}>{measure.Expression}</th>)
     });
 
     var td = (row)=>{        
       return  this.state.cols.map((col,i)=>{
-            return  (<td> {this.state.data[row][col]}           
+            return  (<td key={i}> {this.state.data[row][col]}           
                     </td>)
         });
 
@@ -324,7 +332,7 @@ export default class DataGrid extends Component {
 
 
     var tr = this.state.data.map((d,i)=>{
-        return  (<tr> 
+        return  (<tr  key={i}> 
                     {td(i)}           
                  </tr>)
     });
@@ -339,8 +347,10 @@ export default class DataGrid extends Component {
     var view = (
         <table>
             <thead>
+              <tr>
                 {thDim}
                 {thMeasure}
+              </tr>
             </thead>
             <tbody>
                 {tr}

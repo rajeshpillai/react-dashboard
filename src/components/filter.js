@@ -1,8 +1,11 @@
 import React, { Component } from "react";
+import ReactDOM from 'react-dom';
+import Toolbox from "./toolbox.js";
 import axios from "axios";
+import PropertyWindow from "./propertywindow";
 var _ = require("lodash");
 
-export default class Filter extends Component {
+export default class Filter extends Toolbox {
   constructor(props) {
     super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
@@ -13,6 +16,7 @@ export default class Filter extends Component {
     this.test = "testData";
 
     this.id =  this.props.id;
+    this.layoutId= this.props.layoutId,
     this.globalFilters = this.props.globalFilters
     this.filters =[];
     this.type="dropdown";
@@ -31,8 +35,7 @@ export default class Filter extends Component {
       dimensionName: "",
       isFormVisible: false,
       selectedValue: "",
-      //filters: [],
-      layoutId: this.props.layoutId,
+      //filters: [],      
       showSettings: false
     };
   }
@@ -152,24 +155,33 @@ export default class Filter extends Component {
   }
 
 
-  componentDidMount() {
-    console.log("componentDidMount");
-    this.fetchData();
-  }
+  // componentDidMount() {
+  //   console.log("componentDidMount");
+  //   this.fetchData();
+  // }
 
   ShowConfigForm = () => {
     let form = (
-      <div>
-        <input
-          ref={(inpDim)=>this.inpDim = inpDim}
-          type="text"
-          placeholder="Enter Dimension"
-          defaultValue={this.state.dimensionName}
-        />
-        <button onClick={this.saveForm}>Apply</button>
-        &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
-      </div>
+      <PropertyWindow>
+        <div style={this.property_window}>
+          <input
+            ref={(inpDim)=>this.inpDim = inpDim}
+            type="text"
+            placeholder="Enter Dimension"
+            defaultValue={this.state.dimensionName}
+          />
+          <button onClick={this.saveForm}>Apply</button>
+          &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
+        </div>
+      </PropertyWindow>
     );
+
+    // ReactDOM.createPortal(
+    //   document.createElement('div'),
+    //   document.getElementById('prop-root')
+    // );
+
+    //document.getElementById('prop-root').appendChild(form);
     return form;
   };
 
@@ -210,15 +222,15 @@ export default class Filter extends Component {
   //   return null;
   // }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.globalFilters != this.props.globalFilters) {
-      this.isFirstTime = true;
-      this.fetchData();
-    }
-    //
-   // let test = 0;
-    console.log("componentDidUpdate state", this.state);
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (prevProps.globalFilters != this.props.globalFilters) {
+  //     this.isFirstTime = true;
+  //     this.fetchData();
+  //   }
+  //   //
+  //  // let test = 0;
+  //   console.log("componentDidUpdate state", this.state);
+  // }
 
   handleSelectChange = (e,value) => {
     e.stopPropagation();
@@ -301,28 +313,62 @@ export default class Filter extends Component {
     );
   };
 
-  toggleConfirmForm = (e) => {
-    if(e){
-      e.preventDefault();
-    }
+  // toggleConfirmForm = (e) => {
+  //   if(e){
+  //     e.preventDefault();
+  //   }
    
-    this.setState(prevState => ({
-      isFormVisible: !prevState.isFormVisible,
-      showSettings: prevState.isFormVisible
-    }));
-  };
+  //   this.setState(prevState => ({
+  //     //isFormVisible: !prevState.isFormVisible,
+  //     showSettings: !prevState.isFormVisible
+  //   }));
 
-  getDataToSave = () => {
-    return this.state;
-  };
+  //   this.onSetPropertyForm();
+  // };
+
+  // getDataToSave = () => {
+  //   return this.state;
+  // };
+
+  // onDeleteBox = () => {
+  //   this.props.onDeleteBox({
+  //     layoutId: this.state.layoutId,
+  //     id: this.id
+  //   });
+  // }
+
+  // onSetPropertyForm  = () => {
+  //   let form = (
+  //     <div>
+  //       <label>Dimension: </label>
+  //       <input
+  //         ref={(inpDim)=>this.inpDim = inpDim}
+  //         type="text"
+  //         placeholder="Enter Dimension"
+  //         defaultValue={this.state.dimensionName}
+  //       />
+  //       <br/>
+  //       <button onClick={this.saveForm}>Apply</button>
+  //       &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
+  //     </div>
+  //   );    
+  //   this.props.onSetPropertyForm(form);
+  //   // var data = {
+  //   //   form:form,
+  //   //   layoutId: this.layoutId
+  //   // }
+  //   // this.props.onSetPropertyForm(data);
+  // }
+
 
   render() {
     console.log("Filter: Render");
-    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a></span>);
+    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a href="#" onClick={this.onDeleteBox}>X</a></span>);
 
     var defaultView = (
       <div>
-        <button onClick={(e) => this.toggleConfirmForm(e)}>Add Dimension</button>                 
+        <button onClick={(e) => this.toggleConfirmForm(e)}>Add Dimension</button>    
+        <a href="#" onClick={this.onDeleteBox}>X</a>             
       </div>
     );
 
@@ -402,8 +448,8 @@ export default class Filter extends Component {
       <React.Fragment>       
         {(!this.state.dimensions || (this.state.dimensions && this.state.dimensions.length == 0)) && defaultView}
         {this.state.showSettings && showSettingLinkUI }
-        {!this.state.isFormVisible && this.state.dimensions && this.state.dimensions.length > 0 && view}
-        {!this.state.isFormVisible && this.state.dimensions && this.state.dimensions.length > 0 && this.enablePagination && paginationButtonView}
+        {this.state.dimensions && this.state.dimensions.length > 0 && view}
+        {this.state.dimensions && this.state.dimensions.length > 0 && this.enablePagination && paginationButtonView}
         {this.state.isFormVisible && this.ShowConfigForm()}
       </React.Fragment>
     );

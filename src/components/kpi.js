@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import axios from "axios";
+import Toolbox from "./toolbox.js";
+import PropertyWindow from "./propertywindow";
 import _ from "lodash";
 
-export default class Kpi extends Component {
+export default class Kpi extends Toolbox {
   constructor(props) {
     super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
@@ -10,14 +12,14 @@ export default class Kpi extends Component {
 
     this.test = "testData";
     this.isFirstTime= props.isFirstTime;
+    this.layoutId= props.layoutId;
 
     this.state = {
       measure: props.measure,
       value: "",
       expression: "",
       measureText: "",
-      isFormVisible: false,
-      layoutId: props.layoutId,
+      isFormVisible: false,      
       showSettings: false
       
     };
@@ -77,33 +79,35 @@ export default class Kpi extends Component {
       });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.globalFilters != this.props.globalFilters) {
-      this.fetchData();
-    }
-    //
-    console.log("componentDidUpdate state", this.state);
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (prevProps.globalFilters != this.props.globalFilters) {
+  //     this.fetchData();
+  //   }
+  //   //
+  //   console.log("componentDidUpdate state", this.state);
+  // }
 
-  componentDidMount() {
-    if(this.isFirstTime) {
-      return;
-    }
-    this.fetchData();
-  }
+  // componentDidMount() {
+  //   if(this.isFirstTime) {
+  //     return;
+  //   }
+  //   this.fetchData();
+  // }
 
   ShowConfigForm = () => {
     let form = (
-      <div>
-        <input
-          ref={(inpExpr)=>this.inpExpr = inpExpr}
-          type="text"
-          placeholder="Enter expression"
-          defaultValue={this.state.expression}
-        />
-        <button onClick={this.saveForm}>Apply</button>
-        &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
-      </div>
+      <PropertyWindow>
+        <div style={this.property_window}>
+          <input
+            ref={(inpExpr)=>this.inpExpr = inpExpr}
+            type="text"
+            placeholder="Enter expression"
+            defaultValue={this.state.expression}
+          />
+          <button onClick={this.saveForm}>Apply</button>
+          &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
+        </div>
+      </PropertyWindow>
     );
     return form;
   };
@@ -124,7 +128,7 @@ export default class Kpi extends Component {
         this.props.onConfigurationChange({
           measure: [measure],
           title: this.state.title,
-          layoutId: this.state.layoutId,
+          layoutId: this.layoutId,
           //filters: this.state.filters,
           isFirstTime: false
         });
@@ -133,20 +137,53 @@ export default class Kpi extends Component {
     );
   };
 
-  toggleConfirmForm = () => {
-    this.setState(prevState => ({
-      isFormVisible: !prevState.isFormVisible,
-      showSettings: prevState.isFormVisible
-    }));
-  };
+  // toggleConfirmForm = () => {
+  //   this.setState(prevState => ({
+  //     isFormVisible: !prevState.isFormVisible,
+  //     showSettings: prevState.isFormVisible
+  //   }));
+  // };
+
+  // onDeleteBox = () => {
+  //   this.props.onDeleteBox({
+  //     layoutId: this.layoutId,
+  //     id: this.id
+  //   });
+  // }
+
+  // onSetPropertyForm  = () => {    
+  //   let form = (
+  //     <div>
+  //        <label>Expression: </label>
+  //       <input
+  //         ref={(inpExpr)=>this.inpExpr = inpExpr}
+  //         type="text"
+  //         placeholder="Enter expression"
+  //         defaultValue={this.state.expression}
+  //         //value=
+  //       />
+  //       <br/>
+  //       <button onClick={this.saveForm}>Apply</button>
+  //       &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
+  //     </div>
+  //   );
+
+  //   var data = {
+  //     form:form,
+  //     layoutId: this.layoutId
+  //   }
+  //   this.props.onSetPropertyForm(data);
+  //   //this.props.onSetPropertyForm(form);
+  // }
 
   render() {
     console.log("KPI: Render");
-    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a></span>);
+    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a href="#" onClick={this.onDeleteBox}>X</a></span>);
 
     var defaultView = (
       <div>
         <button onClick={this.toggleConfirmForm}>Add Measure</button>
+        <a href="#" onClick={this.onDeleteBox}>X</a> 
       </div>
     );
 

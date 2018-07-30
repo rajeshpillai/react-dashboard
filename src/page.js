@@ -11,10 +11,20 @@ import axios from 'axios';
 var _ = require('lodash');
 
 const save_page_button={
-  position: "absolute",
-  top: "-2px",
+  position: "fixed",
+  top: "9px",
   zIndex: "9999",
-  left: "0px"
+  left: "250px"
+}
+
+const property_window ={
+    position: "fixed",
+    right: "0",
+    zIndex: "9999",
+    background: "cyan",
+    height: "100vh",
+    top: "50px",
+    minWidth: "250px"
 }
 
 class Page extends Component {
@@ -38,7 +48,7 @@ class Page extends Component {
   // }
 
   state = {   
-    uiComponents: ["KPI", "Filter","BarChart", "LineChart","DataGrid","Pivot"],
+    uiComponents: ["Filter","KPI","DataGrid", "BarChart"], //, "LineChart","Pivot"],
     layout: [
       // { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
       // { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
@@ -51,7 +61,25 @@ class Page extends Component {
       // { i: "i", x: 6, y: 2, w: 2, h: 2, item: "" },
       // { i: "k", x: 8, y: 2, w: 2, h: 2, item: "" }
     ],
-    filters: []
+    filters: [],
+    isPropertyWindowVisible :false,
+    schema:[
+      {
+        type: "filter",
+        dimensions :{
+          appl:true,
+          min:0,
+          max:1
+        } ,
+        measureAppl:{
+          appl:false,
+          min:0,
+          max:0
+        }
+      }
+
+
+    ]
    };
 
   comps = {
@@ -64,6 +92,7 @@ class Page extends Component {
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)}
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
+          onDeleteBox = {d=> this.onDeleteBox(d)}
         />
       );
     },
@@ -77,6 +106,7 @@ class Page extends Component {
     //       onFilterChange={(filter,item) => this.onFilterChange(filter,item)}
     //       filterChanged = {this.state.filterChanged} 
     //       onConfigurationChange ={c => this.onConfigurationChange(c)}
+    //     onDeleteBox = {d=> this.onDeleteBox(d)}
     //     />
     //   );
     // },
@@ -90,6 +120,7 @@ class Page extends Component {
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
+          onDeleteBox = {d=> this.onDeleteBox(d)}
         />
       );
     },
@@ -104,6 +135,7 @@ class Page extends Component {
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
+          onDeleteBox = {d=> this.onDeleteBox(d)}
         />
       );
     },
@@ -116,6 +148,7 @@ class Page extends Component {
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
+          onDeleteBox = {d=> this.onDeleteBox(d)}  
         />      
       );
     },
@@ -128,6 +161,7 @@ class Page extends Component {
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)} 
+          onDeleteBox = {d=> this.onDeleteBox(d)}
         />
       );
     },
@@ -141,13 +175,24 @@ class Page extends Component {
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
+          onDeleteBox = {d=> this.onDeleteBox(d)}
         />
       );
     }
   };
 
+  onDeleteBox = config =>{
+    console.log('onDeleteBox config', config);
+    var layout = this.state.layout.filter((l)=>{
+      return l.i != config.layoutId;
+    })
+    this.setState({
+      layout
+    });
+  }
+
   onConfigurationChange = config =>{
-   console.log('config', config);
+   console.log('onConfigurationChange config', config);
     var layout = this.state.layout.map((l) => {
       if(l.i == config.layoutId){
          //l.item = this.comps[l.itemType](config);
@@ -244,7 +289,7 @@ class Page extends Component {
     var x=0;
     var y =0;
     var h=4;
-    var w=4;
+    var w=5;
 
 
     //containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2) / cols
@@ -336,7 +381,49 @@ class Page extends Component {
     });
   };
 
+  onSetPropertyForm =(data) =>{
+  //   this.setState({     
+  //     propForm:  form
+  //  });
+   
+  var form = null;
+  
+   var layout = this.state.layout.map(l=>{
+     if(l.item.layoutId == data.layoutId){
+       if(data.form){
+        l.item.propForm = data.form;
+       }        
+        form = l.item.propForm;
+     }
+     return l;
+   })
+
+    this.setState(prevState => ({
+      isPropertyWindowVisible: true,
+      layout,
+      propForm:  form
+    })); 
+  }
+
+  togglePropertyWindow = (e) => {
+    if(e){
+      e.preventDefault();
+    }
+   
+    this.setState(prevState => ({
+      isPropertyWindowVisible: !prevState.isPropertyWindowVisible
+    }));    
+  };
+
+  
+
   render() {
+    var propWindowView = (
+      <div style={property_window}>
+        {this.state.propForm}
+      </div>
+    );
+
   if(!this.state){
     return (<h2>Loading ...</h2>);
   }
@@ -360,7 +447,7 @@ class Page extends Component {
       console.log("this.comps",this.comps);
       return (
         <div
-          key={l.i}
+          key={l.item.layoutId}
           onDragOver={e => this.onDragOver(e)}
           onDrop={e => this.onDrop(e, l)}
         >         
@@ -416,6 +503,17 @@ class Page extends Component {
                       </div>
                     </div>
                 </main>
+                <div id="prop-root"></div>
+                {/* {this.state.isPropertyWindowVisible && propWindowView}   */}
+                {/* <div >
+                  <input                    
+                    type="text"
+                    placeholder="Enter Dimension"
+                    value={this.state.dimensionName}
+                  />
+                  <button onClick={this.saveForm}>Apply</button>
+                  &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
+                </div>               */}
             </div>
 
 
