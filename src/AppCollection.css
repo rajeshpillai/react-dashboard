@@ -1,5 +1,6 @@
 .app-container {
   display: flex;
+  padding-top: 50px;
 }
 .app {
   width: 200px;

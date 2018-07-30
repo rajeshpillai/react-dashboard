@@ -46,7 +46,7 @@ class App extends Component {
             <Route              
               path="/app/:appid/page/:pageid"
               render={({ match }) => {                  
-              return (<Page data={{'test':'asasas'}}></Page>);
+              return (<Page data={{'pageName':'Page' + match.params.pageid}}></Page>);
               }}
             />           
         </div>
