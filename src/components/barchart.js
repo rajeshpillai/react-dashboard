@@ -1,7 +1,10 @@
 import React, { Component } from "react";
+import ReactDOM from 'react-dom';
 import axios from "axios";
 import { Chart, Axis, Series, Tooltip, Cursor, Line, Bar } from "react-charts";
+import $ from "jquery";
 var _ = require("lodash");
+
 
 export default class BarChart extends Component {
   constructor(props) {
@@ -155,7 +158,8 @@ export default class BarChart extends Component {
             //     data: graphData
             //   }
             // ]
-            data: graphData
+            //data: graphData
+            data: response.data
             ,
               showSettings:true             
           });
@@ -260,7 +264,23 @@ export default class BarChart extends Component {
   }
   componentDidMount() {
     console.log("componentDidMount");
+    var dimple = window.dimple;
+    this.svg = dimple.newSvg("#chart");
+    this.chart = new dimple.chart(this.svg, "100%","100%");
+    this.chart.addCategoryAxis("x", "employee1.city");
+    this.chart.addMeasureAxis("y", "count(employee1.ename)");
+    this.chart.addSeries(null, dimple.plot.bar);
+   
     this.fetchData();
+
+    // var that = this;
+    //   // Add a method to draw the chart on resize of the window
+    //   window.onresize = function () {
+    //     // As of 1.1.0 the second parameter here allows you to draw
+    //     // without reprocessing data.  This saves a lot on performance
+    //     // when you know the data won't have changed.
+    //     that.chart.draw(0, true);
+    // };
   }
 
   toggleConfirmForm = () => {
@@ -269,6 +289,16 @@ export default class BarChart extends Component {
       showSettings: prevState.isFormVisible
     }));
   };
+
+  // componentDidUpdate(prevProps, prevState) {
+
+  //   var svg = $("#chart svg");
+  //   svg.height("80px");
+  //   svg.width("180px");
+  //   // var node = ReactDOM.findDOMNode(this.svg);
+  //   // node.height = "80%";
+  //   // node.width ="80%";
+  // }
 
   render() {
     console.log("KPI: Render");
@@ -280,15 +310,40 @@ export default class BarChart extends Component {
       </div>
     );
 
+    
+    // var data = [
+    //   { "Word":"Hello", "Awesomeness":2000 },
+    //   { "Word":"World", "Awesomeness":3000 }
+    // ];
+    var data = this.state.data;
+    var dimple = window.dimple;
+    //var chart = new dimple.chart(this.svg, data);
+    var chart = this.chart;
+    if(chart && this.state.data){
+      //debugger;
+      chart.data = data;
+      
+      var svg = $("#chart svg");      
+      //debugger;
+       svg.height(svg.parent().height()-10);
+       svg.width(svg.parent().width()-10);
+      //
+      chart.draw();
+
+      //chart.draw(0,true);
+    }
+
     var view = (
-      <Chart data={this.state.data}>
-            <Axis primary type="ordinal" />
-            <Axis type="linear" stacked />
-            <Series type={Bar} />
-            <Cursor primary />
-            <Cursor />
-            <Tooltip />
-         </Chart>
+      <span></span>
+      
+      // <Chart data={this.state.data}>
+      //       <Axis primary type="ordinal" />
+      //       <Axis type="linear" stacked />
+      //       <Series type={Bar} />
+      //       <Cursor primary />
+      //       <Cursor />
+      //       <Tooltip />
+      //    </Chart>
     );
 
     console.log("barchart render called");
@@ -299,6 +354,7 @@ export default class BarChart extends Component {
         {this.state.showSettings && showSettingLinkUI }
         {!this.state.isFormVisible && this.state.data && this.state.data.length > 0 && view}
         {this.state.isFormVisible && this.ShowConfigForm()}
+        <div id="chart" width="100%" height="100%"></div>
       </React.Fragment>
     );
   }

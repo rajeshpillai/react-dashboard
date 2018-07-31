@@ -48,7 +48,7 @@ class Page extends Component {
   // }
 
   state = {   
-    uiComponents: ["Filter","KPI","DataGrid", "BarChart"], //, "LineChart","Pivot"],
+    uiComponents: ["Filter","KPI","DataGrid", "BarChart", "LineChart"],//,"Pivot"],
     layout: [
       // { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
       // { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 

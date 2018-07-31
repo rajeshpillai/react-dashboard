@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import ReactDOM from 'react-dom';
 import axios from "axios";
 import PropertyWindow from "./propertywindow";
-import Toolbox from "./toolbox.js"
+import Toolbox from "./toolbox.js" 
+import $ from "jquery";
 var _ = require("lodash");
 
 const table_Scroll={
@@ -271,23 +272,70 @@ export default class DataGrid extends Toolbox {
     console.log("componentDidMount");
    
     this.fetchData();
-    let timeout;
+    // let timeout;
+    // this.iScroll.addEventListener("scroll", () => {      
+    //     clearTimeout(timeout);
+    //     timeout = setTimeout(()=>{
+    //       if(this.iScroll.scrollTop == 0){
+    //         //alert("reached top");
+    //         const node = ReactDOM.findDOMNode(this.iScroll);
+    //         node.scrollTop = this.iScroll.scrollTop+10;
+    //         this.previousPage();
+    //       } else if (this.iScroll.scrollTop + this.iScroll.clientHeight >= this.iScroll.scrollHeight) {            
+    //         //alert("load items)");
+    //         const node = ReactDOM.findDOMNode(this.iScroll);
+    //         node.scrollTop = this.iScroll.scrollTop-15;
+    //         this.nextPage();
+    //       }
+    //     }, 200);       
+    // });  
+
+    // Change the selector if needed
+    //debugger;
+    var that = this;
+    setTimeout(()=>{
+     // debugger;
+    var $table = $('table.scroll'),
+    $bodyCells = $table.find('tbody tr:first').children(),
+    colWidth;
+
+    // Adjust the width of thead cells when window resizes
+    $(window).resize(function() {
+    // Get the tbody columns width array
+    colWidth = $bodyCells.map(function() {
+        return $(this).width();
+    }).get();
+
+    // Set the width of thead columns
+    $table.find('thead tr').children().each(function(i, v) {
+        $(v).width(colWidth[i]);
+    });    
+
+    let timeout; //scrollContent
+    this.iScroll = $(".scrollContent")[0];
+    //var nextPage = this.nextPage;
     this.iScroll.addEventListener("scroll", () => {      
         clearTimeout(timeout);
         timeout = setTimeout(()=>{
           if(this.iScroll.scrollTop == 0){
             //alert("reached top");
+            //debugger;
             const node = ReactDOM.findDOMNode(this.iScroll);
             node.scrollTop = this.iScroll.scrollTop+10;
-            this.previousPage();
+            that.previousPage();
           } else if (this.iScroll.scrollTop + this.iScroll.clientHeight >= this.iScroll.scrollHeight) {            
             //alert("load items)");
-            const node = ReactDOM.findDOMNode(this.iScroll);
+            const node =  ReactDOM.findDOMNode(this.iScroll);
             node.scrollTop = this.iScroll.scrollTop-15;
-            this.nextPage();
+            //debugger;
+            that.nextPage();
           }
         }, 200);       
     });  
+
+    }).resize(); // Trigger resize handler
+  }, 200); 
+
 }
 
   // toggleConfirmForm = () => {
@@ -302,13 +350,19 @@ export default class DataGrid extends Toolbox {
     e.stopPropagation();
     }
     this.currentPage = this.currentPage +1;
+    if(this.currentPage <= 0){
+      this.currentPage = 1;
+    }
     if(this.currentPage > this.totalPageCount){
-      this.curentPage  = this.totalPageCount;
+      this.currentPage  = this.totalPageCount;
     } else {
       if(this.isFirstTime){
         this.startRowNum = 0;        
       } else {
         this.startRowNum = parseInt(this.startRowNum) + parseInt(this.pageSize);
+        if (this.currentPage != Math.floor(this.startRowNum/this.pageSize)){
+          this.currentPage = Math.floor(this.startRowNum/this.pageSize);
+        }
         if (this.startRowNum > this.totalRecords) { this.startRowNum = this.totalRecords - parseInt(this.pageSize); }      
       }
       this.fetchData();  
@@ -322,13 +376,19 @@ export default class DataGrid extends Toolbox {
     }
    
     this.currentPage = this.currentPage -1;
-    if(this.currentPage < 1){
-      this.curentPage  = 1;
+    if (this.curentPage != Math.floor(this.startRowNum/this.pageSize)){
+      this.currentPage = Math.floor(this.startRowNum/this.pageSize);
+    }
+    if(this.currentPage <=0){
+      this.currentPage  = 1;
     } else {
       if(this.isFirstTime){
         this.startRowNum = 0;        
       } else {
         this.startRowNum = parseInt(this.startRowNum) - parseInt(this.pageSize);
+        if (this.currentPage != Math.floor(this.startRowNum/this.pageSize)){
+          this.currentPage = Math.floor(this.startRowNum/this.pageSize);
+        }
         if (this.startRowNum < 0) { this.startRowNum = 0; }             
       }
       this.fetchData();  
@@ -385,14 +445,14 @@ export default class DataGrid extends Toolbox {
         </div>
       );
     var view = (     
-        <table className="table table-sm table-bordered table-striped">
-            <thead className="thead-dark">
+        <table className="scrollTable table table-fixed table-sm table-bordered table-striped">
+            <thead className="thead-dark fixedHeader">
               <tr>
                 {thDim}
                 {thMeasure}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="scrollContent" ref={(iScroll)=>this.iScroll = iScroll}>
                 {tr}
             </tbody>
         </table>            
@@ -402,10 +462,12 @@ export default class DataGrid extends Toolbox {
       <React.Fragment>
         {(!this.state.data || (this.state.data && this.state.data.length == 0)) && defaultView}
         {this.state.showSettings && showSettingLinkUI }
-        <div ref={(iScroll)=>this.iScroll = iScroll} style={table_Scroll}>
+        {/* <div ref={(iScroll)=>this.iScroll = iScroll} style={table_Scroll}> */}
+        <div id="tableContainer" className="tableContainer">
           {this.state.data && this.state.data.length > 0 && view}
           {/* {this.state.loadingState ? <p className="loading"> loading More Items..</p> : ""} */}
-        </div>   
+        {/* </div>    */}
+        </div>
         {/* {this.state.data && this.state.data.length > 0 && this.enablePagination && paginationButtonView} */}
         {this.state.isFormVisible && this.ShowConfigForm()}
       </React.Fragment>

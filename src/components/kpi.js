@@ -3,6 +3,7 @@ import axios from "axios";
 import Toolbox from "./toolbox.js";
 import PropertyWindow from "./propertywindow";
 import _ from "lodash";
+import { SketchPicker } from 'react-color';
 
 export default class Kpi extends Toolbox {
   constructor(props) {
@@ -20,8 +21,9 @@ export default class Kpi extends Toolbox {
       expression: "",
       measureText: "",
       isFormVisible: props.isFormVisible,      
-      showSettings: false
-      
+      showSettings: false,
+      bgColor: "#fff",
+      txtColor  : "#000"
     };
   }
 
@@ -106,6 +108,29 @@ export default class Kpi extends Toolbox {
             defaultValue={this.state.expression}
           />
           <br />
+          <div>Presentation</div>
+            <div className="row">
+                <div>
+                  <label>Background Color: </label>  
+                  <input
+                    ref={(bgColor)=>this.bgColor = bgColor}
+                    type="text"
+                    placeholder="Enter Background Color"
+                    defaultValue={this.state.bgColor}
+                  />  <SketchPicker/>
+              </div>
+            </div>
+            <div className="row">
+                <div>
+                  <label>Text Color: </label>  
+                  <input
+                    ref={(txtColor)=>this.txtColor = txtColor}
+                    type="text"
+                    placeholder="Enter Text Color"
+                    defaultValue={this.state.txtColor}
+                  />
+              </div>
+            </div>
           <button onClick={this.saveForm}>Apply</button>
           &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
         </div>
@@ -123,7 +148,9 @@ export default class Kpi extends Toolbox {
     this.setState(
       {
         expression: measure.Expression,
-        measure: [measure]//,
+        measure: [measure],
+        bgColor : this.bgColor.value,
+        txtColor : this.txtColor.value
         //isFirstTime: false
       },
       () => {
@@ -190,7 +217,7 @@ export default class Kpi extends Toolbox {
     );
 
     var view = (
-      <div>
+      <div style={{backgroundColor:this.state.bgColor,color:this.state.txtColor}}>
         <label>KPI - </label>
         <span>{this.state.value}</span>
       </div>
