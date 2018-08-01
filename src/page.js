@@ -2,12 +2,14 @@ import React, { Component } from "react";
 import ReactGridLayout from "react-grid-layout";
 import Kpi from "./components/kpi";
 import Filter from "./components/filter";
-import BarChart from './components/barchart';
+import BarChart1 from './components/barchart';
 //import NewBarChart from './components/newbarchart';
 import LineChart from './components/linechart';
 import DataGrid from './components/datagrid';
 import Pivot from './components/pivot';
 import axios from 'axios';
+import Dimensions from 'react-dimensions';
+import WidgetBox from './widgetbox';
 var _ = require('lodash');
 
 const save_page_button={
@@ -48,7 +50,7 @@ class Page extends Component {
   // }
 
   state = {   
-    uiComponents: ["Filter","KPI","DataGrid", "BarChart", "LineChart"],//,"Pivot"],
+    uiComponents: ["Filter","KPI","DataGrid", "BarChart1", "LineChart"],//,"Pivot"],
     layout: [
       // { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
       // { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
@@ -66,9 +68,10 @@ class Page extends Component {
    };
 
   comps = {
-    BarChart: (config) => {
+    BarChart1: (config) => {
+      let BarChart1D = Dimensions({options:{elementResize :true}})(BarChart1);
       return (
-        <BarChart layoutId={config.layoutId}
+        <BarChart1D layoutId={config.layoutId}
           measure = {config.measure}
           label="Bar Chart"
           globalFilters={this.state.globalFilters}
@@ -125,6 +128,7 @@ class Page extends Component {
       );
     },
     Filter: (config) => {
+      // let FilterD = Dimensions({options:{elementResize :true}})(Filter);
       return (
         <Filter layoutId={config.layoutId} id={config.id}
           dimensions = {config.dimensions} 
@@ -135,7 +139,7 @@ class Page extends Component {
           onConfigurationChange ={c => this.onConfigurationChange(c)}
           onDeleteBox = {d=> this.onDeleteBox(d)} 
           onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
-          isFormVisible= {config.isFormVisible}
+          isFormVisible= {config.isFormVisible}           
         />      
       );
     },
@@ -419,7 +423,15 @@ class Page extends Component {
   //   }));    
   // };
 
-  
+  onResizeStop = (ev,a,c,d,e,f,ref6,height,width)=>{
+     //debugger;
+  //  console.log("onresize",ev);
+  //  console.log("size",size);
+
+  //  console.log("onresize",ev);
+  //  console.log("node size height",height);
+  //  console.log("node size width",width);
+  }
 
   render() {
     var propWindowView = (
@@ -449,15 +461,20 @@ class Page extends Component {
     });
     var box = layout.map(l => {
       console.log("this.comps",this.comps);
+      //let WidgetBoxD = Dimensions({options:{elementResize :true}})(WidgetBox) ;
       return (
         <div
           key={l.item.layoutId}
           onDragOver={e => this.onDragOver(e)}
-          onDrop={e => this.onDrop(e, l)}
+          onDrop={e => this.onDrop(e, l)} 
+          //test="asasas"
         >         
        
           {l.itemType && _.clone(this.comps[l.itemType](l.item))}
+          
         </div>
+        // <WidgetBoxD key={l.item.layoutId} l={l}  comps={this.comps} onDragOver={e => this.onDragOver(e)}
+        // onDrop={e => this.onDrop(e, l)} />
       );
     });
 
@@ -501,7 +518,8 @@ class Page extends Component {
                           cols={12}
                           rowHeight={100}
                           width={1200} 
-                          onLayoutChange={this.onLayoutChange}>
+                          onLayoutChange={this.onLayoutChange} 
+                          onResizeStop= {this.onResizeStop}>
                           {box}
                         </ReactGridLayout>
                       </div>

@@ -67,6 +67,7 @@ export default class Toolbox extends Component {
     }
       
     componentDidUpdate(prevProps, prevState) {
+        //debugger;
         if (prevProps.globalFilters != this.props.globalFilters) {
           this.isFirstTime = true;
           this.fetchData();

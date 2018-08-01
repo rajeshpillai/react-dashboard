@@ -190,6 +190,7 @@ export default class Filter extends Toolbox {
   };
 
   // static getDerivedStateFromProps(props, state) {
+  //   debugger;
   //   console.log("filter:gds");
   //   var obj={};
   //   var isChanged=false;
@@ -224,7 +225,7 @@ export default class Filter extends Toolbox {
   //   // };
     
   //   return null;
-  // }
+   //}
 
   // componentDidUpdate(prevProps, prevState) {
   //   if (prevProps.globalFilters != this.props.globalFilters) {
