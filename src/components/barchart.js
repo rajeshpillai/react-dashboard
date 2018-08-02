@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import ReactDOM from 'react-dom';
 import axios from "axios";
-import { Chart, Axis, Series, Tooltip, Cursor, Line, Bar } from "react-charts";
-//import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from  "recharts";
+//import { Chart, Axis, Series, Tooltip, Cursor, Line, Bar } from "react-charts";
+import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from  "recharts";
 import NVD3Chart from "react-nvd3";
 //import { VictoryChart,VictoryBar } from "victory";
 //import Chart from "chart.js";
@@ -43,15 +43,16 @@ class BarChart1 extends Toolbox {
     // var measure = {Expression:'sum(ProductInventory.Quantity)'};
 
     var dim = {Name:'employee1.city'};
+    var dim2 = {Name:'skills1.skill'};
     var measure = {Expression:'count(employee1.city)'};
-    //var measure2 = {Expression:'sum(Product.Weight)'};
+    var measure2 = {Expression:'count(employee1.ename)'};
     this.layoutId= this.props.layoutId,
 
-    // this.dimensions = [dim];
-    // this.measure = [measure];
-
-    this.dimensions = [dim];
+    this.dimensions = [dim,dim2];
     this.measure = [measure];
+
+    // this.dimensions = [{Name:""}];
+    // this.measure = [{Expression:""}];
 
     this.state = {
       dimensions:this.dimensions,
@@ -189,7 +190,8 @@ class BarChart1 extends Toolbox {
             //   }
             // ]
             //data: graphData
-            data: [{values: response.data}]
+            //data: [{values: response.data}]  //for nvd3
+            data: response.data
             ,
               showSettings:true             
           });
@@ -317,8 +319,8 @@ class BarChart1 extends Toolbox {
       },
       () => {
         //debugger;
-        console.log("this.dimensionsthis.dimensions",this.dimensions);
-        console.log("this.measurethis.measure",this.measure);
+       // console.log("this.dimensionsthis.dimensions",this.dimensions);
+       // console.log("this.measurethis.measure",this.measure);
         this.props.onConfigurationChange({
           dimensions: this.dimensions,
           measure: this.measure,
@@ -565,7 +567,12 @@ var lineChartOptions = {
 //  }
 //var graph = Dimensions()(view);
 
-  
+    var reChartBarView = this.measure.map((m,i)=>{
+      return( 
+        <Bar key={i} dataKey={(m)?m.Expression:""} fill="#8884d8" />
+      )
+    });
+
     var view = (
     //   <XYPlot width={this.props.containerWidth} height={this.props.containerHeight}>
     //   <LineSeries data={data1} />
@@ -593,20 +600,23 @@ var lineChartOptions = {
     // </VictoryChart>
   <ContainerDimensions>
       { ({ width, height }) => 
-        <NVD3Chart id="barChart" 
-          width={width} height={height}  type="discreteBarChart" datum={this.state.data} x={(this.state.dimensions)?this.state.dimensions[0].Name:""} y={(this.state.measure)?this.state.measure[0].Expression:""} />
+        // <NVD3Chart id="barChart" 
+        //   width={width} height={height}  type="discreteBarChart" datum={this.state.data} x={(this.state.dimensions)?this.state.dimensions[0].Name:""} y={(this.state.measure)?this.state.measure[0].Expression:""} />
+
+        <BarChart width={width} height={height} data={this.state.data}>
+       <CartesianGrid strokeDasharray="3 3"/>
+       <XAxis dataKey={(this.dimensions)?this.dimensions[0].Name:""}/>       
+       <YAxis/>
+       <Tooltip/>
+       <Legend />
+       {reChartBarView}
+       {/* <Bar dataKey={(this.measure)?this.measure[0].Expression:""} fill="#8884d8" />        */}
+       {/* <Bar dataKey={(this.measure)?this.measure[1].Expression:""} fill="#82ca9d" /> */}
+       {/* <Bar dataKey="uv" fill="#82ca9d" /> */}
+      </BarChart>
       }
   </ContainerDimensions>
-      // <BarChart width={783} height={210} data={this.state.data}
-      //       margin={{top: 5, right: 30, left: 20, bottom: 5}}>
-      //  <CartesianGrid strokeDasharray="3 3"/>
-      //  <XAxis dataKey="employee1.city"/>
-      //  <YAxis/>
-      //  <Tooltip/>
-      //  <Legend />
-      //  <Bar dataKey="count(employee1.ename)" fill="#8884d8" />
-      //  {/* <Bar dataKey="uv" fill="#82ca9d" /> */}
-      // </BarChart>
+      
       
       // <Chart data={this.state.data}>
       //       <Axis primary type="ordinal" />
