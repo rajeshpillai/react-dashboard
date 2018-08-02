@@ -56,6 +56,9 @@ export default class DataGrid extends Toolbox {
     //cols.push(dim2.Name);
     cols.push(measure.Expression);
     //cols.push(measure2.Expression);
+    if(!this.dimensions || !this.measure){
+
+    }
 
     this.pageSize =15;
     this.totalRecords = 0;
@@ -63,8 +66,8 @@ export default class DataGrid extends Toolbox {
     this.isFirstTime = true;
     this.currentPage = 0;
     this.totalPageCount = 0;
-    this.layoutId= this.props.layoutId;    
-    this.id =  this.props.id;
+    this.layoutId= props.layoutId;    
+    this.id =  props.id;
 
     this.state = {
       dimensions:[dim,dim1], //dim2
@@ -317,6 +320,7 @@ export default class DataGrid extends Toolbox {
     let timeout; //scrollContent
     this.iScroll = $(".scrollContent")[0];
     //var nextPage = this.nextPage;
+    if(!this.iScroll){ return;}
     this.iScroll.addEventListener("scroll", () => {      
         clearTimeout(timeout);
         timeout = setTimeout(()=>{
@@ -457,7 +461,7 @@ export default class DataGrid extends Toolbox {
                     {thMeasure}
                   </tr>
                 </thead>
-                <tbody className="scrollContent" ref={(iScroll)=>this.iScroll = iScroll}>
+                <tbody className="scrollContent">
                     {tr}
                 </tbody>
             </table>  

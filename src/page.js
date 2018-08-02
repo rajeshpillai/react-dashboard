@@ -106,7 +106,7 @@ class Page extends Component {
 
     LineChart: (config) => {
       return (
-        <LineChart layoutId={config.layoutId}
+        <LineChart layoutId={config.layoutId}  id={config.id}
           dimensions =  {config.dimensions}
           measure = {config.measure}
           label="Line Chart"
@@ -154,7 +154,7 @@ class Page extends Component {
     },
     DataGrid: (config) => {    
       return (
-      <DataGrid layoutId={config.layoutId}
+      <DataGrid layoutId={config.layoutId}  id={config.id}
           dimensions =  {config.dimensions}
           measure = {config.measure}
           label="Table"
