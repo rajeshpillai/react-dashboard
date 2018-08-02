@@ -62,7 +62,8 @@ export default class DataGrid extends Toolbox {
     this.isFirstTime = true;
     this.currentPage = 0;
     this.totalPageCount = 0;
-    this.layoutId= this.props.layoutId,
+    this.layoutId= this.props.layoutId;    
+    this.id =  this.props.id;
 
     this.state = {
       dimensions:[dim,dim1], //dim2
@@ -256,7 +257,8 @@ export default class DataGrid extends Toolbox {
       dimensions: this.state.dimensions,
       title: this.state.title,
       layoutId: this.layoutId,
-      filters: this.state.filters
+      filters: this.state.filters,
+      id:this.id
     });
     this.fetchData();
     

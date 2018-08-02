@@ -18,13 +18,9 @@ var _ = require("lodash");
 // import recharts from 'recharts';
 
 const data = [
-  {name: 'Page A', uv: 4000, pv: 2400, amt: 2400},
-  {name: 'Page B', uv: 3000, pv: 1398, amt: 2210},
-  {name: 'Page C', uv: 2000, pv: 9800, amt: 2290},
-  {name: 'Page D', uv: 2780, pv: 3908, amt: 2000},
-  {name: 'Page E', uv: 1890, pv: 4800, amt: 2181},
-  {name: 'Page F', uv: 2390, pv: 3800, amt: 2500},
-  {name: 'Page G', uv: 3490, pv: 4300, amt: 2100},
+  {"Enter Dimension": 'x1', "Enter Expression": 100},
+  {"Enter Dimension": 'x2', "Enter Expression": 200},
+  {"Enter Dimension": 'x3', "Enter Expression": 50}
 ];
 
 class BarChart1 extends Toolbox {
@@ -42,24 +38,35 @@ class BarChart1 extends Toolbox {
 
     // var measure = {Expression:'sum(ProductInventory.Quantity)'};
 
-    var dim = {Name:'employee1.city'};
-    var dim2 = {Name:'skills1.skill'};
-    var measure = {Expression:'count(employee1.city)'};
-    var measure2 = {Expression:'count(employee1.ename)'};
-    this.layoutId= this.props.layoutId,
-
-    this.dimensions = [dim,dim2];
-    this.measure = [measure];
+   
+    this.layoutId= props.layoutId;
+    this.id =  props.id;   
+    this.dimensions =props.dimensions;
+    this.measure =props.measure;
+    this.defaultValue = false;
 
     // this.dimensions = [{Name:""}];
     // this.measure = [{Expression:""}];
+    if(!this.dimensions || !this.measure){
+      // var dim = {Name:'employee1.city'};
+      // //var dim2 = {Name:'skills1.skill'};
+      // var measure = {Expression:'count(employee1.city)'};
+      // var measure2 = {Expression:'count(employee1.ename)'};
+
+      var dim = {Name:'Enter Dimension'};
+      //var dim2 = {Name:'skills1.skill'};
+      var measure = {Expression:'Enter Expression'};
+      this.dimensions=[dim];
+      this.measure=[measure];
+      this.defaultValue = true;
+    }
 
     this.state = {
       dimensions:this.dimensions,
       measure: this.measure,//,measure2],   
       isFormVisible: props.isFormVisible,
-      showSettings: false,
-      hello:"fff"
+      showSettings: true,
+      data:data
     };
 
   }
@@ -110,6 +117,9 @@ class BarChart1 extends Toolbox {
   serviceBaseUrl = "http://localhost:57387/api/";
 
   fetchData() {
+    if(this.defaultValue){
+      return;
+    }
     // if (null == this.state.expression || this.state.expression == "") {
     //   return;
     // }
@@ -274,6 +284,7 @@ class BarChart1 extends Toolbox {
   };
 
   saveForm(){
+    this.defaultValue = false;
     this.toggleConfirmForm();
     console.log("this.state",this.state);
     console.log("this.dimensions",this.dimensions);
@@ -325,7 +336,7 @@ class BarChart1 extends Toolbox {
           dimensions: this.dimensions,
           measure: this.measure,
           title: this.state.title,
-          layoutId: this.state.layoutId,
+          layoutId: this.layoutId,
           //filters: this.state.filters,
           id: this.id
         });
@@ -457,7 +468,7 @@ class BarChart1 extends Toolbox {
 
   render() {
     console.log("BARCHART: Render ", this.state.hello);
-    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a></span>);
+    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a href="#" onClick={this.onDeleteBox}>X</a></span>);
 
     var defaultView = (
       <div>
@@ -550,23 +561,6 @@ class BarChart1 extends Toolbox {
   }
 ];
 
-var lineChartData = {
-  labels: [1, 2, 3, 4, 5, 6, 7, 8],
-  series: [
-    [5, 9, 7, 8, 5, 3, 5, 4]
-  ]
-}
-var lineChartOptions = {
-  low: 0,
-  showArea: true
-}
-
-  
-//  if(!this.state.data){
-  
-//  }
-//var graph = Dimensions()(view);
-
     var reChartBarView = this.measure.map((m,i)=>{
       return( 
         <Bar key={i} dataKey={(m)?m.Expression:""} fill="#8884d8" />
@@ -604,16 +598,16 @@ var lineChartOptions = {
         //   width={width} height={height}  type="discreteBarChart" datum={this.state.data} x={(this.state.dimensions)?this.state.dimensions[0].Name:""} y={(this.state.measure)?this.state.measure[0].Expression:""} />
 
         <BarChart width={width} height={height} data={this.state.data}>
-       <CartesianGrid strokeDasharray="3 3"/>
-       <XAxis dataKey={(this.dimensions)?this.dimensions[0].Name:""}/>       
-       <YAxis/>
-       <Tooltip/>
-       <Legend />
-       {reChartBarView}
-       {/* <Bar dataKey={(this.measure)?this.measure[0].Expression:""} fill="#8884d8" />        */}
-       {/* <Bar dataKey={(this.measure)?this.measure[1].Expression:""} fill="#82ca9d" /> */}
-       {/* <Bar dataKey="uv" fill="#82ca9d" /> */}
-      </BarChart>
+            <CartesianGrid strokeDasharray="3 3"/>
+            <XAxis dataKey={(this.dimensions)?this.dimensions[0].Name:""}/>       
+            <YAxis/>
+            <Tooltip/>
+            <Legend />
+            {reChartBarView}
+            {/* <Bar dataKey={(this.measure)?this.measure[0].Expression:""} fill="#8884d8" />        */}
+            {/* <Bar dataKey={(this.measure)?this.measure[1].Expression:""} fill="#82ca9d" /> */}
+            {/* <Bar dataKey="uv" fill="#82ca9d" /> */}
+        </BarChart>
       }
   </ContainerDimensions>
       

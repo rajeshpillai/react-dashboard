@@ -6,7 +6,7 @@ import PropertyWindow from "./propertywindow";
 import Dimensions from 'react-dimensions';
 var _ = require("lodash");
 
-class Filter extends Toolbox {
+export default class Filter extends Toolbox {
   constructor(props) {
     super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
@@ -314,7 +314,7 @@ class Filter extends Toolbox {
         this.props.onConfigurationChange({
           dimensions: [dimension],
           title: this.state.title,
-          layoutId: this.state.layoutId,
+          layoutId: this.layoutId,
           //filters: this.state.filters,
           id: this.id
         });
@@ -465,5 +465,3 @@ class Filter extends Toolbox {
     );
   }
 }
-
-export default Dimensions({options:{elementResize :true}})(Filter);

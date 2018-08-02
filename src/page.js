@@ -4,13 +4,10 @@ import Kpi from "./components/kpi";
 import Filter from "./components/filter";
 import BarChart1 from './components/barchart';
 //import NewBarChart from './components/newbarchart';
-import LineChart from './components/linechart';
+import LineChart1 from './components/linechart';
 import DataGrid from './components/datagrid';
 import Pivot from './components/pivot';
 import axios from 'axios';
-//import Dimensions from 'react-dimensions';
-import ContainerDimensions from 'react-container-dimensions';
-import WidgetBox from './widgetbox';
 var _ = require('lodash');
 
 const save_page_button={
@@ -51,7 +48,7 @@ class Page extends Component {
   // }
 
   state = {   
-    uiComponents: ["Filter","KPI","DataGrid", "BarChart1", "LineChart"],//,"Pivot"],
+    uiComponents: ["Filter","KPI","DataGrid", "BarChart1", "LineChart1"],//,"Pivot"],
     layout: [
       // { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
       // { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
@@ -76,7 +73,8 @@ class Page extends Component {
       //let BarChart1D =this.renderedComps[0];// Dimensions({options:{elementResize :true}})(BarChart1);
       console.log("config",config);
       return (
-        <BarChart1 layoutId={config.layoutId} id={config.id} 
+        <BarChart1 layoutId={config.layoutId} id={config.id}
+          dimensions =  {config.dimensions}
           measure = {config.measure}
           label="Bar Chart"
           globalFilters={this.state.globalFilters}
@@ -104,18 +102,19 @@ class Page extends Component {
     //   );
     // },
 
-    LineChart: (config) => {
+    LineChart1: (config) => {
       return (
-        <LineChart layoutId={config.layoutId}
+        <LineChart1 layoutId={config.layoutId}
+          dimensions =  {config.dimensions}
           measure = {config.measure}
-          label="Bar Chart"
-          filters={config.filters}
-          onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
+          label="Line Chart"
+          globalFilters={this.state.globalFilters}
+          onFilterChange={(filter,item) => this.onFilterChange(filter,item)}
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
           onDeleteBox = {d=> this.onDeleteBox(d)} 
           onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
-          isFormVisible= {config.isFormVisible}      
+          isFormVisible= {config.isFormVisible}         
         />
       );
     },
@@ -155,6 +154,7 @@ class Page extends Component {
     DataGrid: (config) => {    
       return (
       <DataGrid layoutId={config.layoutId}
+          dimensions =  {config.dimensions}
           measure = {config.measure}
           label="Table"
           globalFilters={this.state.globalFilters}
