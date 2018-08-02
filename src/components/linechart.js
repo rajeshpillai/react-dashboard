@@ -26,6 +26,8 @@ export default class LineChart1 extends Toolbox {
     this.filters =[];    
     this.layoutId= props.layoutId;
     this.id =  props.id;
+    this.dimensions =props.dimensions;
+    this.measure =props.measure;
 
     if(!this.dimensions || !this.measure){
       // var dim = {Name:'employee1.city'};
@@ -40,9 +42,6 @@ export default class LineChart1 extends Toolbox {
       this.measure=[measure];
       this.defaultValue = true;
     }
-
-    this.dimensions = [dim];
-    this.measure = [measure];
 
     // this.dimensions = [{Name:""}];
     // this.measure = [{Expression:""}];

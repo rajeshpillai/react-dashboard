@@ -14,14 +14,15 @@ export default class Kpi extends Toolbox {
     this.test = "testData";
     this.isFirstTime= props.isFirstTime;
     this.layoutId= props.layoutId;
+    this.id = props.id;
 
     this.state = {
       measure: props.measure,
       value: "",
-      expression: "",
+      expression: (props.measure && props.measure.length > 0)?props.measure[0].Expression:"",
       measureText: "",
       isFormVisible: props.isFormVisible,      
-      showSettings: false,
+      showSettings: (props.measure && props.measure.length > 0)? true: false,
       bgColor: "#fff",
       txtColor  : "#000"
     };
@@ -38,7 +39,7 @@ export default class Kpi extends Toolbox {
     // }
     
     var widgetModel = {
-      Dimension: this.state.dimensions,
+     // Dimension: this.state.dimensions,
       Measure: [
         {
           Expression: this.state.expression,
@@ -158,8 +159,8 @@ export default class Kpi extends Toolbox {
           measure: [measure],
           title: this.state.title,
           layoutId: this.layoutId,
-          //filters: this.state.filters,
-          isFirstTime: false
+          //filters: this.state.filters
+          id: this.id
         });
         this.fetchData();
       }

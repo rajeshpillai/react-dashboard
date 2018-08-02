@@ -126,7 +126,7 @@ h3 {
 div.tableContainer {
 	clear: both;
 	border: 1px solid #963;
-	height: 285px;
+	/* height: 285px; */
 	overflow: auto;
 	/* width: 756px */
 }

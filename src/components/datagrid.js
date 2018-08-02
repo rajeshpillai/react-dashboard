@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import axios from "axios";
 import PropertyWindow from "./propertywindow";
 import Toolbox from "./toolbox.js" 
+import ContainerDimensions from 'react-container-dimensions';
 import $ from "jquery";
 var _ = require("lodash");
 
@@ -447,17 +448,21 @@ export default class DataGrid extends Toolbox {
         </div>
       );
     var view = (     
-        <table className="scrollTable table table-fixed table-sm table-bordered table-striped">
-            <thead className="thead-dark fixedHeader">
-              <tr>
-                {thDim}
-                {thMeasure}
-              </tr>
-            </thead>
-            <tbody className="scrollContent" ref={(iScroll)=>this.iScroll = iScroll}>
-                {tr}
-            </tbody>
-        </table>            
+          // <ContainerDimensions>
+          // { ({ width, height }) =>             
+            <table height="100%"  className="scrollTable table table-sm table-bordered table-striped">
+                <thead className="thead-dark fixedHeader">
+                  <tr>
+                    {thDim}
+                    {thMeasure}
+                  </tr>
+                </thead>
+                <tbody className="scrollContent" ref={(iScroll)=>this.iScroll = iScroll}>
+                    {tr}
+                </tbody>
+            </table>  
+      //     }
+      // </ContainerDimensions>                  
     );
 
     return (
@@ -465,11 +470,15 @@ export default class DataGrid extends Toolbox {
         {(!this.state.data || (this.state.data && this.state.data.length == 0)) && defaultView}
         {this.state.showSettings && showSettingLinkUI }
         {/* <div ref={(iScroll)=>this.iScroll = iScroll} style={table_Scroll}> */}
-        <div id="tableContainer" className="tableContainer">
-          {this.state.data && this.state.data.length > 0 && view}
-          {/* {this.state.loadingState ? <p className="loading"> loading More Items..</p> : ""} */}
-        {/* </div>    */}
-        </div>
+        <ContainerDimensions>
+          { ({ width, height }) =>   
+              <div id="tableContainer" className="tableContainer" width={width} height={height} >
+                {this.state.data && this.state.data.length > 0 && view}
+                {/* {this.state.loadingState ? <p className="loading"> loading More Items..</p> : ""} */}
+              {/* </div>    */}
+              </div>
+         }
+         </ContainerDimensions>     
         {/* {this.state.data && this.state.data.length > 0 && this.enablePagination && paginationButtonView} */}
         {this.state.isFormVisible && this.ShowConfigForm()}
       </React.Fragment>
