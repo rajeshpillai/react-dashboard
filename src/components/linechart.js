@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import {XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line} from  "recharts";
+import {XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart as ReLineChart, Line} from  "recharts";
 import Toolbox from "./toolbox.js";
 import PropertyWindow from "./propertywindow";
 import ContainerDimensions from 'react-container-dimensions';
@@ -14,7 +14,7 @@ const data = [
 ];
 
 
-export default class LineChart1 extends Toolbox {
+export default class LineChart extends Toolbox {
   constructor(props) {
     super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
@@ -257,14 +257,14 @@ export default class LineChart1 extends Toolbox {
     var view = (    
       <ContainerDimensions>
           { ({ width, height }) =>         
-            <LineChart width={width} height={height} data={this.state.data}>
+            <ReLineChart width={width} height={height} data={this.state.data}>
               <CartesianGrid strokeDasharray="3 3"/>
               <XAxis dataKey={(this.dimensions)?this.dimensions[0].Name:""}/>       
               <YAxis/>
               <Tooltip/>
               <Legend />
               {reChartLineView}       
-            </LineChart>
+            </ReLineChart>
           }
       </ContainerDimensions>      
     );

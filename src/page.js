@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import ReactGridLayout from "react-grid-layout";
 import Kpi from "./components/kpi";
 import Filter from "./components/filter";
-import BarChart1 from './components/barchart';
+import BarChart from './components/barchart';
 //import NewBarChart from './components/newbarchart';
-import LineChart1 from './components/linechart';
+import LineChart from './components/linechart';
 import DataGrid from './components/datagrid';
 import Pivot from './components/pivot';
 import axios from 'axios';
@@ -52,8 +52,8 @@ class Page extends Component {
       {type:"Filter", displayName:"Filter"},
       {type:"KPI", displayName:"KPI"},
       {type:"DataGrid", displayName:"DataGrid"},
-      {type:"BarChart1", displayName:"BarChart"},
-      {type:"LineChart1", displayName:"LineChart"}//,
+      {type:"BarChart", displayName:"BarChart"},
+      {type:"LineChart", displayName:"LineChart"}//,
       // {type:"Pivot", displayName:"Pivot"}
     ],
     layout: [
@@ -72,15 +72,10 @@ class Page extends Component {
     isPropertyWindowVisible :false
    };
 
-//  renderedComps =[Dimensions({options:{elementResize :true}})(BarChart1)];
-   //BarChart1D = Dimensions({options:{elementResize :true}})(BarChart1);
-
   comps = {
-    BarChart1: (config) => {
-      //let BarChart1D =this.renderedComps[0];// Dimensions({options:{elementResize :true}})(BarChart1);
-      console.log("config",config);
+    BarChart: (config) => {
       return (
-        <BarChart1 layoutId={config.layoutId} id={config.id}
+        <BarChart layoutId={config.layoutId} id={config.id}
           dimensions =  {config.dimensions}
           measure = {config.measure}
           label="Bar Chart"
@@ -109,9 +104,9 @@ class Page extends Component {
     //   );
     // },
 
-    LineChart1: (config) => {
+    LineChart: (config) => {
       return (
-        <LineChart1 layoutId={config.layoutId}
+        <LineChart layoutId={config.layoutId}
           dimensions =  {config.dimensions}
           measure = {config.measure}
           label="Line Chart"
@@ -142,8 +137,7 @@ class Page extends Component {
         />
       );
     },
-    Filter: (config) => {
-      console.log("Filter loading....????");    
+    Filter: (config) => { 
       return (
         <Filter layoutId={config.layoutId} id={config.id}
           dimensions = {config.dimensions} 

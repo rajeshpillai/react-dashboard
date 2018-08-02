@@ -1,20 +1,18 @@
 import React, { Component } from "react";
-import ReactDOM from 'react-dom';
+//import ReactDOM from 'react-dom';
 import axios from "axios";
 //import { Chart, Axis, Series, Tooltip, Cursor, Line, Bar } from "react-charts";
-import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from  "recharts";
-import NVD3Chart from "react-nvd3";
+import {BarChart as ReBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from  "recharts";
+//import NVD3Chart from "react-nvd3";
 //import { VictoryChart,VictoryBar } from "victory";
 //import Chart from "chart.js";
 import $ from "jquery";
-import ChartistGraph from 'react-chartist';
-import {XYPlot, LineSeries} from 'react-vis';
+// import ChartistGraph from 'react-chartist';
+// import {XYPlot, LineSeries} from 'react-vis';
 import Toolbox from "./toolbox.js";
 import PropertyWindow from "./propertywindow";
 import ContainerDimensions from 'react-container-dimensions';
 var _ = require("lodash");
-
-
 // import recharts from 'recharts';
 
 const data = [
@@ -23,7 +21,7 @@ const data = [
   {"Enter Dimension": 'x3', "Enter Expression": 50}
 ];
 
-class BarChart1 extends Toolbox {
+export default class BarChart extends Toolbox {
   constructor(props) {
     super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
@@ -597,7 +595,7 @@ class BarChart1 extends Toolbox {
         // <NVD3Chart id="barChart" 
         //   width={width} height={height}  type="discreteBarChart" datum={this.state.data} x={(this.state.dimensions)?this.state.dimensions[0].Name:""} y={(this.state.measure)?this.state.measure[0].Expression:""} />
 
-        <BarChart width={width} height={height} data={this.state.data}>
+        <ReBarChart width={width} height={height} data={this.state.data}>
             <CartesianGrid strokeDasharray="3 3"/>
             <XAxis dataKey={(this.dimensions)?this.dimensions[0].Name:""}/>       
             <YAxis/>
@@ -607,7 +605,7 @@ class BarChart1 extends Toolbox {
             {/* <Bar dataKey={(this.measure)?this.measure[0].Expression:""} fill="#8884d8" />        */}
             {/* <Bar dataKey={(this.measure)?this.measure[1].Expression:""} fill="#82ca9d" /> */}
             {/* <Bar dataKey="uv" fill="#82ca9d" /> */}
-        </BarChart>
+        </ReBarChart>
       }
   </ContainerDimensions>
       
@@ -637,5 +635,3 @@ class BarChart1 extends Toolbox {
     );
   }
 }
-//export default Dimensions({options:{elementResize :true}})(BarChart1);
-export default BarChart1;
