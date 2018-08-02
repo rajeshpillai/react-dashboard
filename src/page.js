@@ -30,25 +30,32 @@ const property_window ={
 class Page extends Component {
   serviceBaseUrl = "http://localhost:57387/api/";
 
-  componentDidMount(){
-     axios
-    .post(this.serviceBaseUrl + "data/getPageData")
-    .then(response => {
-      console.log("response-getPageData", response);
-      this.setState({
-        uiComponents: response.data.uiComponents,
-        layout:  response.data.layout,
-        globalFilters:  response.data.filters
-      });
-      //alert("Page Data Saved Sucessfully !");
-    })
-    .catch(function(error) {
-      console.log("error", error);
-    });
-  }
+  // componentDidMount(){
+  //    axios
+  //   .post(this.serviceBaseUrl + "data/getPageData")
+  //   .then(response => {
+  //     console.log("response-getPageData", response);
+  //     this.setState({
+  //       uiComponents: response.data.uiComponents,
+  //       layout:  response.data.layout ? response.data.layout : [],
+  //       globalFilters:  response.data.filters
+  //     });
+  //     //alert("Page Data Saved Sucessfully !");
+  //   })
+  //   .catch(function(error) {
+  //     console.log("error", error);
+  //   });
+  // }
 
   state = {   
-    uiComponents: ["Filter","KPI","DataGrid", "BarChart1", "LineChart1"],//,"Pivot"],
+    uiComponents: [
+      {type:"Filter", displayName:"Filter"},
+      {type:"KPI", displayName:"KPI"},
+      {type:"DataGrid", displayName:"DataGrid"},
+      {type:"BarChart1", displayName:"BarChart"},
+      {type:"LineChart1", displayName:"LineChart"}//,
+      // {type:"Pivot", displayName:"Pivot"}
+    ],
     layout: [
       // { i: "a", x: 0, y: 0, w: 2, h: 2, item: "" },
       // { i: "b", x: 2, y: 0, w: 2, h: 2, item: "" }, //minW: 2, maxW: 4, 
@@ -276,7 +283,7 @@ class Page extends Component {
     // }
     var isCompExist = false;
     this.state.uiComponents.forEach(element => {
-      if(element == c){
+      if(element.type == c){
         isCompExist = true;
         return;
       }
@@ -290,9 +297,15 @@ class Page extends Component {
 
     var x=0;
     var y =0;
-    var h=4;
-    var w=5;
+    var h=2;
+    var w=2;
 
+    if(this.state.layout && this.state.layout.length /2 == 0){
+      x=2;
+      y =0;
+      h=2;
+      w=2;
+    }
 
     //containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2) / cols
 
@@ -460,10 +473,10 @@ class Page extends Component {
         // <li key={c} draggable onDragStart={e => this.onDragStart(e, c)}>
         //   {c}
         // </li>
-         <li key={c} draggable onDragStart={e => this.onDragStart(e, c)} className="nav-item">
+         <li key={c.type} draggable onDragStart={e => this.onDragStart(e, c.type)} className="nav-item">
          <a className="nav-link" href="#">
          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap ="round" strokeLinejoin="round" className="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
-          {c}
+          {c.displayName}
          </a>
      </li>    
       );
