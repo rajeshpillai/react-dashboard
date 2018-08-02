@@ -253,3 +253,7 @@ html>body tbody.scrollContent td + td + td {
 }
   /* table scroll end */
  
+
+  .right{
+    float: right;
+  }

@@ -79,4 +79,8 @@ export default class Toolbox extends Component {
         console.log("componentDidUpdate state", this.state);
       }
 
+      getRandomColor(){
+        return  'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
+      }
+
 }

@@ -373,7 +373,7 @@ export default class Filter extends Toolbox {
 
   render() {
     console.log("Filter: Render");
-    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a href="#" onClick={this.onDeleteBox}>X</a></span>);
+    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a className="right" href="#" onClick={this.onDeleteBox}>X</a></span>);
 
     var defaultView = (
       <div>

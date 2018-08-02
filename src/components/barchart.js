@@ -261,7 +261,9 @@ export default class BarChart extends Toolbox {
                placeholder="Enter Expression"
                defaultValue= {this.state.measure[i].Expression} 
                onChange ={this.handleMeasureChange(i)}
-             />             
+             />  
+             <span><a href="#" onClick={() => this.addNewMeasure()}>+</a></span>  
+             <span><a href="#" onClick={() => this.deleteMeasure(m)}>X</a></span>         
            </div>)
       })
 
@@ -280,6 +282,25 @@ export default class BarChart extends Toolbox {
       );   
     return ui;
   };
+
+  addNewMeasure(){    
+    var m = {};
+    this.measure.push(m);
+    this.setState(
+      {        
+        measure: this.measure
+      });
+  }
+
+  deleteMeasure(m){    
+    var measure = this.measure.filter((l)=>{
+      return l.Expression != m.Expression;
+    })
+    this.setState({
+      measure
+    });
+    this.measure = measure;    
+  }
 
   saveForm(){
     this.defaultValue = false;
@@ -466,7 +487,7 @@ export default class BarChart extends Toolbox {
 
   render() {
     console.log("BARCHART: Render ", this.state.hello);
-    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a href="#" onClick={this.onDeleteBox}>X</a></span>);
+    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a className="right" href="#" onClick={this.onDeleteBox}>X</a></span>);
 
     var defaultView = (
       <div>
