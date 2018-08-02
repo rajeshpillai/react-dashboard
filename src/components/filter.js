@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom';
 import Toolbox from "./toolbox.js";
 import axios from "axios";
 import PropertyWindow from "./propertywindow";
+import Dimensions from 'react-dimensions';
 var _ = require("lodash");
 
-export default class Filter extends Toolbox {
+class Filter extends Toolbox {
   constructor(props) {
     super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
@@ -43,6 +44,10 @@ export default class Filter extends Toolbox {
   serviceBaseUrl = "http://localhost:57387/api/";
 
  
+  componentWillUnmount() {
+    console.log("Unmounting Filter....Why ???");
+  }
+
 
   fetchData() {
     
@@ -460,3 +465,5 @@ export default class Filter extends Toolbox {
     );
   }
 }
+
+export default Dimensions({options:{elementResize :true}})(Filter);

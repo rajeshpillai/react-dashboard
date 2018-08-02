@@ -9,7 +9,9 @@ import NVD3Chart from "react-nvd3";
 import $ from "jquery";
 import ChartistGraph from 'react-chartist';
 import {XYPlot, LineSeries} from 'react-vis';
-import Dimensions from 'react-dimensions'
+import Toolbox from "./toolbox.js";
+import PropertyWindow from "./propertywindow";
+import ContainerDimensions from 'react-container-dimensions';
 var _ = require("lodash");
 
 
@@ -25,11 +27,13 @@ const data = [
   {name: 'Page G', uv: 3490, pv: 4300, amt: 2100},
 ];
 
-class BarChart1 extends Component {
+class BarChart1 extends Toolbox {
   constructor(props) {
     super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
+    this.saveForm = this.saveForm.bind(this);
     this.fetchData = this.fetchData.bind(this);
+    this.ShowConfigForm = this.ShowConfigForm.bind(this);
 
     this.globalFilters = this.props.globalFilters
     this.filters =[];
@@ -39,27 +43,32 @@ class BarChart1 extends Component {
     // var measure = {Expression:'sum(ProductInventory.Quantity)'};
 
     var dim = {Name:'employee1.city'};
-    var measure = {Expression:'count(employee1.ename)'};
+    var measure = {Expression:'count(employee1.city)'};
     //var measure2 = {Expression:'sum(Product.Weight)'};
+    this.layoutId= this.props.layoutId,
+
+    // this.dimensions = [dim];
+    // this.measure = [measure];
+
+    this.dimensions = [dim];
+    this.measure = [measure];
 
     this.state = {
-      dimensions:[dim],
-      measure: [measure],//,measure2],   
-      isFormVisible: false,
+      dimensions:this.dimensions,
+      measure: this.measure,//,measure2],   
+      isFormVisible: props.isFormVisible,
       showSettings: false,
-      containerWidth: 87,
-      containerHeight: 98
+      hello:"fff"
     };
 
-    this.fetchData();
   }
 
-  componentDidCatch(error, info){
-     // Display fallback UI
-     this.setState({ hasError: true });
-     // You can also log the error to an error reporting service
-    console.log("Error in bar chart", error);
-  }
+  // componentDidCatch(error, info){
+  //    // Display fallback UI
+  //    this.setState({ hasError: true });
+  //    // You can also log the error to an error reporting service
+  //   console.log("Error in bar chart", error);
+  // }
   // data = [
   //   {
   //     label: "India",
@@ -193,33 +202,41 @@ class BarChart1 extends Component {
 
   handleMeasureChange = (i) =>(evt) =>{
       //debugger;
-      const measures = this.state.measure.map((m, midx) => {
+      //console.log("this.measure**********",this.measure);
+      this.measure = this.measure.map((m, midx) => {
         if (i !== midx) return m;
         return { ...m, Expression: evt.target.value };
       });
+      //console.log("this.measure**********",this.measure);
       
-      this.setState({ measure: measures });
+      //this.setState({ measure: this.measure });
   }
 
   handleDimChange = (i) =>(evt) =>{
     //debugger;
-    const dims = this.state.dimensions.map((m, midx) => {
+   // console.log("this.dimensions**********",this.dimensions);
+    this.dimensions = this.dimensions.map((m, midx) => {
       if (i !== midx) return m;
       return { ...m, Name: evt.target.value };
     });
-    
-    this.setState({ dimensions: dims });
+    //console.log("this.dimensions**********",this.dimensions);
+
+    //this.setState({hello:"Urvashi"});
+
+   //this.setState({ dimensions: this.dimensions });
 }
 
-  ShowConfigForm = () => {
+  ShowConfigForm() {
+
+    
    
     let dims = this.state.dimensions.map((dim,i)=>{
       return( <div  key={i}>
         <label>Dimension:</label>
          <input        
            type="text"
-           placeholder="Enter Dimention"
-           value= {dim.Name} 
+           placeholder="Enter Dimension"           
+           defaultValue={this.state.dimensions[i].Name}
            onChange ={this.handleDimChange(i)}
          />      
        </div>)
@@ -232,125 +249,163 @@ class BarChart1 extends Component {
              <input         
                type="text"
                placeholder="Enter Expression"
-               value= {m.Expression} 
+               defaultValue= {this.state.measure[i].Expression} 
                onChange ={this.handleMeasureChange(i)}
              />             
            </div>)
       })
 
-      let save = (<div key="button"><button onClick={this.saveForm}>Apply</button> 
+      let save = (<div key="button"><button onClick={() =>this.saveForm()}>Apply</button> 
                   <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
                   </div>)
    
-      let ui=[dims,measures,save];     
-
+      let ui= (
+        <PropertyWindow>
+          <div style={this.property_window}>
+            {dims}
+            {measures}
+            {save}
+          </div>
+        </PropertyWindow>
+      );   
     return ui;
   };
 
-  saveForm = () => {
+  saveForm(){
     this.toggleConfirmForm();
-    this.props.onConfigurationChange({
-      measure: this.state.measure,
-      dimensions: this.state.dimensions,
-      title: this.state.title,
-      layoutId: this.state.layoutId,
-      filters: this.state.filters
-    });
-    this.fetchData();
-    // let measure = {
-    //   Expression: this.inpExpr.value // this.state.expression
-    // };
-
-    // this.setState(
-    //   {
-    //     expression: this.inpExpr.value,
-    //     measure: [measure]
-    //   },
-    //   () => {
-    //     this.props.onConfigurationChange({
-    //       measure: [measure],
-    //       title: this.state.title,
-    //       layoutId: this.state.layoutId,
-    //       filters: this.state.filters
-    //     });
-    //     this.fetchData();
+    console.log("this.state",this.state);
+    console.log("this.dimensions",this.dimensions);
+    console.log("this.measure",this.measure);
+    // this.props.onConfigurationChange({
+    //   measure: this.state.measure,
+    //   dimensions: this.state.dimensions,
+    //   title: this.state.title,
+    //   layoutId: this.state.layoutId,
+    //   filters: this.state.filters
+    // });
+    //debugger;
+    // this.setState((prevState) => {
+    //   // Important: read `prevState` instead of `this.state` when updating.
+    //   return {
+    //     dimensions: this.dimensions,
+    //     measure: this.measure
     //   }
-    // );
-  };
+    // },() => {
+    //   //debugger;
+    //   console.log("this.dimensionsthis.dimensions",this.dimensions);
+    //   this.props.onConfigurationChange({
+    //     dimensions: this.dimensions,
+    //     measure: this.measure,
+    //     title: this.state.title,
+    //     layoutId: this.state.layoutId,
+    //     //filters: this.state.filters,
+    //     id: this.id
+    //   });
+    //   this.fetchData();
+    // });
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.globalFilters != this.props.globalFilters) {
-      this.fetchData();
-    }
-    // if($(".react-grid-item").length > 0){
-    //   this.height =  window.getComputedStyle($(".react-grid-item")[0]).height.replace("px","");
-    //   this.width =  window.getComputedStyle($(".react-grid-item")[0]).width.replace("px","");
-    // }
     
+    // this.setState({hello:"Urvashi"},
+    //   () => {
+    //   console.log("FAILURE>>>>>>>");
+    // });
+
+    this.setState(
+      {
+        dimensions: this.dimensions,
+        measure: this.measure
+      },
+      () => {
+        //debugger;
+        console.log("this.dimensionsthis.dimensions",this.dimensions);
+        console.log("this.measurethis.measure",this.measure);
+        this.props.onConfigurationChange({
+          dimensions: this.dimensions,
+          measure: this.measure,
+          title: this.state.title,
+          layoutId: this.state.layoutId,
+          //filters: this.state.filters,
+          id: this.id
+        });
+        this.fetchData();
+      }
+    );
   }
-  componentDidMount() {
-    console.log("componentDidMount");
-    var dimple = window.dimple;
-    // this.svg = dimple.newSvg("#chart");
-    // this.chart = new dimple.chart(this.svg, "100%","100%");
-    // this.chart.addCategoryAxis("x", "employee1.city");
-    // this.chart.addMeasureAxis("y", "count(employee1.ename)");
-    // this.chart.addSeries(null, dimple.plot.bar);
+  
+
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (prevProps.globalFilters != this.props.globalFilters) {
+  //     this.fetchData();
+  //   }
+  //   // if($(".react-grid-item").length > 0){
+  //   //   this.height =  window.getComputedStyle($(".react-grid-item")[0]).height.replace("px","");
+  //   //   this.width =  window.getComputedStyle($(".react-grid-item")[0]).width.replace("px","");
+  //   // }
+    
+  // }
+  // componentDidMount() {
+  //   console.log("componentDidMount");
+  //   var dimple = window.dimple;
+  //   // this.svg = dimple.newSvg("#chart");
+  //   // this.chart = new dimple.chart(this.svg, "100%","100%");
+  //   // this.chart.addCategoryAxis("x", "employee1.city");
+  //   // this.chart.addMeasureAxis("y", "count(employee1.ename)");
+  //   // this.chart.addSeries(null, dimple.plot.bar);
    
-    // this.fetchData();
-    // if($(".react-grid-item").length > 0){
-    //   this.height =  window.getComputedStyle($(".react-grid-item")[0]).height.replace("px","");
-    //   this.width =  window.getComputedStyle($(".react-grid-item")[0]).width.replace("px","");
-    // }
+  //   // this.fetchData();
+  //   // if($(".react-grid-item").length > 0){
+  //   //   this.height =  window.getComputedStyle($(".react-grid-item")[0]).height.replace("px","");
+  //   //   this.width =  window.getComputedStyle($(".react-grid-item")[0]).width.replace("px","");
+  //   // }
     
-  //   var ctx = this.canv.getContext("2d");
-  //   this.chart = new Chart(ctx, {
-  //     type: 'bar',
-  //     data: {
-  //         labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-  //         datasets: [{
-  //             label: '# of Votes',
-  //             data: [12, 19, 3, 5, 2, 3],
-  //             backgroundColor: [
-  //                 'rgba(255, 99, 132, 0.2)',
-  //                 'rgba(54, 162, 235, 0.2)',
-  //                 'rgba(255, 206, 86, 0.2)',
-  //                 'rgba(75, 192, 192, 0.2)',
-  //                 'rgba(153, 102, 255, 0.2)',
-  //                 'rgba(255, 159, 64, 0.2)'
-  //             ],
-  //             borderColor: [
-  //                 'rgba(255,99,132,1)',
-  //                 'rgba(54, 162, 235, 1)',
-  //                 'rgba(255, 206, 86, 1)',
-  //                 'rgba(75, 192, 192, 1)',
-  //                 'rgba(153, 102, 255, 1)',
-  //                 'rgba(255, 159, 64, 1)'
-  //             ],
-  //             borderWidth: 1
-  //         }]
-  //     },
-  //     options: {
-  //         scales: {
-  //             yAxes: [{
-  //                 ticks: {
-  //                     beginAtZero:true
-  //                 }
-  //             }]
-  //         },
-  //         responsive:true,
-  //        maintainAspectRatio:true
-  //     }
-  // });
+  // //   var ctx = this.canv.getContext("2d");
+  // //   this.chart = new Chart(ctx, {
+  // //     type: 'bar',
+  // //     data: {
+  // //         labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+  // //         datasets: [{
+  // //             label: '# of Votes',
+  // //             data: [12, 19, 3, 5, 2, 3],
+  // //             backgroundColor: [
+  // //                 'rgba(255, 99, 132, 0.2)',
+  // //                 'rgba(54, 162, 235, 0.2)',
+  // //                 'rgba(255, 206, 86, 0.2)',
+  // //                 'rgba(75, 192, 192, 0.2)',
+  // //                 'rgba(153, 102, 255, 0.2)',
+  // //                 'rgba(255, 159, 64, 0.2)'
+  // //             ],
+  // //             borderColor: [
+  // //                 'rgba(255,99,132,1)',
+  // //                 'rgba(54, 162, 235, 1)',
+  // //                 'rgba(255, 206, 86, 1)',
+  // //                 'rgba(75, 192, 192, 1)',
+  // //                 'rgba(153, 102, 255, 1)',
+  // //                 'rgba(255, 159, 64, 1)'
+  // //             ],
+  // //             borderWidth: 1
+  // //         }]
+  // //     },
+  // //     options: {
+  // //         scales: {
+  // //             yAxes: [{
+  // //                 ticks: {
+  // //                     beginAtZero:true
+  // //                 }
+  // //             }]
+  // //         },
+  // //         responsive:true,
+  // //        maintainAspectRatio:true
+  // //     }
+  // // });
 
-  }
+  // }
 
-  toggleConfirmForm = () => {
-    this.setState(prevState => ({
-      isFormVisible: !prevState.isFormVisible,
-      showSettings: prevState.isFormVisible
-    }));
-  };
+  // toggleConfirmForm = () => {
+  //   this.setState(prevState => ({
+  //     isFormVisible: !prevState.isFormVisible,
+  //     showSettings: prevState.isFormVisible
+  //   }));
+  // };
 
   // componentDidUpdate(prevProps, prevState) {
 
@@ -372,28 +427,34 @@ class BarChart1 extends Component {
   //   console.log("height",this.height);
   //   console.log("width",this.width);
   // }
-  static getDerivedStateFromProps(props, state) {
-    //debugger;   
-    var isChanged = false;
-    var newState = {...state};
-    if(props.containerHeight != state.containerHeight){
-      newState.containerHeight = props.containerHeight;
-      isChanged = true;
-    }
-    if(props.containerWidth != state.containerWidth){
-      newState.containerWidth = props.containerWidth;
-      isChanged = true;
-    }
-    if(isChanged){
-      return newState;
-    }
-    return null;
+  // static getDerivedStateFromProps(props, state) {
+  //   //debugger;   
+  //   var isChanged = false;
+  //   var newState = {...state};
+  //   if(props.containerHeight != state.containerHeight){
+  //     newState.containerHeight = props.containerHeight;
+  //     isChanged = true;
+  //   }
+  //   if(props.containerWidth != state.containerWidth){
+  //     newState.containerWidth = props.containerWidth;
+  //     isChanged = true;
+  //   }
+  //   // if(props.dimensions != state.dimensions){
+  //   //   newState.dimensions = props.dimensions;
+  //   //   isChanged = true;
+  //   // }
+  //   if(isChanged){
+  //     return newState;
+  //   }
+  //   return null;
+  // }
+
+  componentWillUnmount() {
+    console.log("Unmounting Barchart....Why ???");
   }
 
-  
-
   render() {
-    console.log("KPI: Render");
+    console.log("BARCHART: Render ", this.state.hello);
     var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a></span>);
 
     var defaultView = (
@@ -504,6 +565,7 @@ var lineChartOptions = {
 //  }
 //var graph = Dimensions()(view);
 
+  
     var view = (
     //   <XYPlot width={this.props.containerWidth} height={this.props.containerHeight}>
     //   <LineSeries data={data1} />
@@ -529,8 +591,12 @@ var lineChartOptions = {
     //     ]}
     //   />
     // </VictoryChart>
-      <NVD3Chart id="barChart" width={this.state.containerWidth} height={this.state.containerHeight}  type="discreteBarChart" datum={this.state.data} x="employee1.city" y="count(employee1.ename)"/>
-
+  <ContainerDimensions>
+      { ({ width, height }) => 
+        <NVD3Chart id="barChart" 
+          width={width} height={height}  type="discreteBarChart" datum={this.state.data} x={(this.state.dimensions)?this.state.dimensions[0].Name:""} y={(this.state.measure)?this.state.measure[0].Expression:""} />
+      }
+  </ContainerDimensions>
       // <BarChart width={783} height={210} data={this.state.data}
       //       margin={{top: 5, right: 30, left: 20, bottom: 5}}>
       //  <CartesianGrid strokeDasharray="3 3"/>
@@ -558,7 +624,7 @@ var lineChartOptions = {
       <React.Fragment>
         {(!this.state.data || (this.state.data && this.state.data.length == 0)) && defaultView}
         {this.state.showSettings && showSettingLinkUI }
-        {!this.state.isFormVisible && this.state.data && this.state.data.length > 0 && view}
+        {this.state.data && this.state.data.length > 0 && view}
         {this.state.isFormVisible && this.ShowConfigForm()}
         {/* <div style={{position:"relative",height:"50vh"}} >
          <canvas ref={(canv)=>this.canv = canv}  width="100%" height="100%"></canvas>
@@ -567,5 +633,5 @@ var lineChartOptions = {
     );
   }
 }
-
-export default Dimensions({options:{elementResize :true}})(BarChart1) ;
+//export default Dimensions({options:{elementResize :true}})(BarChart1);
+export default BarChart1;

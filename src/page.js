@@ -8,7 +8,8 @@ import LineChart from './components/linechart';
 import DataGrid from './components/datagrid';
 import Pivot from './components/pivot';
 import axios from 'axios';
-import Dimensions from 'react-dimensions';
+//import Dimensions from 'react-dimensions';
+import ContainerDimensions from 'react-container-dimensions';
 import WidgetBox from './widgetbox';
 var _ = require('lodash');
 
@@ -67,18 +68,24 @@ class Page extends Component {
     isPropertyWindowVisible :false
    };
 
+//  renderedComps =[Dimensions({options:{elementResize :true}})(BarChart1)];
+   //BarChart1D = Dimensions({options:{elementResize :true}})(BarChart1);
+
   comps = {
     BarChart1: (config) => {
-      let BarChart1D = Dimensions({options:{elementResize :true}})(BarChart1);
+      //let BarChart1D =this.renderedComps[0];// Dimensions({options:{elementResize :true}})(BarChart1);
+      console.log("config",config);
       return (
-        <BarChart1D layoutId={config.layoutId}
+        <BarChart1 layoutId={config.layoutId} id={config.id} 
           measure = {config.measure}
           label="Bar Chart"
           globalFilters={this.state.globalFilters}
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)}
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
-          onDeleteBox = {d=> this.onDeleteBox(d)}
+          onDeleteBox = {d=> this.onDeleteBox(d)} 
+          onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
+          isFormVisible= {config.isFormVisible}      
         />
       );
     },
@@ -106,7 +113,9 @@ class Page extends Component {
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
-          onDeleteBox = {d=> this.onDeleteBox(d)}
+          onDeleteBox = {d=> this.onDeleteBox(d)} 
+          onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
+          isFormVisible= {config.isFormVisible}      
         />
       );
     },
@@ -128,7 +137,7 @@ class Page extends Component {
       );
     },
     Filter: (config) => {
-      // let FilterD = Dimensions({options:{elementResize :true}})(Filter);
+      console.log("Filter loading....????");    
       return (
         <Filter layoutId={config.layoutId} id={config.id}
           dimensions = {config.dimensions} 
@@ -459,6 +468,7 @@ class Page extends Component {
      </li>    
       );
     });
+
     var box = layout.map(l => {
       console.log("this.comps",this.comps);
       //let WidgetBoxD = Dimensions({options:{elementResize :true}})(WidgetBox) ;
@@ -468,10 +478,8 @@ class Page extends Component {
           onDragOver={e => this.onDragOver(e)}
           onDrop={e => this.onDrop(e, l)} 
           //test="asasas"
-        >         
-       
-          {l.itemType && _.clone(this.comps[l.itemType](l.item))}
-          
+        >    
+          {l.itemType && _.clone(this.comps[l.itemType](l.item))}                       
         </div>
         // <WidgetBoxD key={l.item.layoutId} l={l}  comps={this.comps} onDragOver={e => this.onDragOver(e)}
         // onDrop={e => this.onDrop(e, l)} />
