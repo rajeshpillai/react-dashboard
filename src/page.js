@@ -157,6 +157,7 @@ class Page extends Component {
       <DataGrid layoutId={config.layoutId}  id={config.id}
           dimensions =  {config.dimensions}
           measure = {config.measure}
+          cols = {config.cols}
           label="Table"
           globalFilters={this.state.globalFilters}
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 

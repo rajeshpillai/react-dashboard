@@ -52,6 +52,7 @@ export default class DataGrid extends Toolbox {
     this.defaultValue = false;
     this.searchList =[];
 
+    var cols = props.cols;
     if(!this.dimensions || !this.measure){
       // var dim = {Name:'ProductInventory.Shelf'};
     // //var dim = {Name:'Product.Name'};
@@ -80,7 +81,7 @@ export default class DataGrid extends Toolbox {
       
       var dim = {Name:'Enter Dimension'};      
       var measure = {Expression:'Enter Expression'};
-      var cols =[];
+      cols =[];
       cols.push({name: dim.Name, displayName: dim.Name, allowSearch:true});   
       cols.push({name: measure.Expression, displayName: measure.Expression, allowSearch:false});
 
@@ -419,6 +420,7 @@ export default class DataGrid extends Toolbox {
           this.props.onConfigurationChange({
             measure: this.state.measure,
             dimensions: this.state.dimensions,
+            cols: this.state.cols,
             title: this.state.title,
             layoutId: this.layoutId,
             filters: this.state.filters,
