@@ -13,20 +13,47 @@ const table_Scroll={
   overflow: "scroll"
 }
 
+const defaultData = [
+  {"Enter Dimension": 'x1', "Enter Expression": 100},
+  {"Enter Dimension": 'x2', "Enter Expression": 200},
+  {"Enter Dimension": 'x3', "Enter Expression": 50}
+];
+
+
 export default class DataGrid extends Toolbox {
   constructor(props) {
       //debugger;
     super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
+    this.saveForm = this.saveForm.bind(this);
     this.fetchData = this.fetchData.bind(this);
+    this.ShowConfigForm = this.ShowConfigForm.bind(this);
     this.nextPage = this.nextPage.bind(this);  
     this.previousPage = this.previousPage.bind(this);
     this.getData = this.getData.bind(this);
+    this.toggleSearch = this.toggleSearch.bind(this);
+    this.searchData = this.searchData.bind(this);
+    this.onSearchBlur = this.onSearchBlur.bind(this);
     //this.globalFilters = this.props.globalFilters
     //this.filterChanged = this.props.filterChanged;
     this.filters =[];
+    this.searchList=[];
+    
+    this.pageSize =15;
+    this.totalRecords = 0;
+    this.enablePagination=true;
+    this.isFirstTime = true;
+    this.currentPage = 0;
+    this.totalPageCount = 0;
+    this.layoutId= props.layoutId;    
+    this.id =  props.id;
+    this.dimensions =props.dimensions;
+    this.measure =props.measure;
+    this.defaultValue = false;
+    this.searchList =[];
 
-    // var dim = {Name:'ProductInventory.Shelf'};
+    if(!this.dimensions || !this.measure){
+      // var dim = {Name:'ProductInventory.Shelf'};
     // //var dim = {Name:'Product.Name'};
     // var dim1 = {Name:'ProductVendor.VendorId'};
     // //var dim2 = {Name:'PurchaseOrderHeader.ShipMethodId'};
@@ -42,40 +69,33 @@ export default class DataGrid extends Toolbox {
     // var measure = {Expression:'sum(employee.salary)'};
     // var measure2 = {Expression:'count(employee.ename)'};
 
-    var dim = {Name:'employee1.ename'};
-    //var dim = {Name:'Product.Name'};
-    var dim1 = {Name:'skills1.skill'};
-    //var dim2 = {Name:'PurchaseOrderHeader.ShipMethodId'};
 
-    var measure = {Expression:'sum(employee1.salary)'};
-    //var measure2 = {Expression:'count(employee.ename)'};
+      // var dim = {Name:'employee1.ename'};
+      // //var dim = {Name:'Product.Name'};
+      // var dim1 = {Name:'skills1.skill'};
+      // //var dim2 = {Name:'PurchaseOrderHeader.ShipMethodId'};
+  
+      // var measure = {Expression:'sum(employee1.salary)'};
+      //var measure2 = {Expression:'count(employee.ename)'};
+      
+      var dim = {Name:'Enter Dimension'};      
+      var measure = {Expression:'Enter Expression'};
+      var cols =[];
+      cols.push({name: dim.Name, displayName: dim.Name, allowSearch:true});   
+      cols.push({name: measure.Expression, displayName: measure.Expression, allowSearch:false});
 
-    var cols =[];
-    cols.push(dim.Name);
-    cols.push(dim1.Name);
-    //cols.push(dim2.Name);
-    cols.push(measure.Expression);
-    //cols.push(measure2.Expression);
-    if(!this.dimensions || !this.measure){
-
+      this.dimensions=[dim];
+      this.measure=[measure];
+      this.defaultValue = true;
     }
 
-    this.pageSize =15;
-    this.totalRecords = 0;
-    this.enablePagination=true;
-    this.isFirstTime = true;
-    this.currentPage = 0;
-    this.totalPageCount = 0;
-    this.layoutId= props.layoutId;    
-    this.id =  props.id;
-
     this.state = {
-      dimensions:[dim,dim1], //dim2
-      measure: [measure],//,measure2],    //measure2
+      dimensions:this.dimensions,
+      measure: this.measure,
       cols: cols,
       isFormVisible: props.isFormVisible,
-      showSettings: false,
-      data:[]
+      showSettings: true,
+      data:defaultData
     };
 
     //this.fetchData();
@@ -84,13 +104,94 @@ export default class DataGrid extends Toolbox {
 
   serviceBaseUrl = "http://localhost:57387/api/";
 
+  searchData(event,col){
+    var keyCode = event.which || event.keyCode;
+    //console.log("keyCode",keyCode);
+    //console.log("col",col);
+    //alert("search");  
+    // If enter key is pressed
+    if (keyCode === 13){
+      var colName = col.name;
+      var searchData = event.currentTarget.value;
+      var searchList = this.searchList;
+      if(!searchList) {searchList = [];}
+      var existingSearch = _.filter(searchList, { 'ColName': colName });     
+
+      //debugger;
+      if (existingSearch.length>0) { existingSearch[0]['Value'] = searchData; }
+      else { searchList.push({ 'ColName': colName, 'Value': searchData }); }
+
+      if (searchData.length == 0) {
+          //If Empty remove search
+          _.remove(searchList, { 'ColName': colName });
+      }
+
+      if (searchList.length > 0) {
+          this.startRowNum = 0;
+          this.currentPage = 1;
+          this.isFirstTime = true;
+          this.enablePagination=true;
+      }
+     
+      this.fetchData();
+      //refreshGridData(false,false)
+    }
+  }
+
+  onSearchBlur(event,col){
+    if (event.currentTarget.value.length == 0)
+    {     
+        var cols = this.state.cols; 
+        cols.map((c,i)=>{
+          if(c.name == col.name){
+            c.showSearch = false;
+          }
+          return c;
+        })              
+        
+        //event.currentTarget.value = "";
+        var existingSearch = _.filter(this.searchList, { 'ColName': col.name });
+
+        //debugger;
+        if (existingSearch.length > 0) {
+            //If Empty remove search
+            _.remove(this.searchList, { 'ColName': col.name });
+        }
+
+        this.startRowNum = 0;
+        this.currentPage = 1;
+        this.isFirstTime = true;
+        this.enablePagination=true;
+
+        this.setState({cols:cols},()=>{
+          this.fetchData();
+        })
+
+       
+    }
+  }
+
   fetchData() {
+    if(this.defaultValue){
+      return;
+    }
+
     //this.filterChanged = this.props.filterChanged;
-    var widgetModel = {
-      Dimension: this.state.dimensions,     
-      Measure: this.state.measure,
-      Type: "chart"
+    var widgetModel = {    
+      Type: "datagrid",
+      ShowTotal: true
     };
+
+    if(this.state.dimensions && this.state.dimensions.length > 0){
+      widgetModel.Dimension = this.state.dimensions;
+    }
+    if(this.state.measure && this.state.measure.length > 0){
+      widgetModel.Measure = this.state.measure;
+    }
+    
+    if(this.searchList  && this.searchList.length > 0){
+      widgetModel.SearchList = this.searchList;
+    }
 
     //Derive filtesr from Global filters.
     var filterList = [];
@@ -143,7 +244,7 @@ export default class DataGrid extends Toolbox {
     
   }
 
-  getData(widgetModel) {
+  getData(widgetModel) {   
     //debugger;
        var name ="";
          if (this.state.dimensions && this.state.dimensions.length > 0) {
@@ -191,22 +292,22 @@ export default class DataGrid extends Toolbox {
 
   handleMeasureChange = (i) =>(evt) =>{
       //debugger;
-      const measures = this.state.measure.map((m, midx) => {
+      this.measure = this.measure.map((m, midx) => {
         if (i !== midx) return m;
         return { ...m, Expression: evt.target.value };
       });
       
-      this.setState({ measure: measures });
+      //this.setState({ measure: measures, cols: cols  });
   }
 
   handleDimChange = (i) =>(evt) =>{
     //debugger;
-    const dims = this.state.dimensions.map((m, midx) => {
+    this.dimensions= this.dimensions.map((m, midx) => {
       if (i !== midx) return m;
       return { ...m, Name: evt.target.value };
     });
-    
-    this.setState({ dimensions: dims });
+   
+    //this.setState({ dimensions: dims, cols: cols });
 }
 
   ShowConfigForm = () => {
@@ -218,22 +319,27 @@ export default class DataGrid extends Toolbox {
          <input        
            type="text"
            placeholder="Enter Dimention"
-           value= {dim.Name} 
+           defaultValue= {this.state.dimensions[i].Name} 
            onChange ={this.handleDimChange(i)}
-         />      
-       </div>)
+         />  
+            <span><a href="#" onClick={() => this.addNewDimension()}>+</a></span>  
+            <span><a href="#" onClick={() => this.deleteDimension(dim)}>X</a></span>     
+       </div>        
+      )
        })
 
     let measures = 
          this.state.measure.map((m,i)=>{
           return( <div key={i}>
-            <label>Measure:</label>
+             <label>Measure:</label>
              <input         
                type="text"
                placeholder="Enter Expression"
-               value= {m.Expression} 
+               defaultValue= {this.state.measure[i].Expression} 
                onChange ={this.handleMeasureChange(i)}
-             />             
+             />      
+                <span><a href="#" onClick={() => this.addNewMeasure()}>+</a></span>  
+                <span><a href="#" onClick={() => this.deleteMeasure(m)}>X</a></span>          
            </div>)
       })
 
@@ -254,17 +360,75 @@ export default class DataGrid extends Toolbox {
     return ui;
   };
 
-  saveForm = () => {
-    this.toggleConfirmForm();
-    this.props.onConfigurationChange({
-      measure: this.state.measure,
-      dimensions: this.state.dimensions,
-      title: this.state.title,
-      layoutId: this.layoutId,
-      filters: this.state.filters,
-      id:this.id
+  addNewMeasure(){    
+    var m = {};
+    this.measure.push(m);
+    this.setState(
+      {        
+        measure: this.measure
+      });
+  }
+
+  deleteMeasure(m){    
+    var measure = this.measure.filter((l)=>{
+      return l.Expression != m.Expression;
+    })
+    this.setState({
+      measure
     });
-    this.fetchData();
+    this.measure = measure;    
+  }
+
+  addNewDimension(){    
+    var d = {};
+    this.dimensions.push(d);
+    this.setState(
+      {        
+        dimensions: this.dimensions
+      });
+  }
+
+  deleteDimension(dim){    
+    var dimensions = this.dimensions.filter((d)=>{
+      return d.Name != dim.Name;
+    })
+    this.setState({
+      dimensions
+    });
+    this.dimensions = dimensions;    
+  }
+
+  saveForm = () => {
+    this.defaultValue = false;
+    this.toggleConfirmForm();
+    var cols=[];
+      this.dimensions.map((dim, midx) => {
+        cols.push({name: dim.Name, displayName: dim.Name, allowSearch:true});
+      });
+      this.measure.map((m, midx) => {
+        cols.push({name: m.Expression, displayName: m.Expression, allowSearch:false});
+      });
+
+      this.setState(
+        {
+          dimensions: this.dimensions,
+          measure: this.measure,
+          cols: cols
+        },
+        () => {
+          this.props.onConfigurationChange({
+            measure: this.state.measure,
+            dimensions: this.state.dimensions,
+            title: this.state.title,
+            layoutId: this.layoutId,
+            filters: this.state.filters,
+            id:this.id
+          });
+          this.fetchData();
+        }
+      );
+
+    
     
   };
 
@@ -328,11 +492,21 @@ export default class DataGrid extends Toolbox {
             //alert("reached top");
             //debugger;
             const node = ReactDOM.findDOMNode(this.iScroll);
-            node.scrollTop = this.iScroll.scrollTop+10;
+            if(that.currentPage > 1){
+              node.scrollTop = this.iScroll.scrollTop+10;
+            } else {
+              node.scrollTop = this.iScroll.scrollTop;
+            }
+            //node.scrollTop = this.iScroll.scrollTop+10;
             that.previousPage();
           } else if (this.iScroll.scrollTop + this.iScroll.clientHeight >= this.iScroll.scrollHeight) {            
             //alert("load items)");
             const node =  ReactDOM.findDOMNode(this.iScroll);
+            // if(that.currentPage < that.totalPageCount){
+            //   node.scrollTop = this.iScroll.scrollTop-15;
+            // } else {
+            //   node.scrollTop = this.iScroll.scrollTop -1;
+            // }
             node.scrollTop = this.iScroll.scrollTop-15;
             //debugger;
             that.nextPage();
@@ -410,6 +584,18 @@ export default class DataGrid extends Toolbox {
   //   });
   // }
 
+  toggleSearch(col){
+     var cols = this.state.cols;
+     cols = cols.map((c,i)=>{
+        if(c.name == col.name){
+          c.showSearch = !c.showSearch;
+        }
+        return c;
+     })
+
+     this.setState({cols:cols});
+  }
+
   render() {
     console.log("DataGrid: Render");
     var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a className="right" href="#" onClick={this.onDeleteBox}>X</a></span> );
@@ -421,17 +607,36 @@ export default class DataGrid extends Toolbox {
       </div>
     );
 
-    var thDim = this.state.dimensions.map((dim)=>{
-            return (<th key={dim.Name}>{dim.Name}</th>)
-        });
-        
-    var thMeasure = this.state.measure.map((measure)=>{
-        return  (<th  key={measure.Expression}>{measure.Expression}</th>)
+    var searchButtonView = (col) =>{
+      return (
+          <span className="right"><a href="#" onClick={()=>this.toggleSearch(col)}>Search</a></span>     
+      )
+    };
+
+    var searchTextBoxView= (col) =>{
+      return (<input type="text" onKeyUp={(e)=>this.searchData(e,col)} 
+                onBlur={(e)=>this.onSearchBlur(e,col)}   />);
+    }
+    
+
+    var thHeading = this.state.cols.map((col,i)=>{
+      return (<th key={i}>{col.displayName}  
+               {col.allowSearch && searchButtonView(col)}
+               {col.showSearch && searchTextBoxView(col)}
+              </th>)
     });
+
+    // var thDim = this.state.dimensions.map((dim)=>{
+    //         return (<th key={dim.Name}>{dim.Name}  <span>Search</span></th>)
+    //     });
+        
+    // var thMeasure = this.state.measure.map((measure)=>{
+    //     return  (<th  key={measure.Expression}>{measure.Expression}</th>)
+    // });
 
     var td = (row)=>{        
       return  this.state.cols.map((col,i)=>{
-            return  (<td key={i}> {this.state.data[row][col]}           
+            return  (<td key={i}> {this.state.data[row][col.name]}           
                     </td>)
         });
 
@@ -457,8 +662,9 @@ export default class DataGrid extends Toolbox {
             <table height="100%"  className="scrollTable table table-sm table-bordered table-striped">
                 <thead className="thead-dark fixedHeader">
                   <tr>
-                    {thDim}
-                    {thMeasure}
+                    {/* {thDim}
+                    {thMeasure} */}
+                    {thHeading}
                   </tr>
                 </thead>
                 <tbody className="scrollContent">

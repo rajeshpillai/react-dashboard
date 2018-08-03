@@ -478,13 +478,14 @@ class Page extends Component {
 
     var box = layout.map(l => {
       console.log("this.comps",this.comps);
+      var clss = (l.itemType == "DataGrid" && l.item.dimensions && l.item.dimensions.length > 0)? "gridOverFlow":"";
       //let WidgetBoxD = Dimensions({options:{elementResize :true}})(WidgetBox) ;
       return (
         <div
           key={l.item.layoutId}
           onDragOver={e => this.onDragOver(e)}
           onDrop={e => this.onDrop(e, l)} 
-          //test="asasas"
+          className={clss}
         >    
           {l.itemType && _.clone(this.comps[l.itemType](l.item))}                       
         </div>

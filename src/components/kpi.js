@@ -40,14 +40,16 @@ export default class Kpi extends Toolbox {
     
     var widgetModel = {
      // Dimension: this.state.dimensions,
-      Measure: [
-        {
-          Expression: this.state.expression,
-          DisplayName: this.state.Expression
-        }
-      ],
+      Measure: [],
       Type: "kpi"
     };
+   
+    if(this.state.expression){      
+      widgetModel.Measure = [{
+          Expression: this.state.expression,
+          DisplayName: this.state.Expression
+      }];
+    }
 
    
 

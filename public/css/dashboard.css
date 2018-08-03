@@ -257,3 +257,7 @@ html>body tbody.scrollContent td + td + td {
   .right{
     float: right;
   }
+
+  .gridOverFlow{
+    overflow: auto !important;
+  }
