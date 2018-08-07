@@ -30,7 +30,7 @@ class App extends Component {
     var appId = this.state.app.id;
     var pages = this.state.app.pages.map(p => {
       return (
-        <Link to={`/app/${appId}/page/${p.id}`} key={p.id}>
+        <Link to={`/app/${appId}/pages/${p.id}`} key={p.id}>
           <div className="page-link" key={p.title}>
             {p.title}
           </div>          
@@ -44,8 +44,9 @@ class App extends Component {
                 {pages}
             </div>            
             <Route              
-              path="/app/:appid/page/:pageid"
-              render={({ match }) => {                  
+              path="/app/:appid/pages/:pageid"
+              render={({ match }) => {      
+                  console.log("match.params.pageid",match.params.pageid);            
               return (<Page data={{'pageName':'Page' + match.params.pageid}}></Page>);
               }}
             />           

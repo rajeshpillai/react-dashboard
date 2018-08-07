@@ -44,7 +44,7 @@ class AppCollection extends Component {
   render() {
     var apps = this.state.apps.map(d => {
       return (
-        <React.Fragment>
+        <React.Fragment key={d.id}>
           <Link key={d.id} to={`/app/${d.id}/pages`}>
             <div className="app" >
               {d.title}

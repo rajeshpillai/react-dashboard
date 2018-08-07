@@ -33,7 +33,7 @@ class Pages extends Component {
 
             <div>
               <Route
-                path="/app/:id"
+                path="/app/:id/pages"
                 render={({ match }) => {
                   return <h2>{match.params.id}</h2>;
                 }}
