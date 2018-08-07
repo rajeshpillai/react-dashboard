@@ -120,7 +120,8 @@ export default class Kpi extends Toolbox {
                     type="text"
                     placeholder="Enter Background Color"
                     defaultValue={this.state.bgColor}
-                  />  <SketchPicker/>
+                  />  
+                  {/* <SketchPicker/> */}
               </div>
             </div>
             <div className="row">

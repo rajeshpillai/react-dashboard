@@ -33,7 +33,7 @@ class App extends Component {
         <Link to={`/app/${appId}/page/${p.id}`} key={p.id}>
           <div className="page-link" key={p.title}>
             {p.title}
-          </div>
+          </div>          
         </Link>
       );
     });

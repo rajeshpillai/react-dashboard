@@ -5,6 +5,7 @@ import Filter from "./components/filter";
 import BarChart from './components/barchart';
 //import NewBarChart from './components/newbarchart';
 import LineChart from './components/linechart';
+import PieChart from './components/piechart';
 import DataGrid from './components/datagrid';
 import Pivot from './components/pivot';
 import axios from 'axios';
@@ -53,7 +54,8 @@ class Page extends Component {
       {type:"KPI", displayName:"KPI"},
       {type:"DataGrid", displayName:"DataGrid"},
       {type:"BarChart", displayName:"BarChart"},
-      {type:"LineChart", displayName:"LineChart"}//,
+      {type:"LineChart", displayName:"LineChart"},
+      {type:"PieChart", displayName:"PieChart"}
       // {type:"Pivot", displayName:"Pivot"}
     ],
     layout: [
@@ -107,6 +109,23 @@ class Page extends Component {
     LineChart: (config) => {
       return (
         <LineChart layoutId={config.layoutId}  id={config.id}
+          dimensions =  {config.dimensions}
+          measure = {config.measure}
+          label="Line Chart"
+          globalFilters={this.state.globalFilters}
+          onFilterChange={(filter,item) => this.onFilterChange(filter,item)}
+          filterChanged = {this.state.filterChanged} 
+          onConfigurationChange ={c => this.onConfigurationChange(c)}
+          onDeleteBox = {d=> this.onDeleteBox(d)} 
+          onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
+          isFormVisible= {config.isFormVisible}         
+        />
+      );
+    },
+
+    PieChart: (config) => {
+      return (
+        <PieChart layoutId={config.layoutId}  id={config.id}
           dimensions =  {config.dimensions}
           measure = {config.measure}
           label="Line Chart"
@@ -291,16 +310,16 @@ class Page extends Component {
     var ypx = ev.pageY;
 
     var x=0;
-    var y =0;
-    var h=2;
-    var w=2;
+    var y =Infinity;
+    var h=100;
+    var w=4;
 
-    if(this.state.layout && this.state.layout.length /2 == 0){
-      x=2;
-      y =0;
-      h=2;
-      w=2;
-    }
+    // if(this.state.layout && this.state.layout.length /2 == 0){
+    //   x=2;
+    //   y =0;
+    //   h=2;
+    //   w=2;
+    // }
 
     //containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2) / cols
 
@@ -479,7 +498,7 @@ class Page extends Component {
 
     var box = layout.map(l => {
       console.log("this.comps",this.comps);
-      var clss = (l.itemType == "DataGrid" && l.item.dimensions && l.item.dimensions.length > 0)? "gridOverFlow":"";
+      var clss = (l.itemType == "DataGrid")? "gridOverFlow":"";
       //let WidgetBoxD = Dimensions({options:{elementResize :true}})(WidgetBox) ;
       return (
         <div
@@ -534,9 +553,11 @@ class Page extends Component {
                           layout={layout}
                           cols={12}
                           rowHeight={100}
+                          //cols={24}
+                          //rowHeight={1}
                           width={1200} 
                           onLayoutChange={this.onLayoutChange} 
-                          onResizeStop= {this.onResizeStop}>
+                          onResizeStop= {this.onResizeStop}>                          
                           {box}
                         </ReactGridLayout>
                       </div>

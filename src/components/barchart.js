@@ -12,6 +12,7 @@ import $ from "jquery";
 import Toolbox from "./toolbox.js";
 import PropertyWindow from "./propertywindow";
 import ContainerDimensions from 'react-container-dimensions';
+import { scaleOrdinal, schemeCategory10 } from 'd3-scale';
 var _ = require("lodash");
 // import recharts from 'recharts';
 
@@ -20,6 +21,9 @@ const data = [
   {"Enter Dimension": 'x2', "Enter Expression": 200},
   {"Enter Dimension": 'x3', "Enter Expression": 50}
 ];
+
+const colors = scaleOrdinal(schemeCategory10).range();
+
 
 export default class BarChart extends Toolbox {
   constructor(props) {
@@ -582,7 +586,7 @@ export default class BarChart extends Toolbox {
 
     var reChartBarView = this.measure.map((m,i)=>{
       return( 
-        <Bar key={i} dataKey={(m)?m.Expression:""} fill="#8884d8" />
+        <Bar key={i} dataKey={(m)?m.Expression:""}  fill={colors[i % 10]} />
       )
     });
 
@@ -616,7 +620,7 @@ export default class BarChart extends Toolbox {
         // <NVD3Chart id="barChart" 
         //   width={width} height={height}  type="discreteBarChart" datum={this.state.data} x={(this.state.dimensions)?this.state.dimensions[0].Name:""} y={(this.state.measure)?this.state.measure[0].Expression:""} />
 
-        <ReBarChart width={width} height={height} data={this.state.data}>
+        <ReBarChart width={width} height={height-15} data={this.state.data}>
             <CartesianGrid strokeDasharray="3 3"/>
             <XAxis dataKey={(this.dimensions)?this.dimensions[0].Name:""}/>       
             <YAxis/>

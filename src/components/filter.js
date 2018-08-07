@@ -27,6 +27,7 @@ export default class Filter extends Toolbox {
     this.isFirstTime = true;
     this.currentPage = 0;
     this.totalPageCount = 0;
+    //this.displayName = "";
    //this.filterChanged = this.props.filterChanged;
 
     this.state = {
@@ -37,7 +38,8 @@ export default class Filter extends Toolbox {
       isFormVisible: props.isFormVisible,
       selectedValue: "",
       //filters: [],      
-      showSettings: false
+      showSettings: false,
+      displayName : ((props.dimensions && props.dimensions.length > 0) ? props.dimensions[0].Name:"")
     };
   }
 
@@ -171,14 +173,24 @@ export default class Filter extends Toolbox {
     let form = (
       <PropertyWindow>
         <div style={this.property_window}>
-          <label>Dimension: </label> 
+        <div>
+        <label>Dimension: </label> 
           <input
-            ref={(inpDim)=>this.inpDim = inpDim}
-            type="text"
-            placeholder="Enter Dimension"
-            defaultValue={this.state.dimensionName}
-          />
-          <br/>
+              ref={(inpDim)=>this.inpDim = inpDim}
+              type="text"
+              placeholder="Enter Dimension"
+              defaultValue={this.state.dimensionName}
+            />
+        </div>
+        <div>
+        <label>Display Name: </label> 
+          <input
+              ref={(inpDisplayName)=>this.inpDisplayName = inpDisplayName}
+              type="text"
+              placeholder="Enter Display Name"
+              defaultValue={this.state.displayName}
+            />
+        </div>
           <button onClick={this.saveForm}>Apply</button>
           &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
         </div>
@@ -308,13 +320,15 @@ export default class Filter extends Toolbox {
     this.setState(
       {
         dimensionName: this.inpDim.value,
-        dimensions: [dimension]
+        dimensions: [dimension],
+        displayName: this.inpDisplayName.value
       },
       () => {
         this.props.onConfigurationChange({
           dimensions: [dimension],
           title: this.state.title,
           layoutId: this.layoutId,
+          displayName: this.state.displayName,
           //filters: this.state.filters,
           id: this.id
         });
@@ -443,9 +457,16 @@ export default class Filter extends Toolbox {
       );
     });
 
+    var labelView = () =>{
+      //alert(this.displayName);
+      //debugger;
+      var displayName = this.state.displayName? this.state.displayName : this.state.dimensionName;
+      return (<label>{displayName} - ({this.state.count})</label>);
+    };
+
     var view = (
       <div>
-        <label>{this.state.dimensionName} - ({this.state.count})</label>
+        {labelView()}
         <div>
           {this.type == 'checkbox' && checkboxView }
           {this.type == 'dropdown' && dropdownView }
