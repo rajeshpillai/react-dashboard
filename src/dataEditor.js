@@ -2,15 +2,17 @@ import React, { Component } from "react";
 import axios from "axios";
 import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 //import Page from "./page.js";
+import { join } from "path";
 import './dataEditor.css';
 
 export default class DataEditor extends Component {
 
     constructor(props){
         super(props);
+        this.fetchColumns = this.fetchColumns.bind(this);
+        this.fetchTables = this.fetchTables.bind(this);
         this.state = {
-            app: {tables:[]},
-            associations:[],
+            app: {tables:[],associations:[]},           
             columns1:[],
             columns2:[]
         }
@@ -18,10 +20,13 @@ export default class DataEditor extends Component {
         // state = {
         //     props.app
         // }
+        this.keys = [];
+        this.associations =[];
+        // this.association ={
+        //     keys:[]
+        // };
 
-        this.association ={
-            keys:[]
-        };
+        // this.associations=[];
 
         this.table1="";
         this.table2="";
@@ -110,11 +115,15 @@ export default class DataEditor extends Component {
             return f.name == tableName;
         });
         this.table1 = tableName;
-
+//debugger;
         var columns = table[0].columns;
         if(!columns){
             columns =  this.fetchColumns(tableName);
             //table[0].columns = columns;
+        } else {
+            this.setState({                   
+                columns1: columns
+            })
         }
 
         // this.setState({
@@ -134,6 +143,10 @@ export default class DataEditor extends Component {
         if(!columns){
             columns =  this.fetchColumns(tableName);
             //table[0].columns = columns;
+        } else {
+            this.setState({
+                columns2: columns
+            })
         }
         // var columns = table[0].columns;
         // this.setState({
@@ -143,18 +156,57 @@ export default class DataEditor extends Component {
 
     addColumns(e, tableType){
         if(e.target.value){
-            var tableName = (tableType == "table1")? this.table1: this.table2;
-            this.association.keys = this.association.keys.filter((k)=>{
-                return k.indexOf(tableName) == -1;
+            var tableName = (tableType == "table1")? this.table2: this.table1;
+            this.keys = this.keys.filter((k)=>{
+                //return k.indexOf(tableName) == -1;
+                return k.indexOf(tableName) >= 0;
             })
-             this.association.keys.push(tableName + "." + e.target.value);
+
+            tableName = (tableType == "table1")? this.table1: this.table2;
+             this.keys.push(tableName + "." + e.target.value);
         }      
     }
 
     save(e){
-        this.association.table1 = this.table1;
-        this.association.table2 = this.table2;
-        console.log("association",this.association);
+        var association = {
+            TableName : this.table1,
+            Relations :[
+                {
+                    TableName2: this.table2,
+                    Keys:[this.keys]
+                }
+            ]            
+        }
+
+        //this.associations = associations;
+        this.associations.push(association);
+
+        // this.association.table1 = this.table1;
+        // this.association.table2 = this.table2;
+        console.log("association",association);
+        axios
+        .post(this.serviceBaseUrl + "data/saveTableAssociation",association)
+        .then(response => {
+            var app = this.state.app;
+            app.associations = this.associations;
+            this.setState({
+               app
+            })
+          //console.log("response", response);
+          //debugger;
+        //   if (response && response.data) {
+        //     console.log("response.data************",response.data);
+        //      var app = this.state.app;
+        //      app.associations = association;
+        //      this.setState({
+        //         app
+        //      })
+        //   }
+        })
+        .catch(function(error) {
+          console.log("error", error);
+        });
+
     }
   
   render() {
@@ -173,12 +225,22 @@ export default class DataEditor extends Component {
         return (<option key={c.name}  value={c.name}>{c.name}</option>)
     });  
 
+    var associationsView =this.state.app.associations.map(a=>{
+        return (
+            <tr>
+                <td>{a.TableName}</td>
+                <td>{a.Relations[0].TableName2}</td>
+                <td>{a.Relations[0].Keys.join(','   )}</td>
+            </tr>
+        )
+    });
+
     var tablesView = (
         <div className="col-sm-12">
             <div className="row col-sm-12">
                 <div className="table1 col-sm-6">
                     <label>Table1</label>
-                    <select onChange={(e)=>this.showColumns1(e)}>
+                    <select  onChange={(e)=>this.showColumns1(e)}>
                         <option value="">Select Table1</option>
                         {tableOptionsView}
                     </select>   
@@ -210,6 +272,21 @@ export default class DataEditor extends Component {
                 <div>
                     <input type="button" value="Save" onClick={(e)=>this.save(e)} />
                 </div>
+           
+            <div className="row  col-sm-12">
+               <table>
+                   <thead>
+                        <tr>
+                            <th>Table 1</th>
+                            <th>Table 2</th>
+                            <th>Keys</th>
+                        </tr>
+                   </thead>
+                   <tbody>
+                       {this.state.app.associations && associationsView}
+                   </tbody>
+              </table>
+            </div>
         </div>
       );
 
