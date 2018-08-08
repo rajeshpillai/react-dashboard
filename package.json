@@ -8,6 +8,7 @@
     "chartist": "^0.11.0",
     "dimple": "git+https://github.com/PMSI-AlignAlytics/dimple.git",
     "dimple-js": "^2.1.4",
+    "form-serialize": "^0.7.2",
     "jquery": "^3.3.1",
     "lodash": "^4.17.10",
     "plotly.js": "^1.39.3",

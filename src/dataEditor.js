@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 //import Page from "./page.js";
 import { join } from "path";
 import './dataEditor.css';
+var serialize = require('form-serialize');
 
 export default class DataEditor extends Component {
 
@@ -11,6 +12,7 @@ export default class DataEditor extends Component {
         super(props);
         this.fetchColumns = this.fetchColumns.bind(this);
         this.fetchTables = this.fetchTables.bind(this);
+        this.onChangeFile = this.onChangeFile.bind(this)
         this.state = {
             app: {tables:[],associations:[]},           
             columns1:[],
@@ -208,6 +210,35 @@ export default class DataEditor extends Component {
         });
 
     }
+
+    importTable(e){
+        const formData = new FormData();
+        formData.append('file',this.state.file);
+
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        }
+
+        axios
+        .post(this.serviceBaseUrl + "data/importTable",formData,config)
+        .then(response => {
+            // var app = this.state.app;
+            // app.associations = this.associations;
+            // this.setState({
+            //    app
+            // })          
+        })
+        .catch(function(error) {
+          console.log("error", error);
+        });
+
+    }
+
+    onChangeFile(e) {
+        this.setState({file:e.target.files[0]})
+      }
   
   render() {
     var appId = this.state.app.id;
@@ -237,6 +268,12 @@ export default class DataEditor extends Component {
 
     var tablesView = (
         <div className="col-sm-12">
+            <div className="row col-sm-12">
+                <form name="frmTableUpload" id="frmTableUpload"  method="post">
+                    <input type="file"  onChange={this.onChangeFile}/> 
+                    <input type="button" value="Import" onClick={(e)=>this.importTable(e)} />   
+                </form>          
+            </div>
             <div className="row col-sm-12">
                 <div className="table1 col-sm-6">
                     <label>Table1</label>
