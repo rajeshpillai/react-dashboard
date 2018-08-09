@@ -14,6 +14,7 @@ export default class Filter extends Toolbox {
     this.nextPage = this.nextPage.bind(this);  
     this.previousPage = this.previousPage.bind(this);
     this.getData = this.getData.bind(this);
+    this.moveSelectedOptionOnTop = this.moveSelectedOptionOnTop.bind(this);
     this.test = "testData";
 
     this.id =  this.props.id;
@@ -38,7 +39,7 @@ export default class Filter extends Toolbox {
       isFormVisible: props.isFormVisible,
       selectedValue: "",
       //filters: [],      
-      showSettings: false,
+      showSettings: (props.dimensions && props.dimensions.length > 0)? true: false,
       displayName : ((props.dimensions && props.dimensions.length > 0) ? props.dimensions[0].Name:"")
     };
   }
@@ -150,8 +151,9 @@ export default class Filter extends Toolbox {
           if (response && response.data) {
             //console.log("response.data************", JSON.parse(response.data));
             this.totalRecords = response.data.length;
+            var data = this.moveSelectedOptionOnTop(response.data, this.state.selectedValue);
             this.setState({
-              data: response.data,
+              data: data,
               //count: response.data.length,
               count: this.totalRecords,
               dimensionName : name
@@ -255,6 +257,36 @@ export default class Filter extends Toolbox {
   //   console.log("componentDidUpdate state", this.state);
   // }
 
+  moveSelectedOptionOnTop(data, selectedValues) {
+    var dimName = this.state.dimensionName;
+    if (this.type == "list") {
+           //all checked items should be shown at start of the list
+        var finalOptions = [];
+        //var finalTooltipList = [];
+        var values = selectedValues;
+        if(!values){
+          values = this.state.selectedValue;
+        }
+        var that = this;
+        _.each(values, function (item) {
+          var items = that.state.data.filter(f=>{
+            return f[dimName] == item;
+          })
+          if(items.length > 0){
+            finalOptions.push(items[0]);
+          }        
+      })
+        _.each(data, function (item) {
+            if (_.filter(finalOptions, item).length == 0) {
+                finalOptions.push(item);
+                // finalTooltipList.push(item);
+            }
+        })
+        
+        return finalOptions;
+    }
+}
+
   handleSelectChange = (e,value) => {
     e.stopPropagation();
     var selectedValue =(this.state.selectedValue)?this.state.selectedValue :[];
@@ -279,18 +311,25 @@ export default class Filter extends Toolbox {
         selectedValue=[];
       }
     }
+    // this.setState({
+    //   selectedValue: selectedValue
+    // });
+    var data = this.moveSelectedOptionOnTop(this.state.data, selectedValue);
     this.setState({
-      selectedValue: selectedValue
+      selectedValue: selectedValue,
+      data:data
     });
 
     var filter = {
       colName: this.state.dimensionName,
       values: selectedValue,
       type: 'filter'//,
-      //operationType: 
+      //opera tionType: 
     };
 
     this.props.onFilterChange(filter, this);
+
+   
   };
 
   nextPage(e){
