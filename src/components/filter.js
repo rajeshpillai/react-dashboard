@@ -149,6 +149,7 @@ export default class Filter extends Toolbox {
           //this.filterChanged = false;
           if (response && response.data) {
             //console.log("response.data************", JSON.parse(response.data));
+            this.totalRecords = response.data.length;
             this.setState({
               data: response.data,
               //count: response.data.length,

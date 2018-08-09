@@ -31,22 +31,22 @@ const property_window ={
 class Page extends Component {
   serviceBaseUrl = "http://localhost:57387/api/";
 
-  // componentDidMount(){
-  //    axios
-  //   .post(this.serviceBaseUrl + "data/getPageData")
-  //   .then(response => {
-  //     console.log("response-getPageData", response);
-  //     this.setState({
-  //       uiComponents: response.data.uiComponents,
-  //       layout:  response.data.layout ? response.data.layout : [],
-  //       globalFilters:  response.data.filters
-  //     });
-  //     //alert("Page Data Saved Sucessfully !");
-  //   })
-  //   .catch(function(error) {
-  //     console.log("error", error);
-  //   });
-  // }
+  componentDidMount(){
+     axios
+    .post(this.serviceBaseUrl + "data/getPageData")
+    .then(response => {
+      console.log("response-getPageData", response);
+      this.setState({
+        uiComponents: response.data.uiComponents,
+        layout:  response.data.layout ? response.data.layout : [],
+        globalFilters:  response.data.filters
+      });
+      //alert("Page Data Saved Sucessfully !");
+    })
+    .catch(function(error) {
+      console.log("error", error);
+    });
+  }
 
   state = {   
     uiComponents: [
