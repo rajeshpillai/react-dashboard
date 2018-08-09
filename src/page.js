@@ -236,8 +236,7 @@ class Page extends Component {
     //debugger;
      var existingFilter = _.find(filters,{'ColName':filter.colName});
      if(existingFilter){
-      if(filter.type=="filter" && filter.values && filter.values.length == 1 
-         && filter.values[0].trim().length == 0){
+      if(filter.type=="filter" && filter.values && filter.values.length == 0){
            //Remove that filter from list
            filters =  _.filter(filters,function(v){
              return v.ColName != filter.colName              

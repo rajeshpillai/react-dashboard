@@ -20,7 +20,7 @@ export default class Filter extends Toolbox {
     this.layoutId= this.props.layoutId,
     this.globalFilters = this.props.globalFilters
     this.filters =[];
-    this.type="dropdown";
+    this.type="list";
     this.pageSize =25;
     this.totalRecords = 0;
     this.enablePagination=true;
@@ -257,11 +257,27 @@ export default class Filter extends Toolbox {
 
   handleSelectChange = (e,value) => {
     e.stopPropagation();
-    var selectedValue ="";
-    if(value){      
-        selectedValue= value;      
+    var selectedValue =(this.state.selectedValue)?this.state.selectedValue :[];
+    if(this.type=="dropdown"){
+      selectedValue=[];
+    }
+    // var isChecked = document.getElementById(e.target.id).checked;
+    if(value){  
+        var existingValues = selectedValue.filter((f=>{
+          return f == value;
+        }))
+        if(existingValues.length == 0){
+          selectedValue.push(value);
+        } else {
+          selectedValue = selectedValue.filter((f=>{
+            return f!= value;
+          }))
+        }                      
     } else {
-      selectedValue= e.target.value;
+      selectedValue.push(e.target.value);
+      if(e.target.value == ""){
+        selectedValue=[];
+      }
     }
     this.setState({
       selectedValue: selectedValue
@@ -269,7 +285,7 @@ export default class Filter extends Toolbox {
 
     var filter = {
       colName: this.state.dimensionName,
-      values: [selectedValue],
+      values: selectedValue,
       type: 'filter'//,
       //operationType: 
     };
@@ -410,19 +426,31 @@ export default class Filter extends Toolbox {
       );
     });
 
-    var lis = this.state.data.map((v,i) => {     
+    var lis = this.state.data.map((v,i) => {    
+      var isChecked = false;
+      if(this.state.selectedValue) {
+        var existData = this.state.selectedValue.filter(f=>{
+          return f == v[this.state.dimensionName];
+        })
+        if(existData.length > 0){
+          isChecked = true;
+        }
+      }
       return (
-        <li key={i} >
-        <a href="#" onClick={(e) => {this.handleSelectChange(e,v[this.state.dimensionName])}}>
-          {v[this.state.dimensionName]}
-        </a>
-          
+        <li key={i} >               
+            <input type="checkbox" checked={isChecked}
+                key={i} id={this.state.dimensionName+"_"+i}            
+                value={v[this.state.dimensionName]}
+                onChange={(e) => {this.handleSelectChange(e,v[this.state.dimensionName])}}
+              />
+          <label htmlFor={this.state.dimensionName+"_"+i}>{v[this.state.dimensionName]}
+         </label>        
         </li>
       );
     });
 
     var listView =(
-      <ul>
+      <ul style={{listStyle:"none"}}>
          {lis}
       </ul>      
     ); 
