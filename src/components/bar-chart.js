@@ -10,7 +10,7 @@ import $ from "jquery";
 // import ChartistGraph from 'react-chartist';
 // import {XYPlot, LineSeries} from 'react-vis';
 import Toolbox from "./toolbox.js";
-import PropertyWindow from "./propertywindow";
+import PropertyWindow from "./property-window";
 import ContainerDimensions from 'react-container-dimensions';
 import { scaleOrdinal, schemeCategory10 } from 'd3-scale';
 var _ = require("lodash");

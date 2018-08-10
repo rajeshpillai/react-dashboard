@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import ReactGridLayout from "react-grid-layout";
-import Kpi from "./components/kpi";
-import Filter from "./components/filter";
-import BarChart from './components/barchart';
+import Kpi from "../components/kpi";
+import Filter from "../components/filter";
+import BarChart from '../components/bar-chart';
 //import NewBarChart from './components/newbarchart';
-import LineChart from './components/linechart';
-import PieChart from './components/piechart';
-import DataGrid from './components/datagrid';
-import Pivot from './components/pivot';
+import LineChart from '../components/line-chart';
+import PieChart from '../components/pie-chart';
+import DataGrid from '../components/datagrid';
+import Pivot from '../components/pivot';
 import axios from 'axios';
 var _ = require('lodash');
 
@@ -497,8 +497,7 @@ class Page extends Component {
 
     var box = layout.map(l => {
       console.log("this.comps",this.comps);
-      var clss = (l.itemType == "DataGrid")? "gridOverFlow":"";
-      //let WidgetBoxD = Dimensions({options:{elementResize :true}})(WidgetBox) ;
+      var clss = (l.itemType == "DataGrid")? "gridOverFlow":"";      
       return (
         <div
           key={l.item.layoutId}
@@ -507,9 +506,7 @@ class Page extends Component {
           className={clss}
         >    
           {l.itemType && _.clone(this.comps[l.itemType](l.item))}                       
-        </div>
-        // <WidgetBoxD key={l.item.layoutId} l={l}  comps={this.comps} onDragOver={e => this.onDragOver(e)}
-        // onDrop={e => this.onDrop(e, l)} />
+        </div>        
       );
     });
 

@@ -3,8 +3,8 @@ import axios from "axios";
 import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 //import Page from "./page.js";
 import { join } from "path";
-import './dataEditor.css';
-import DataModel from "./dataModel";
+import './data-editor.css';
+import DataModel from "./data-model";
 var _ = require("lodash");
 
 export default class DataEditor extends Component {

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ReactDOM from 'react-dom';
 import axios from "axios";
-import PropertyWindow from "./propertywindow";
+import PropertyWindow from "./property-window";
 import Toolbox from "./toolbox.js" 
 import ContainerDimensions from 'react-container-dimensions';
 import $ from "jquery";

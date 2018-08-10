@@ -3,7 +3,7 @@ import axios from "axios";
 import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 //import Page from "./page.js";
 import { join } from "path";
-import './dataEditor.css';
+import './data-editor.css';
 
 export default class DataModel extends Component {
 

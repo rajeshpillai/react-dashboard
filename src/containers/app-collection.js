@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import App from "./app";
-import DataEditor from "./dataEditor";
-import "./AppCollection.css";
+import DataEditor from "./data-editor";
+import "./app-collection.css";
 import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 var _ = require('lodash');
 

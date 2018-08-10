@@ -1,13 +1,12 @@
 import React, { Component } from "react";
 import axios from "axios";
-import {XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart as ReLineChart, Line} from  "recharts";
+import {Tooltip, Legend, PieChart as RePieChart, Pie,ResponsiveContainer,Label,LabelList,Cell,Sector} from  "recharts";
 import Toolbox from "./toolbox.js";
-import PropertyWindow from "./propertywindow";
+import PropertyWindow from "./property-window";
 import ContainerDimensions from 'react-container-dimensions';
 import { scaleOrdinal, schemeCategory10 } from 'd3-scale';
 var _ = require("lodash");
 const colors = scaleOrdinal(schemeCategory10).range();
-
 
 const data = [
   {"Enter Dimension": 'x1', "Enter Expression": 100},
@@ -15,8 +14,7 @@ const data = [
   {"Enter Dimension": 'x3', "Enter Expression": 50}
 ];
 
-
-export default class LineChart extends Toolbox {
+export default class PieChart extends Toolbox {
   constructor(props) {
     super(props);
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
@@ -258,11 +256,11 @@ export default class LineChart extends Toolbox {
   }
   
   componentWillUnmount() {
-    console.log("Unmounting LineChart....Why ???");
+    console.log("Unmounting PieChart....Why ???");
   }
 
   render() {
-    console.log("LineChart: Render ", this.state.hello);
+    console.log("PieChart: Render ");
     var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a className="right" href="#" onClick={this.onDeleteBox}>X</a></span>);
 
     var defaultView = (
@@ -271,28 +269,47 @@ export default class LineChart extends Toolbox {
       </div>
     );
 
-    var reChartLineView = this.measure.map((m,i)=>{
-      return( 
-        <Line key={i} type="monotone" dataKey={(m)?m.Expression:""} stroke={colors[i % 10]} />
-      )
-    });
+    // var reChartLineView = this.measure.map((m,i)=>{
+    //   return( 
+    //     <Line key={i} type="monotone" dataKey={(m)?m.Expression:""} stroke="#8884d8" />
+    //   )
+    // });
+
+    // var reChartBarView = this.measure.map((m,i)=>{
+    //   return( 
+    //     <Bar key={i} dataKey={(m)?m.Expression:""} fill="#8884d8" />
+    //   )
+    // });
+
+    var cellView = this.state.data.map((entry, index) => {
+      return(<Cell key={`slice-${index}`} fill={colors[index % 10]} />);
+     });
+      
 
     var view = (    
+      // <ResponsiveContainer>
       <ContainerDimensions>
-          { ({ width, height }) =>         
-            <ReLineChart width={width} height={height-15} data={this.state.data}>
-              <CartesianGrid strokeDasharray="3 3"/>
-              <XAxis dataKey={(this.dimensions)?this.dimensions[0].Name:""}/>       
-              <YAxis/>
-              <Tooltip/>
-              <Legend />
-              {reChartLineView}       
-            </ReLineChart>
+          { ({ width, height }) =>    
+            <RePieChart width={width} height={height-15}>
+              <Legend verticalAlign="top" />
+                {/* <Pie dataKey="value"  isAnimationActive={false} data={data01} fill="#8884d8" /> */}
+                  <Pie nameKey={(this.dimensions && this.dimensions.length>0)?this.dimensions[0].Name:""} 
+                      dataKey={(this.measure && this.measure.length>0)?this.measure[0].Expression:""} 
+                      isAnimationActive={true} 
+                      data={this.state.data} 
+                      fill="#8884d8" label>
+                        {cellView}
+                        <Label width={50} position="center"></Label>
+                      </Pie>
+                  {/* <Pie data={data02} cx={500} cy={200} innerRadius={40} outerRadius={80} fill="#82ca9d" label/> */}
+                  <Tooltip/>
+            </RePieChart>  
           }
-      </ContainerDimensions>      
+      </ContainerDimensions>
+      // </ResponsiveContainer>      
     );
 
-    console.log("LineChart render called");
+    console.log("PieChart render called");
 
     return (      
       <React.Fragment>

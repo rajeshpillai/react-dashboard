@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from 'react-dom';
 import Toolbox from "./toolbox.js";
 import axios from "axios";
-import PropertyWindow from "./propertywindow";
+import PropertyWindow from "./property-window";
 import Dimensions from 'react-dimensions';
 var _ = require("lodash");
 

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import Toolbox from "./toolbox.js";
-import PropertyWindow from "./propertywindow";
+import PropertyWindow from "./property-window";
 import _ from "lodash";
 import { SketchPicker } from 'react-color';
 
