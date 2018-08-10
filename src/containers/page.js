@@ -532,13 +532,13 @@ class Page extends Component {
 
                     </div>
                 </nav>
-                <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4" style={{"marginTop": "-120px"}}>
+                <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
                     <div>
                       {/* <div>
                         <ul>{li}</ul>
                       </div> */}
                       <div>
-                        <span>{this.props.data.pageName}</span>
+                        {/* <span>{this.props.data.pageName}</span> */}
                         <input type="button"  value="Save" onClick={e=>{this.onSave(e)}} style={save_page_button} />
                       </div>
                       <div  onDragOver={e => this.onDragOver(e)} onDrop={e => this.onDrop(e) } >

@@ -3,9 +3,14 @@ import App from "./app";
 import DataEditor from "./data-editor";
 import "./app-collection.css";
 import { BrowserRouter as Router, Link, Route } from "react-router-dom";
+import Header from "./header";
 var _ = require('lodash');
 
 class AppCollection extends Component {
+  constructor(props){
+    super(props);
+    //this.onSetTitle = this.onSetTitle.bind(this);
+  }
   state = {
     apps: [
       {
@@ -24,7 +29,8 @@ class AppCollection extends Component {
           { id: 4,title: "page 4", description: "D2" }
         ]
       }
-    ]
+    ],
+    title:""
   };
 
   showDashboard = id => {
@@ -40,6 +46,12 @@ class AppCollection extends Component {
       apps
     });
   };
+
+  // onSetTitle(title){
+  //   this.setState({
+  //     title:title
+  //   });
+  // }
 
   render() {
     var apps = this.state.apps.map(d => {
@@ -58,19 +70,17 @@ class AppCollection extends Component {
     });
 
     return (
-      <React.Fragment>
+      <div>
+       <Header />
         <Router>
-        <div>
-          <div>
-            <Route
-              exact={true}
-              path="/app"
-              render={({ match }) => {
-                return <div className="app-container">{apps}</div>;
-              }}
-            />
-          </div>
-           <div>
+          <div>        
+              <Route
+                exact={true}
+                path="/app"
+                render={({ match }) => {
+                  return <div className="app-container">{apps}</div>;
+                }}
+              />
               <Route
                 path="/app/:id/pages"
                 render={({ match }) => {
@@ -79,22 +89,20 @@ class AppCollection extends Component {
                   // let app2 = this.state.apps.find((a) => {
                   //   return a.id == match.params.id;
                   // });
-                   return (<App data={app} />);
+                 
+                  return (<App data={app}   />);
+                }}
+              />           
+              <Route             
+                path="/app/:id/editor"
+                render={({ match }) => {
+                  var app = _.find(this.state.apps, {id: Number(match.params.id)});
+                  return <DataEditor data={app} />;
                 }}
               />
-           </div>
-           <div>
-            <Route             
-              path="/app/:id/editor"
-              render={({ match }) => {
-                var app = _.find(this.state.apps, {id: Number(match.params.id)});
-                return <DataEditor data={app} />;
-              }}
-            />
-          </div>
-        </div>  
+          </div>  
         </Router>
-      </React.Fragment>
+      </div>
     );
   }
 }
