@@ -2,7 +2,7 @@ import React, { Component } from "react";
 //import ReactDOM from 'react-dom';
 import axios from "axios";
 //import { Chart, Axis, Series, Tooltip, Cursor, Line, Bar } from "react-charts";
-import {BarChart as ReBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from  "recharts";
+import {BarChart as ReBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,Cell} from  "recharts";
 //import NVD3Chart from "react-nvd3";
 //import { VictoryChart,VictoryBar } from "victory";
 //import Chart from "chart.js";
@@ -582,8 +582,15 @@ fetchData() {
 ];
 
     var reChartBarView = this.measure.map((m,i)=>{
+      //var className = (i % 2 == 0)? "gray": "yellow";
       return( 
-        <Bar key={i} dataKey={(m)?m.Expression:""}  fill={colors[i % 10]} />
+        <Bar key={i} dataKey={(m)?m.Expression:""}  fill={colors[i % 10]} >
+            {/* {
+                  data.map((entry, index) => (
+                    <Cell className={className}  fill={data[index]["count(skill.skill)"] == 84 ? 'yellow' : 'red' }/>
+                  ))
+                } */}
+        </Bar>
       )
     });
 

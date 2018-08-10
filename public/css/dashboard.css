@@ -261,3 +261,11 @@ html>body tbody.scrollContent td + td + td {
   .gridOverFlow{
     overflow: auto !important;
   }
+
+
+  .gray{
+    background-color: gray;
+  }
+  .yellow{
+    background-color: yellow;
+  }
