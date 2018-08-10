@@ -16,7 +16,8 @@ export default class Toolbox extends Component {
             minWidth: "250px"
           }
 
-          this.serviceBaseUrl = "http://localhost:57387/api/";          
+          this.serviceBaseUrl = "http://localhost:57387/api/";  
+          this.serviceGetDataUrl = this.serviceBaseUrl + "data/getData";             
     }
 
     onDeleteBox = () => {

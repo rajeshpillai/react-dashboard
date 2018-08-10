@@ -98,7 +98,7 @@ export default class LineChart extends Toolbox {
 
     var that = this;
     axios
-      .post(this.serviceBaseUrl + "data/getData", widgetModel)
+      .post(this.serviceGetDataUrl, widgetModel)
       .then(response => {
         console.log("response", response);
         if (response && response.data) {

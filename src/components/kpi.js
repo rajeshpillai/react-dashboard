@@ -11,7 +11,6 @@ export default class Kpi extends Toolbox {
     this.toggleConfirmForm = this.toggleConfirmForm.bind(this);
     this.fetchData = this.fetchData.bind(this);
 
-    this.test = "testData";
     this.isFirstTime= props.isFirstTime;
     this.layoutId= props.layoutId;
     this.id = props.id;
@@ -65,7 +64,7 @@ export default class Kpi extends Toolbox {
     //}
 
     axios
-      .post(this.serviceBaseUrl + "data/getData", widgetModel)
+      .post(this.serviceGetDataUrl, widgetModel)
       .then(response => {
         console.log("response", response);
         if (response && response.data) {

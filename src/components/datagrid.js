@@ -268,7 +268,7 @@ export default class DataGrid extends Toolbox {
    
        if(this.startRowNum <= this.totalRecords){    
            axios
-           .post(this.serviceBaseUrl + "data/getData", widgetModel)
+           .post(this.serviceGetDataUrl, widgetModel)
            .then(response => {
              console.log("response", response);
              this.isFirstTime = false;
