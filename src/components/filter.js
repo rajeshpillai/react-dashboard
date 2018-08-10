@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import ReactDOM from 'react-dom';
 import Toolbox from "./toolbox.js";
 import axios from "axios";
 import PropertyWindow from "./property-window";
-import Dimensions from 'react-dimensions';
 var _ = require("lodash");
 
 export default class Filter extends Toolbox {
@@ -43,8 +41,6 @@ export default class Filter extends Toolbox {
       displayName : ((props.dimensions && props.dimensions.length > 0) ? props.dimensions[0].Name:"")
     };
   }
-
-  serviceBaseUrl = "http://localhost:57387/api/";
 
  
   componentWillUnmount() {

@@ -58,8 +58,6 @@ export default class LineChart extends Toolbox {
 
   }
 
-  serviceBaseUrl = "http://localhost:57387/api/";
-
   fetchData() {
     if(this.defaultValue){
       return;
@@ -104,36 +102,36 @@ export default class LineChart extends Toolbox {
       .then(response => {
         console.log("response", response);
         if (response && response.data) {
+          // // var graphData = [];
+          // // _.each(response.data, function (item) {
+          // //       var yValue = item[that.state.measure[0].Expression];
+          // //       var xValue = item[that.state.dimensions[0].Name];
+          // //       graphData.push({x:xValue, y:yValue});
+          // //     })
+
+          // //debugger;
           // var graphData = [];
-          // _.each(response.data, function (item) {
-          //       var yValue = item[that.state.measure[0].Expression];
+          // if(that.state.measure.length == 1){
+          //   var obj = { 'label': that.state.dimensions[0].Name, 'data': [] };
+          //   _.each(response.data, function (item) {
+          //     var yValue = item[that.state.measure[0].Expression];
+          //     var xValue = item[that.state.dimensions[0].Name];
+          //     obj.data.push({x:xValue, y:yValue});
+          //   })
+          //   graphData.push(obj);
+          // } else if(that.state.measure.length > 1){
+          //   _.each(that.state.measure, function (ms) {   
+          //     var obj = { 'label': ms.Expression, 'data': [] };
+          //     var dimName = that.state.dimensions[0].Name;
+
+          //     _.each(response.data, function (item) {
+          //       var yValue = item[ms.Expression] == null? 0: item[ms.Expression];
           //       var xValue = item[that.state.dimensions[0].Name];
-          //       graphData.push({x:xValue, y:yValue});
+          //       obj.data.push({x:xValue, y:yValue});               
           //     })
-
-          //debugger;
-          var graphData = [];
-          if(that.state.measure.length == 1){
-            var obj = { 'label': that.state.dimensions[0].Name, 'data': [] };
-            _.each(response.data, function (item) {
-              var yValue = item[that.state.measure[0].Expression];
-              var xValue = item[that.state.dimensions[0].Name];
-              obj.data.push({x:xValue, y:yValue});
-            })
-            graphData.push(obj);
-          } else if(that.state.measure.length > 1){
-            _.each(that.state.measure, function (ms) {   
-              var obj = { 'label': ms.Expression, 'data': [] };
-              var dimName = that.state.dimensions[0].Name;
-
-              _.each(response.data, function (item) {
-                var yValue = item[ms.Expression] == null? 0: item[ms.Expression];
-                var xValue = item[that.state.dimensions[0].Name];
-                obj.data.push({x:xValue, y:yValue});               
-              })
-              graphData.push(obj);
-            })
-          }
+          //     graphData.push(obj);
+          //   })
+          // }
 
          
           this.setState({

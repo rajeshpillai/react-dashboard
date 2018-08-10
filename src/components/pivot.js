@@ -72,9 +72,6 @@ export default class Pivot extends Component {
     //this.fetchData();
   }
 
-
-  serviceBaseUrl = "http://localhost:57387/api/";
-
   fetchData() {
   
     var widgetModel = {

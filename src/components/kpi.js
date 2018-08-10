@@ -27,11 +27,7 @@ export default class Kpi extends Toolbox {
       txtColor  : "#000"
     };
   }
-
   
-
-  serviceBaseUrl = "http://localhost:57387/api/";
-
   fetchData() {
     //if (!this.state.measure || (this.state.measure && this.state.measure.length == 0 && ( null == this.state.expression || this.state.expression == ""))) {
     // if(this.state.isFirstTime) {

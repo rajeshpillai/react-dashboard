@@ -101,10 +101,7 @@ export default class DataGrid extends Toolbox {
 
     //this.fetchData();
   }
-
-
-  serviceBaseUrl = "http://localhost:57387/api/";
-
+  
   searchData(event,col){
     var keyCode = event.which || event.keyCode;
     //console.log("keyCode",keyCode);

@@ -15,11 +15,10 @@ export default class Toolbox extends Component {
             top: "50px",
             minWidth: "250px"
           }
-          
-    }
-    
 
-    
+          this.serviceBaseUrl = "http://localhost:57387/api/";          
+    }
+
     onDeleteBox = () => {
         this.props.onDeleteBox({
         layoutId: this.layoutId,
