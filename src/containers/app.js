@@ -48,7 +48,7 @@ class App extends Component {
               path="/app/:appid/pages/:pageid"
               render={({ match }) => {      
                   console.log("match.params.pageid",match.params.pageid);            
-              return (<Page data={{'pageName':'Page' + match.params.pageid}}></Page>);
+              return (<Page data={{'pageName':'Page' + match.params.pageid, 'appId': match.params.appid, 'pageId':match.params.pageid}}></Page>);
               }}
             />           
         </div>

@@ -12,7 +12,7 @@ export default class DataModel extends Component {
         this.fetchColumns = this.fetchColumns.bind(this);
         this.fetchTables = this.fetchTables.bind(this);        
         this.state = {
-            app: {tables:[],associations:[]},           
+            app: props.data,//{tables:[],associations:[]},           
             columns1:[],
             columns2:[]
         }
@@ -185,13 +185,15 @@ export default class DataModel extends Component {
         // this.association.table2 = this.table2;
         console.log("association",association);
         axios
-        .post(this.serviceBaseUrl + "data/saveTableAssociation",association)
+        .post(this.serviceBaseUrl + "data/saveTableAssociation",{Association: association, AppId:this.state.app.id})
         .then(response => {
             var app = this.state.app;
             app.associations = this.associations;
             this.setState({
                app
             })
+            console.log("app*******************", app);
+
           //console.log("response", response);
           //debugger;
         //   if (response && response.data) {
@@ -210,7 +212,8 @@ export default class DataModel extends Component {
     }
 
   render() {
-    var appId = this.state.app.id;
+    ///var appId = (this.state.app)?this.state.app.id:"";
+    var associations = (this.state.app.associations)?this.state.app.associations:[];
 
     var tableOptionsView =this.state.app.tables.map(t=>{       
             return (<option key={t.name} value={t.name}>{t.name}</option>)
@@ -225,9 +228,9 @@ export default class DataModel extends Component {
         return (<option key={c.name}  value={c.name}>{c.name}</option>)
     });  
 
-    var associationsView =this.state.app.associations.map(a=>{
+    var associationsView =associations.map(a=>{
         return (
-            <tr>
+            <tr key={a.TableName}>
                 <td>{a.TableName}</td>
                 <td>{a.Relations[0].TableName2}</td>
                 <td>{a.Relations[0].Keys.join(','   )}</td>

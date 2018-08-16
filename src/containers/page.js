@@ -33,7 +33,7 @@ class Page extends Component {
 
   componentDidMount(){
      axios
-    .post(this.serviceBaseUrl + "data/getPageData")
+    .post(this.serviceBaseUrl + "data/getPageData",{appId:this.props.data.appId, pageId: this.props.data.pageId})
     .then(response => {
       console.log("response-getPageData", response);
       this.setState({
@@ -71,7 +71,9 @@ class Page extends Component {
       // { i: "k", x: 8, y: 2, w: 2, h: 2, item: "" }
     ],
     filters: [],
-    isPropertyWindowVisible :false
+    isPropertyWindowVisible :false,
+    appId: this.props.data.appId,
+    pageId:this.props.data.pageId
    };
 
   comps = {

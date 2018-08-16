@@ -115,12 +115,12 @@ export default class DataEditor extends Component {
             <Route
                     path="/app/:id/editor/datamodel"
                     render={({ match }) => {
-                    var app = _.find(this.state.apps, {id: Number(match.params.id)});
-                        
+                    //var app = _.find(this.state.apps, {id: Number(match.params.id)});
+                        //console.log("app&&&&&&&&&&&&&&&&",this.state.app);
                         // let app2 = this.state.apps.find((a) => {
                         //   return a.id == match.params.id;
                         // });
-                        return (<DataModel data={app} />);
+                        return (<DataModel data={this.state.app} />);
                     }}
                  />         
         </div>       
