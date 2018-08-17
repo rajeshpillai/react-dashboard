@@ -173,7 +173,8 @@ export default class DataModel extends Component {
             Relations :[
                 {
                     TableName2: this.table2,
-                    Keys:[this.keys]
+                    Keys:[this.keys],
+                    Cardinality: this.cardinality
                 }
             ]            
         }
@@ -211,6 +212,10 @@ export default class DataModel extends Component {
 
     }
 
+    SetCardinality(e){
+        this.cardinality = e.target.value;
+    }
+
   render() {
     ///var appId = (this.state.app)?this.state.app.id:"";
     var associations = (this.state.app.associations)?this.state.app.associations:[];
@@ -226,7 +231,7 @@ export default class DataModel extends Component {
     
     var columns2OptionsView = this.state.columns2.map(c => {
         return (<option key={c.name}  value={c.name}>{c.name}</option>)
-    });  
+    });      
 
     var associationsView =associations.map(a=>{
         return (
@@ -270,6 +275,17 @@ export default class DataModel extends Component {
                             <option value="">Select Columns</option>
                             {columns2OptionsView}
                         </select>   
+                    </div>  
+                </div>
+                <div className="row  col-sm-12">
+                    <div className="table1  col-sm-6">
+                            <label>Cardinality</label>
+                            <select  onChange={(e)=>this.SetCardinality(e)}>
+                                <option value="">Select Cardinality</option>
+                                <option value="0">One to many (1:*)</option>
+                                <option value="1">One to one (1:1)</option>
+                                <option value="2">Many to one (*:1) </option>
+                            </select>   
                     </div>  
                 </div>
                 <div>
