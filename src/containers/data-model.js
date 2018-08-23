@@ -186,7 +186,7 @@ export default class DataModel extends Component {
         // this.association.table2 = this.table2;
         console.log("association",association);
         axios
-        .post(this.serviceBaseUrl + "data/saveTableAssociation",{Association: association, AppId:this.state.app.id})
+        .post(this.serviceBaseUrl + "data/saveTableAssociation",{Association: association, AppId:this.state.app.id, AppTitle:this.state.app.title})
         .then(response => {
             var app = this.state.app;
             app.associations = this.associations;

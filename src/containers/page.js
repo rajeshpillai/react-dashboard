@@ -33,15 +33,17 @@ class Page extends Component {
 
   componentDidMount(){
      axios
-    .post(this.serviceBaseUrl + "data/getPageData",{appId:this.props.data.appId, pageId: this.props.data.pageId})
+    .post(this.serviceBaseUrl + "data/getPageData",{appTitle:this.props.app.title,appId:this.props.data.appId, pageId: this.props.data.pageId})
     .then(response => {
       console.log("response-getPageData", response);
-      this.setState({
-        uiComponents: response.data.uiComponents,
-        layout:  response.data.layout ? response.data.layout : [],
-        globalFilters:  response.data.filters
-      });
-      //alert("Page Data Saved Sucessfully !");
+      if(response){
+        this.setState({
+          uiComponents: response.data.uiComponents,
+          layout:  response.data.layout ? response.data.layout : [],
+          globalFilters:  response.data.filters
+        });        
+      }
+      
     })
     .catch(function(error) {
       console.log("error", error);
@@ -73,7 +75,8 @@ class Page extends Component {
     filters: [],
     isPropertyWindowVisible :false,
     appId: this.props.data.appId,
-    pageId:this.props.data.pageId
+    pageId:this.props.data.pageId,
+    appTitle: this.props.app.title
    };
 
   comps = {
@@ -394,8 +397,13 @@ class Page extends Component {
       })
     }
 
+    delete stateData.newLayout;
+
+    var pageLayout={"Layout" :stateData, "AppId":this.props.app.id,"AppTitle":this.props.app.title,pageId: this.props.data.pageId};
+    //var pageLayout={"Layout" :{}, "AppId":this.props.app.id,"AppTitle":this.props.app.title};
+
     axios
-    .post(this.serviceBaseUrl + "data/savePageData", stateData) //this.state
+    .post(this.serviceBaseUrl + "data/savePageData", pageLayout) //this.state
     .then(response => {
       console.log("response", response);
       alert("Page Data Saved Sucessfully !");

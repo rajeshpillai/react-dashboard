@@ -45,12 +45,20 @@ class App extends Component {
                 {pages}
             </div>             */}
             <Route              
-              path="/app/:appid/pages/:pageid"
+              path="/app/:appid/pages/1"
               render={({ match }) => {      
-                  console.log("match.params.pageid",match.params.pageid);            
-              return (<Page data={{'pageName':'Page' + match.params.pageid, 'appId': match.params.appid, 'pageId':match.params.pageid}}></Page>);
+                //   console.log("match.params.pageid",match.params.pageid);            
+              return (<Page app={this.state.app} data={{'pageName':'Page1', 'appId': match.params.appid, 'pageId':1}}></Page>);
               }}
-            />           
+            />   <Route              
+            path="/app/:appid/pages/2"
+            render={({ match }) => {      
+                // console.log("match.params.pageid",match.params.pageid);            
+            return (<Page app={this.state.app} data={{'pageName':'Page1', 'appId': match.params.appid, 'pageId':2}}></Page>);
+            }}
+          />  
+
+
         </div>
     );
   }

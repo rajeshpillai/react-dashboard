@@ -34,6 +34,8 @@ export default class DataGrid extends Toolbox {
     this.toggleSearch = this.toggleSearch.bind(this);
     this.searchData = this.searchData.bind(this);
     this.onSearchBlur = this.onSearchBlur.bind(this);
+    this.onScroll = this.onScroll.bind(this);
+    
     //this.globalFilters = this.props.globalFilters
     //this.filterChanged = this.props.filterChanged;
     this.filters =[];
@@ -275,8 +277,15 @@ export default class DataGrid extends Toolbox {
              //this.props.filterChanged = false;
              if (response && response.data) {
                //console.log("response.data************", JSON.parse(response.data));
+              //  var data = this.state.data;
+              //  if(this.currentPage > 1){
+              //   data = data.concat(response.data);                
+              //  } else {
+              //   data = response.data 
+              //  }
+              var data = response.data ;
                this.setState({
-                 data: response.data,                
+                 data: data,                
                  count: this.totalRecords,                 
                  showSettings:true  
                });
@@ -481,37 +490,38 @@ export default class DataGrid extends Toolbox {
     });    
 
     let timeout; //scrollContent
-    this.iScroll = $(".scrollContent")[0];
+    this.iScroll = $(".scrollContent",$("#"+ "table_" + this.id))[0];
     //var nextPage = this.nextPage;
     if(!this.iScroll){ return;}
-    this.iScroll.addEventListener("scroll", () => {      
-        clearTimeout(timeout);
-        timeout = setTimeout(()=>{
-          if(this.iScroll.scrollTop == 0){
-            //alert("reached top");
-            //debugger;
-            const node = ReactDOM.findDOMNode(this.iScroll);
-            if(that.currentPage > 1){
-              node.scrollTop = this.iScroll.scrollTop+10;
-            } else {
-              node.scrollTop = this.iScroll.scrollTop;
-            }
-            //node.scrollTop = this.iScroll.scrollTop+10;
-            that.previousPage();
-          } else if (this.iScroll.scrollTop + this.iScroll.clientHeight >= this.iScroll.scrollHeight) {            
-            //alert("load items)");
-            const node =  ReactDOM.findDOMNode(this.iScroll);
-            // if(that.currentPage < that.totalPageCount){
-            //   node.scrollTop = this.iScroll.scrollTop-15;
-            // } else {
-            //   node.scrollTop = this.iScroll.scrollTop -1;
-            // }
-            node.scrollTop = this.iScroll.scrollTop-15;
-            //debugger;
-            that.nextPage();
-          }
-        }, 200);       
-    });  
+    // this.iScroll.addEventListener("scroll", () => {      
+    // //this.iScroll.("scroll", () => {      
+    //     clearTimeout(timeout);
+    //     timeout = setTimeout(()=>{
+    //       if(this.iScroll.scrollTop == 0){
+    //         //alert("reached top");
+    //         //debugger;
+    //         const node = ReactDOM.findDOMNode(this.iScroll);
+    //         if(that.currentPage > 1){
+    //           node.scrollTop = this.iScroll.scrollTop+10;
+    //         } else {
+    //           node.scrollTop = this.iScroll.scrollTop;
+    //         }
+    //         //node.scrollTop = this.iScroll.scrollTop+10;
+    //         that.previousPage();
+    //       } else if (this.iScroll.scrollTop + this.iScroll.clientHeight >= this.iScroll.scrollHeight) {            
+    //         //alert("load items)");
+    //         const node =  ReactDOM.findDOMNode(this.iScroll);
+    //         // if(that.currentPage < that.totalPageCount){
+    //         //   node.scrollTop = this.iScroll.scrollTop-15;
+    //         // } else {
+    //         //   node.scrollTop = this.iScroll.scrollTop -1;
+    //         // }
+    //         node.scrollTop = this.iScroll.scrollTop-15;
+    //         //debugger;
+    //         that.nextPage();
+    //       }
+    //     }, 200);       
+    // });  
 
     }).resize(); // Trigger resize handler
   }, 200); 
@@ -595,6 +605,39 @@ export default class DataGrid extends Toolbox {
      this.setState({cols:cols});
   }
 
+  onScroll(e){
+    //this.iScroll.addEventListener("scroll", () => {      
+    //this.iScroll.("scroll", () => {      
+       // clearTimeout(timeout);
+        //timeout = setTimeout(()=>{
+          this.iScroll = e.target;
+          if(this.iScroll.scrollTop == 0){
+            //alert("reached top");
+            //debugger;
+            const node = ReactDOM.findDOMNode(this.iScroll);
+            if(this.currentPage > 1){
+              node.scrollTop = this.iScroll.scrollTop+10;
+            } else {
+              node.scrollTop = this.iScroll.scrollTop;
+            }
+            //node.scrollTop = this.iScroll.scrollTop+10;
+            this.previousPage();
+          } else if (this.iScroll.scrollTop + this.iScroll.clientHeight >= this.iScroll.scrollHeight) {            
+            //alert("load items)");
+            const node =  ReactDOM.findDOMNode(this.iScroll);
+            // if(that.currentPage < that.totalPageCount){
+            //   node.scrollTop = this.iScroll.scrollTop-15;
+            // } else {
+            //   node.scrollTop = this.iScroll.scrollTop -1;
+            // }
+            node.scrollTop = this.iScroll.scrollTop-15;
+            //debugger;
+            this.nextPage();
+          }
+        //}, 200);       
+    //});  
+  }
+
   render() {
     console.log("DataGrid: Render");
     var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a className="right" href="#" onClick={this.onDeleteBox}>X</a></span> );
@@ -633,12 +676,16 @@ export default class DataGrid extends Toolbox {
     //     return  (<th  key={measure.Expression}>{measure.Expression}</th>)
     // });
 
-    var td = (row)=>{        
+    var td = (rowIndex)=>{        
       return  this.state.cols.map((col,i)=>{
-            return  (<td key={i}> {this.state.data[row][col.name]}           
+            return  (<td key={i}> {getTDData(rowIndex,col.name)}
                     </td>)
         });
 
+    };
+
+    var getTDData =(rowIndex,colName) =>{
+        return (this.state.data[rowIndex][colName] || this.state.data[rowIndex]['"' + colName + '"'] )
     };
 
 
@@ -658,7 +705,7 @@ export default class DataGrid extends Toolbox {
     var view = (     
           // <ContainerDimensions>
           // { ({ width, height }) =>             
-            <table height="100%"  className="scrollTable table table-sm table-bordered table-striped">
+            <table id={"table_" + this.id} height="100%"  className="scrollTable table table-sm table-bordered table-striped">
                 <thead className="thead-dark fixedHeader">
                   <tr>
                     {/* {thDim}
@@ -666,7 +713,7 @@ export default class DataGrid extends Toolbox {
                     {thHeading}
                   </tr>
                 </thead>
-                <tbody className="scrollContent">
+                <tbody className="scrollContent" onScroll={this.onScroll}>
                     {tr}
                 </tbody>
             </table>  
