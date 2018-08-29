@@ -10,7 +10,8 @@ export default class DataModel extends Component {
     constructor(props){
         super(props);
         this.fetchColumns = this.fetchColumns.bind(this);
-        this.fetchTables = this.fetchTables.bind(this);        
+        this.fetchTables = this.fetchTables.bind(this);  
+        this.fetchAssociations = this.fetchAssociations.bind(this);      
         this.state = {
             app: props.data,//{tables:[],associations:[]},           
             columns1:[],
@@ -104,6 +105,32 @@ export default class DataModel extends Component {
         });
     }
 
+
+    fetchAssociations(tableName1,tableName2){
+        debugger;
+        var querystring= "appTitle="+this.state.app.title;
+        if(tableName1){
+            querystring += "&tableName1="+ tableName1;
+        }
+        if(tableName2){
+            querystring += "&tableName2="+ tableName2;
+        }
+        axios
+        .get(this.serviceBaseUrl + "data/getExistingTableAssociation?" + querystring)
+        .then(response => {
+          console.log("response", response);
+          //debugger;
+          if (response && response.data) {
+            console.log("response.data************",response.data);
+            this.setState({
+                associations: [response.data]
+            })
+          }
+        })
+        .catch(function(error) {
+          console.log("error", error);
+        });
+    }
     componentDidMount(){
        this.fetchTables();
     }
@@ -125,6 +152,8 @@ export default class DataModel extends Component {
                 columns1: columns
             })
         }
+
+        this.fetchAssociations(this.table1,this.table2);
 
         // this.setState({
         //     columns1: columns

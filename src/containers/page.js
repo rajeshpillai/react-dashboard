@@ -32,22 +32,24 @@ class Page extends Component {
   serviceBaseUrl = "http://localhost:57387/api/";
 
   componentDidMount(){
-     axios
-    .post(this.serviceBaseUrl + "data/getPageData",{appTitle:this.props.app.title,appId:this.props.data.appId, pageId: this.props.data.pageId})
-    .then(response => {
-      console.log("response-getPageData", response);
-      if(response){
-        this.setState({
-          uiComponents: response.data.uiComponents,
-          layout:  response.data.layout ? response.data.layout : [],
-          globalFilters:  response.data.filters
-        });        
-      }
-      
-    })
-    .catch(function(error) {
-      console.log("error", error);
-    });
+    //if(!this.props.app){
+      axios
+      .post(this.serviceBaseUrl + "data/getPageData",{appTitle:"",appId:this.props.match.params.appid, pageId: this.props.match.params.pageid})
+      .then(response => {
+        console.log("response-getPageData", response);
+        if(response){
+          this.setState({
+            uiComponents: response.data.uiComponents,
+            layout:  response.data.layout ? response.data.layout : [],
+            globalFilters:  response.data.filters
+          });        
+        }
+        
+      })
+      .catch(function(error) {
+        console.log("error", error);
+      });
+  //}
   }
 
   state = {   
@@ -74,9 +76,9 @@ class Page extends Component {
     ],
     filters: [],
     isPropertyWindowVisible :false,
-    appId: this.props.data.appId,
-    pageId:this.props.data.pageId,
-    appTitle: this.props.app.title
+    appId: (this.props.data)? this.props.data.appId:null,
+    pageId:(this.props.data)?this.props.data.pageId:null,
+    appTitle: ( this.props.app) ? this.props.app.title:null
    };
 
   comps = {
@@ -399,8 +401,8 @@ class Page extends Component {
 
     delete stateData.newLayout;
 
-    var pageLayout={"Layout" :stateData, "AppId":this.props.app.id,"AppTitle":this.props.app.title,pageId: this.props.data.pageId};
-    //var pageLayout={"Layout" :{}, "AppId":this.props.app.id,"AppTitle":this.props.app.title};
+    var pageLayout={"Layout" :stateData, "AppId":this.props.match.params.appid,"AppTitle":"",pageId: this.props.match.params.pageid};
+    //var pageLayout={"Layout" :{}, "AppId":this.props.match.params.appid,"AppTitle":this.props.app.title};
 
     axios
     .post(this.serviceBaseUrl + "data/savePageData", pageLayout) //this.state
