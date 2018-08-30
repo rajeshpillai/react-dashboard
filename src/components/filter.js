@@ -15,9 +15,9 @@ export default class Filter extends Toolbox {
     this.moveSelectedOptionOnTop = this.moveSelectedOptionOnTop.bind(this);
     this.test = "testData";
 
-    this.id =  this.props.id;
-    this.layoutId= this.props.layoutId,
-    this.globalFilters = this.props.globalFilters
+    this.id =  props.id;
+    this.layoutId= props.layoutId,
+    this.globalFilters = props.globalFilters
     this.filters =[];
     this.type="list";
     this.pageSize =25;
@@ -26,6 +26,7 @@ export default class Filter extends Toolbox {
     this.isFirstTime = true;
     this.currentPage = 0;
     this.totalPageCount = 0;
+
     //this.displayName = "";
    //this.filterChanged = this.props.filterChanged;
 
@@ -60,7 +61,8 @@ export default class Filter extends Toolbox {
 
     var widgetModel = {
       Dimension: this.state.dimensions,
-      Type: "filter"
+      Type: "filter",
+      AppId: this.appId
     };
     //debugger;
     //Derive filtesr from Global filters.

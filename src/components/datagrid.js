@@ -179,7 +179,8 @@ export default class DataGrid extends Toolbox {
     //this.filterChanged = this.props.filterChanged;
     var widgetModel = {    
       Type: "datagrid",
-      ShowTotal: true
+      ShowTotal: true,
+      AppId: this.appId
     };
 
     if(this.state.dimensions && this.state.dimensions.length > 0){

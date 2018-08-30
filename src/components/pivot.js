@@ -77,7 +77,8 @@ export default class Pivot extends Component {
     var widgetModel = {
       Dimension: this.state.dimensions,     
       Measure: this.state.measure,
-      Type: "chart"
+      Type: "pivot",
+      AppId: this.appId
     };
 
     //Derive filtesr from Global filters.

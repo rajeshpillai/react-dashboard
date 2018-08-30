@@ -94,7 +94,8 @@ class Page extends Component {
           onConfigurationChange ={c => this.onConfigurationChange(c)}
           onDeleteBox = {d=> this.onDeleteBox(d)} 
           onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
-          isFormVisible= {config.isFormVisible}      
+          isFormVisible= {config.isFormVisible}  
+          appId={this.props.match.params.appid}  
         />
       );
     },
@@ -125,7 +126,8 @@ class Page extends Component {
           onConfigurationChange ={c => this.onConfigurationChange(c)}
           onDeleteBox = {d=> this.onDeleteBox(d)} 
           onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
-          isFormVisible= {config.isFormVisible}         
+          isFormVisible= {config.isFormVisible}   
+          appId={this.props.match.params.appid}        
         />
       );
     },
@@ -142,7 +144,8 @@ class Page extends Component {
           onConfigurationChange ={c => this.onConfigurationChange(c)}
           onDeleteBox = {d=> this.onDeleteBox(d)} 
           onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
-          isFormVisible= {config.isFormVisible}         
+          isFormVisible= {config.isFormVisible}       
+          appId={this.props.match.params.appid}    
         />
       );
     },
@@ -159,7 +162,8 @@ class Page extends Component {
           onConfigurationChange ={c => this.onConfigurationChange(c)}
           onDeleteBox = {d=> this.onDeleteBox(d)} 
           onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
-          isFormVisible= {config.isFormVisible} 
+          isFormVisible= {config.isFormVisible}  
+          appId={this.props.match.params.appid} 
         />
       );
     },
@@ -174,7 +178,8 @@ class Page extends Component {
           onConfigurationChange ={c => this.onConfigurationChange(c)}
           onDeleteBox = {d=> this.onDeleteBox(d)} 
           onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)} 
-          isFormVisible= {config.isFormVisible}           
+          isFormVisible= {config.isFormVisible} 
+          appId={this.props.match.params.appid}          
         />      
       );
     },
@@ -191,7 +196,8 @@ class Page extends Component {
           onConfigurationChange ={c => this.onConfigurationChange(c)} 
           onDeleteBox = {d=> this.onDeleteBox(d)}
           onSetPropertyWindowActive ={d=> this.onSetPropertyWindowActive(d)}  
-          isFormVisible= {config.isFormVisible}
+          isFormVisible= {config.isFormVisible} 
+          appId={this.props.match.params.appid} 
         />
       );
     },
@@ -205,7 +211,8 @@ class Page extends Component {
           onFilterChange={(filter,item) => this.onFilterChange(filter,item)} 
           filterChanged = {this.state.filterChanged} 
           onConfigurationChange ={c => this.onConfigurationChange(c)}
-          onDeleteBox = {d=> this.onDeleteBox(d)}
+          onDeleteBox = {d=> this.onDeleteBox(d)} 
+          appId={this.props.match.params.appid} 
         />
       );
     }

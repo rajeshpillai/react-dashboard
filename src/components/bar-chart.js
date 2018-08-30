@@ -132,7 +132,8 @@ fetchData() {
       //   }
       // ],
       Measure: this.state.measure,
-      Type: "chart"
+      Type: "chart",
+      AppId: this.appId
     };
 
     //Derive filtesr from Global filters.

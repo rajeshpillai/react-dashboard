@@ -17,7 +17,8 @@ export default class Toolbox extends Component {
           }
 
           this.serviceBaseUrl = "http://localhost:57387/api/";  
-          this.serviceGetDataUrl = this.serviceBaseUrl + "data/getData";             
+          this.serviceGetDataUrl = this.serviceBaseUrl + "data/getData";   
+          this.appId = props.appId;          
     }
 
     onDeleteBox = () => {

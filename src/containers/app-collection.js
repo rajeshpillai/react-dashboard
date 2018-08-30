@@ -49,6 +49,7 @@ class AppCollection extends Component {
   //   title:"",
   //   showAppForm:false
   // };
+  
 
    componentDidMount() {
     console.log("componentDidMount-AppCollection");
@@ -94,7 +95,8 @@ class AppCollection extends Component {
       var app ={
         id: this.state.apps.length+1,
         title: this.inpAppName.value,
-        pages: []
+        pages: [],
+        tables:[]
       };
       apps.push(app);
 
@@ -178,7 +180,7 @@ class AppCollection extends Component {
                   }}
                 />                 
                 <Route
-                  path="/app/:id/pages"
+                  path="/app/:id/pages"                  
                   render={(obj) => {                  
                     var app = obj.location.state;
                     //console.log("&&&&&&&&&&&&&&&&&&&&&&&&&this.state.apps",this.state.apps);
@@ -191,16 +193,19 @@ class AppCollection extends Component {
                   }}
                 />           
                 <Route             
-                  path="/app/:id/editor"
+                  path="/app/:id/editor"                  
                   //render={({ match,state }) => {         
                   render={(obj) => {                       
                     //console.log("obje******", obj)    ;    
-                    var app = obj.location.state;
+                    //var app = obj.location.state;
                     // _.find(this.state.apps, {id: Number(obj.match.params.id)});
                     //console.log("this.state.apps********",this.state.apps);
                     //console.log("app********",app);
+                    //if(!app){
+                      var app = _.find(this.state.apps, {id: Number(obj.match.params.id)});   
+                    //}
                     if(!app){
-                      app = _.find(this.state.apps, {id: Number(obj.match.params.id)});   
+                      app = obj.location.state;
                     }
                     return <DataEditor data={app} match={obj.match} />;
                   }}

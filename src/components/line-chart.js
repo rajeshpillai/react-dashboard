@@ -75,7 +75,8 @@ export default class LineChart extends Toolbox {
       //   }
       // ],
       Measure: this.state.measure,
-      Type: "chart"
+      Type: "linechart",
+      AppId: this.appId
     };
 
     //Derive filtesr from Global filters.

@@ -73,7 +73,8 @@ export default class PieChart extends Toolbox {
       //   }
       // ],
       Measure: this.state.measure,
-      Type: "chart"
+      Type: "piechart",
+      AppId: this.appId
     };
 
     //Derive filtesr from Global filters.

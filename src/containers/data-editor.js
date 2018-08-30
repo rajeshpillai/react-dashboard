@@ -13,11 +13,11 @@ export default class DataEditor extends Component {
         super(props);       
         this.fetchTables = this.fetchTables.bind(this);
         this.onChangeFile = this.onChangeFile.bind(this)
-        var app = props.data;
-        app.tables=[];
-        
+        this.addTable = this.addTable.bind(this);
+        var app = props.data;       
         this.state = {
-            app
+            app,
+            allTables:[]
         }
        
         this.serviceBaseUrl = "http://localhost:57387/api/";
@@ -31,10 +31,11 @@ export default class DataEditor extends Component {
           //debugger;
           if (response && response.data) {
             console.log("response.data************",response.data);
-            var app = this.state.app;
-            app.tables = response.data;
+            //var app = this.state.app;
+            //app.tables = response.data;
+            var allTables = response.data;
             this.setState({
-                app
+                allTables
             })
           }
         })
@@ -42,6 +43,35 @@ export default class DataEditor extends Component {
           console.log("error", error);
         });
     }
+
+    addTable(table){
+        console.log("tabletabletabletable",table);
+        //alert(table.name);
+        var app = this.state.app;
+        var tableExist = _.find(app.tables,{'name':table.name});
+        if(!tableExist){
+            app.tables.push(table);
+        }
+       
+        this.setState({
+            app
+        })
+    }
+
+    removeTable(table){
+        //alert(table.name);
+        var app = this.state.app;
+        var tableExist = _.filter(app.tables,{'name':table.name});
+
+        app.tables = app.tables.filter((tbl,i)=>{
+            return (tbl.name != table.name);
+        })
+        
+        this.setState({
+            app
+        })
+    }
+
 
 
     componentDidMount(){
@@ -76,20 +106,79 @@ export default class DataEditor extends Component {
     onChangeFile(e) {
         this.setState({file:e.target.files[0]})
       }
+      
+    save(e){
+    
+        axios
+        .post(this.serviceBaseUrl + "data/saveApp",this.state.app)
+        .then(response => {
+            var app = this.state.app;
+            //app.associations = this.associations;
+            this.setState({
+               app
+            })
+            console.log("app*******************", app);
+        })
+        .catch(function(error) {
+          console.log("error", error);
+        });
+    }
+
+    componentWillReceiveProps(nextProps){
+        this.setState({ app : nextProps.data })
+    }
+    
   
   render() {
-    var appId = this.state.app.id;
+    
 
-    var tableListView = this.state.app.tables.map(t=>{
-        return (<li key={t.name}>{t.name}</li>)
+    var app = this.state.app;
+    if(!app){app={tables:[],associations:[]};} 
+
+    var appId = app.id;
+
+    var tableListView = app.tables.map(t=>{
+        return (<li key={t.name}>
+            {t.name}
+            <input type="button" className="btn btn-primary btn-sm" value="-" onClick={()=>this.removeTable(t)} ></input>
+        </li>)
     });
+
+    var allTableListView = this.state.allTables.map(t=>{
+        return (<li key={t.name}>
+                    {t.name}
+                    <input type="button" className="btn btn-primary btn-sm" value="+" onClick={()=>this.addTable(t)} ></input>
+                </li>)
+    });
+
+    var associateTableLinkView =() =>{
+        if(app.tables.length > 1){
+            return( <div>
+                <Link to={`/app/${this.state.app.id}/editor/datamodel`}>
+                    <div>Associate Tables</div>         
+                </Link>
+            </div>)
+        }      
+    }
 
     var tablesView = (
         <div className="row">
             <div className="col-sm-4">
-                <ul>
-                    {tableListView}
-                </ul>
+                <div>
+                    <input type="button" value="Save" onClick={(e)=>this.save(e)} />
+                </div>
+                <div><strong>{app.title} Table List:</strong></div>
+                <div>
+                    <ul>
+                        {tableListView}
+                    </ul>
+                </div>
+                <div><strong>All Table List:</strong></div>
+                <div>
+                    <ul>
+                        {allTableListView}
+                    </ul>
+                </div>
             </div>  
             <div className="col-sm-8">
                 <form name="frmTableUpload" id="frmTableUpload"  method="post">
@@ -97,11 +186,7 @@ export default class DataEditor extends Component {
                     <input type="file"  onChange={this.onChangeFile}/> 
                     <input type="button" value="Import" onClick={(e)=>this.importTable(e)} />   
                 </form>   
-                <div>
-                    <Link to={`/app/${this.state.app.id}/editor/datamodel`}>
-                        <div>Associate Tables</div>         
-                    </Link>
-                </div>                  
+                {associateTableLinkView()}                  
             </div>    
            
                
@@ -111,7 +196,7 @@ export default class DataEditor extends Component {
 
     return (
         <div className="data-editor-container">
-            {this.state.app.tables && tablesView}     
+            {app.tables && tablesView}     
             <Route
                     path="/app/:id/editor/datamodel"
                     render={({ match }) => {
@@ -119,8 +204,8 @@ export default class DataEditor extends Component {
                         //console.log("app&&&&&&&&&&&&&&&&",this.state.app);
                         // let app2 = this.state.apps.find((a) => {
                         //   return a.id == match.params.id;
-                        // });
-                        return (<DataModel data={this.state.app} />);
+                        // });                                               
+                        return (<DataModel data={app} />);
                     }}
                  />         
         </div>       

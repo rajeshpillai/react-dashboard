@@ -10,7 +10,7 @@ export default class DataModel extends Component {
     constructor(props){
         super(props);
         this.fetchColumns = this.fetchColumns.bind(this);
-        this.fetchTables = this.fetchTables.bind(this);  
+        //this.fetchTables = this.fetchTables.bind(this);  
         this.fetchAssociations = this.fetchAssociations.bind(this);      
         this.state = {
             app: props.data,//{tables:[],associations:[]},           
@@ -34,6 +34,11 @@ export default class DataModel extends Component {
         this.serviceBaseUrl = "http://localhost:57387/api/";
     }
 
+
+    componentWillReceiveProps(nextProps){
+        this.setState({ app : nextProps.data })
+    }
+
     
 
     // static getDerivedStateFromProps(props, state) {
@@ -51,25 +56,25 @@ export default class DataModel extends Component {
     //     return null;
     // }
 
-    fetchTables(){
-        axios
-        .post(this.serviceBaseUrl + "data/getTables")
-        .then(response => {
-          console.log("response", response);
-          //debugger;
-          if (response && response.data) {
-            console.log("response.data************",response.data);
-            var app = this.state.app;
-            app.tables = response.data;
-            this.setState({
-                app
-            })
-          }
-        })
-        .catch(function(error) {
-          console.log("error", error);
-        });
-    }
+    // fetchTables(){
+    //     axios
+    //     .post(this.serviceBaseUrl + "data/getTables")
+    //     .then(response => {
+    //       console.log("response", response);
+    //       //debugger;
+    //       if (response && response.data) {
+    //         console.log("response.data************",response.data);
+    //         var app = this.state.app;
+    //         app.tables = response.data;
+    //         this.setState({
+    //             app
+    //         })
+    //       }
+    //     })
+    //     .catch(function(error) {
+    //       console.log("error", error);
+    //     });
+    // }
 
     fetchColumns(tableName){
         axios
@@ -107,7 +112,7 @@ export default class DataModel extends Component {
 
 
     fetchAssociations(tableName1,tableName2){
-        debugger;
+        //debugger;
         var querystring= "appTitle="+this.state.app.title;
         if(tableName1){
             querystring += "&tableName1="+ tableName1;
@@ -131,9 +136,9 @@ export default class DataModel extends Component {
           console.log("error", error);
         });
     }
-    componentDidMount(){
-       this.fetchTables();
-    }
+    // componentDidMount(){
+    //    this.fetchTables();
+    // }
 
     showColumns1(e){
         //alert(e.target.value);
@@ -318,7 +323,7 @@ export default class DataModel extends Component {
                     </div>  
                 </div>
                 <div>
-                    <input type="button" value="Save" onClick={(e)=>this.save(e)} />
+                    <input type="button" value="Save Association" onClick={(e)=>this.save(e)} />
                 </div>
            
             <div className="row  col-sm-12">
