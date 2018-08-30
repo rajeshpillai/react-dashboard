@@ -110,17 +110,19 @@ class App extends Component {
         )
     };
       
-    // var pagesRoutesView= this.state.app.pages.map(p => {
+    // var pagesRoutesView=(pages) => {
+    //     pages.map(p => {
     //       return (
     //             <Route              
-    //             path="/app/:appid/pages/${p.id}"
-    //             render={({ match }) => {      
-    //                 //   console.log("match.params.pageid",match.params.pageid);            
-    //             return (<Page app={this.state.app} data={{'pageName':'Page1', 'appId': match.params.appid, 'pageId':1}}></Page>);
-    //             }}
-    //         />
+    //                 path="/app/:appid/pages/${p.id}"
+    //                 render={({ match }) => {      
+    //                     //   console.log("match.params.pageid",match.params.pageid);            
+    //                 return (<Page app={this.state.app} data={{'pageName':'Page1', 'appId': match.params.appid, 'pageId':1}}></Page>);
+    //                 }}
+    //             />
     //       );
     //     });
+    // }
         
 
     var addNewPageView = () =>{
@@ -147,12 +149,13 @@ class App extends Component {
                             //   console.log("match.params.pageid",match.params.pageid);            
                         return (newPageFormView(app));
                         }}
-                    />                     
+                    /> 
+                    {/* {pagesRoutesView(this.props.data.pages)}                     */}
                     <Route              
                         path="/app/:appid/pages/:pageid"
                         render={({ match }) => {      
                             //   console.log("match.params.pageid",match.params.pageid);            
-                        return (<Page app={this.state.app} data={{'pageName':'Page1', 'appId': match.params.appid, 'pageId':match.params.pageid}} match={match}></Page>);
+                        return (<Page key={match.params.pageid} app={this.state.app} data={{'appId': match.params.appid, 'pageId':match.params.pageid}} match={match}></Page>);
                         }}
                     />
 

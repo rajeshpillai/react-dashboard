@@ -408,6 +408,8 @@ export default class DataGrid extends Toolbox {
 
   saveForm = () => {
     this.defaultValue = false;
+    this.isFirstTime =true;
+    this.enablePagination = true;
     this.toggleConfirmForm();
     var cols=[];
       this.dimensions.map((dim, midx) => {

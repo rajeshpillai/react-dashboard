@@ -51,7 +51,7 @@ class Page extends Component {
       });
   //}
   }
-
+  
   state = {   
     uiComponents: [
       {type:"Filter", displayName:"Filter"},

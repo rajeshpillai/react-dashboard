@@ -124,9 +124,9 @@ export default class DataEditor extends Component {
         });
     }
 
-    componentWillReceiveProps(nextProps){
-        this.setState({ app : nextProps.data })
-    }
+    // componentWillReceiveProps(nextProps){
+    //     this.setState({ app : nextProps.data })
+    // }
     
   
   render() {
@@ -205,7 +205,7 @@ export default class DataEditor extends Component {
                         // let app2 = this.state.apps.find((a) => {
                         //   return a.id == match.params.id;
                         // });                                               
-                        return (<DataModel data={app} />);
+                        return (<DataModel  key={appId} data={app} />);
                     }}
                  />         
         </div>       

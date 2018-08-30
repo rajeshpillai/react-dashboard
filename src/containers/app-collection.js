@@ -189,7 +189,7 @@ class AppCollection extends Component {
                       console.log("app********",app);
                     }
                     //var app = _.find(this.state.apps, {id: Number(obj.match.params.id)});                
-                    return (<App data={app}  match={obj.match}  />);
+                    return (<App key={obj.match.params.id}  data={app}  match={obj.match}  />);
                   }}
                 />           
                 <Route             
@@ -207,7 +207,7 @@ class AppCollection extends Component {
                     if(!app){
                       app = obj.location.state;
                     }
-                    return <DataEditor data={app} match={obj.match} />;
+                    return <DataEditor key={app} data={app} match={obj.match} />;
                   }}
                 />
                 </Switch>

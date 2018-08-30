@@ -35,9 +35,9 @@ export default class DataModel extends Component {
     }
 
 
-    componentWillReceiveProps(nextProps){
-        this.setState({ app : nextProps.data })
-    }
+    // componentWillReceiveProps(nextProps){
+    //     this.setState({ app : nextProps.data })
+    // }
 
     
 
