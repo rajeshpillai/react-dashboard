@@ -570,7 +570,7 @@ class Page extends Component {
                           rowHeight={100}
                           //cols={24}
                           //rowHeight={1}
-                          width={1200} 
+                          width={1200}                         
                           onLayoutChange={this.onLayoutChange} 
                           onResizeStop= {this.onResizeStop}>                          
                           {box}

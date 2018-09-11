@@ -14,10 +14,12 @@ export default class DataEditor extends Component {
         this.fetchTables = this.fetchTables.bind(this);
         this.onChangeFile = this.onChangeFile.bind(this)
         this.addTable = this.addTable.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         var app = props.data;       
         this.state = {
             app,
-            allTables:[]
+            allTables:[],
+            importedColumns:[]
         }
        
         this.serviceBaseUrl = "http://localhost:57387/api/";
@@ -78,9 +80,39 @@ export default class DataEditor extends Component {
        this.fetchTables();
     }
 
+
+    getColumnsDatatype(e){
+        const formData = new FormData();
+        formData.append('file',this.state.file);
+        formData.append('delimiter',this.inpDelimiter.value);
+        formData.append('tablename',this.inpTableName.value);
+
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        }
+
+        axios
+        .post(this.serviceBaseUrl + "data/getColumnsDatatype",formData,config)
+        .then(response => {
+            if(response && response.data){
+                this.setState({
+                    importedColumns: response.data
+                });
+            }                    
+        })
+        .catch(function(error) {
+          console.log("error", error);
+        });
+
+    }
+
     importTable(e){
         const formData = new FormData();
         formData.append('file',this.state.file);
+        formData.append('delimiter',this.inpDelimiter.value);
+        formData.append('tablename',this.inpTableName.value);
 
         const config = {
             headers: {
@@ -128,14 +160,83 @@ export default class DataEditor extends Component {
     //     this.setState({ app : nextProps.data })
     // }
     
+    handleChange(e, colName){
+        //alert(e.target.value);
+      //alert(colName);
+        var importedColumns = this.state.importedColumns;
+        importedColumns =  importedColumns.map(f=>{
+            if(f.Name == colName){
+                f.CType = e.target.value;
+            }
+            return f;
+        });
+
+        this.setState({
+            importedColumns
+        });
+    }
   
+    addData(e){
+        var data={
+            Columns: this.state.importedColumns,
+            FileName: this.state.file.name,
+            Delemiter: this.inpDelimiter.value,
+            TableName:this.inpTableName.value
+        }
+
+        console.log("ImportedFileModel",data);
+
+        axios
+        .post(this.serviceBaseUrl + "data/addData",data)
+        .then(response => {
+            // var app = this.state.app;
+            // app.associations = this.associations;
+            // this.setState({
+            //    app
+            // })          
+        })
+        .catch(function(error) {
+          console.log("error", error);
+        });
+
+    }
+
   render() {
-    
+    let dataTypes=["BOOLEAN","TINYINT","INT","SMALLINT","BIGINT", "STRING","DOUBLE","FLOAT","DATE","TIME","TIMESTAMP"];
 
     var app = this.state.app;
     if(!app){app={tables:[],associations:[]};} 
 
     var appId = app.id;
+
+    // var columnDataTypeListView = (value) =>{
+    //     dataTypes.map(d=>{
+    //         return (<option value={d} >{d}</option>)
+    //         })        
+    // }
+
+    var columnDataTypeListView =dataTypes.map(d=>{
+        return (<option key={d} value={d} >{d}</option>)
+    });
+        
+
+
+    var importedColumnsView =this.state.importedColumns.map(col=>{
+        return (
+            <div key={col.Name}>
+                <span>{col.Name}</span>               
+                <select defaultValue={col.CType}  onChange={(e)=>this.handleChange(e,col.Name)} >
+                        {columnDataTypeListView}
+                </select>
+            </div>
+        )
+    });
+
+    var addDataButtonView=()=>{
+        if(this.state.importedColumns.length > 0){
+            return(<input type="button" value="Add Data" onClick={(e)=>this.addData(e)} />)
+        }
+    }
 
     var tableListView = app.tables.map(t=>{
         return (<li key={t.name}>
@@ -183,9 +284,14 @@ export default class DataEditor extends Component {
             <div className="col-sm-8">
                 <form name="frmTableUpload" id="frmTableUpload"  method="post">
                     {/* <input type="text" /> */}
-                    <input type="file"  onChange={this.onChangeFile}/> 
-                    <input type="button" value="Import" onClick={(e)=>this.importTable(e)} />   
+                    <div><input type="file"  onChange={this.onChangeFile}/> </div>
+                    <div> <label>Delimiter:</label> <input type="text" ref={(inpDelimiter)=>this.inpDelimiter = inpDelimiter} /></div>
+                    <div> <label>Table Name:</label> <input type="text" ref={(inpTableName)=>this.inpTableName = inpTableName} /></div>                    
+                    {/* <div><input type="button" value="Import" onClick={(e)=>this.importTable(e)} />  </div>                     */}
+                    <div><input type="button" value="Import" onClick={(e)=>this.getColumnsDatatype(e)} />  </div>
                 </form>   
+                {importedColumnsView}
+                {addDataButtonView()}
                 {associateTableLinkView()}                  
             </div>    
            

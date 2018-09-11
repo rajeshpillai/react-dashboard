@@ -12,6 +12,8 @@ body {
 .react-grid-item {
   transition: all 200ms ease;
   transition-property: left, top;
+  /* overflow-y: auto;
+  overflow-x: auto; */
 }
 .react-grid-item.cssTransforms {
   transition-property: transform;

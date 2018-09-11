@@ -57,7 +57,7 @@ class App extends Component {
     addPage(){
         var app = this.state.app;
         var page ={
-          id: this.state.app.pages.length+1,
+          id: (this.state.app.pages)?this.state.app.pages.length+1:1,
           title: this.inpPageName.value,
           appId: app.id
         };
@@ -128,8 +128,8 @@ class App extends Component {
     var addNewPageView = () =>{
         var app = (this.state.app)?this.state.app : this.props.data;
         if(app){
-          return(   <div class="new-page">
-                        <Link  to={{pathname: `/app/${app.id}/pages/newpage`}} key={app.id} activeClassName="page-link">
+          return(   <div className="new-page">
+                        <Link  to={{pathname: `/app/${app.id}/pages/newpage`}} key={app.id} activeclassname="page-link">
                             Add New Page         
                         </Link>
                     </div>
