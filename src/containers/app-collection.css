@@ -11,5 +11,19 @@
 
 .new-page {
   display: flex;
-  padding-top: 50px;
+  /* padding-top: 50px; */
+}
+/* 
+.card-header {
+  background: url(../img/defaultApp.jpg) no-repeat;
+  background-size: contain;
+  background-position: center center;
+} */
+
+.card-header a span {
+  text-transform: uppercase;
+  font-weight: bold;
+  /* font-family: cursive; */
+  font-size: 20px;
+  color: #106876;
 }
