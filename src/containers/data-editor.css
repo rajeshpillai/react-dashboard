@@ -1,18 +1,25 @@
 .data-editor-container {
-    display: flex;
-    padding-top: 50px;
+  display: flex;
+  padding-top: 50px;
 }
 
-.data-editor-container .table1{
-    display: inline-block;
-    padding: 0px;
+.data-editor-container .table1 {
+  display: inline-block;
+  padding: 0px;
 }
 
-.data-editor-container .table2{
-    display: inline-block;
-    padding: 0 0 0 20px;
+.data-editor-container .table2 {
+  display: inline-block;
+  padding: 0 0 0 20px;
 }
 
-.data-editor-container .table1 label, .data-editor-container .table2 label{
-    padding: 0 10px 0 0;
+.data-editor-container .table1 label,
+.data-editor-container .table2 label {
+  padding: 0 10px 0 0;
+}
+
+.all-table-wrapper {
+  height: 50vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
