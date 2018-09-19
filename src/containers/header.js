@@ -103,20 +103,21 @@ export default class Header extends Component {
                   </Link>
                   {/* <a href="app-list.html" /> */}
                 </li>
-                <li>
+                {/* <li>
                   <a href="page-details.html">
                     {" "}
                     <i className="fa fa-home" />
                     Page Details{" "}
                   </a>
-                </li>
-                <li>
+                </li> */}
+                <span id="dataManager"/>
+                {/* <li>
                   <a href="import-data.html">
                     {" "}
                     <i className="fa fa-home" />
                     Import Data{" "}
                   </a>
-                </li>
+                </li> */}
                 {/* <li>
                   <a href="#.html">
                     {" "}
@@ -132,13 +133,13 @@ export default class Header extends Component {
                   </a>
                 </li> */}
                 <span id="pageControls">
-                  <li>
+                  {/* <li>
                     <a href="#.html">
                       {" "}
                       <i className="fa fa-bar-chart" />
                       Charts{" "}
                     </a>
-                  </li>
+                  </li> */}
                 </span>
               </ul>
             </div>
@@ -158,9 +159,40 @@ export default class Header extends Component {
                       <span> </span>
                       <strong className="text-primary">Dashboard</strong>
                     </div>
-                  </a>
+                  </a>{" "}
+                  {/* <a className="text-primary"> -- > App --> </a>{" "}
+                  <a className="text-primary">Page</a> */}
                 </div>
                 <ul className="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
+                  {/* <!-- Languages dropdown    --> */}
+                  <li className="nav-item dropdown" id="pageList">
+                    {/*<a
+                      id="languages"
+                      rel="nofollow"
+                      data-target="#"
+                      href="#"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                      className="nav-link language dropdown-toggle"
+                    >
+                      <span className="d-none d-sm-inline-block">Page 1</span>
+                    </a>
+                    <ul aria-labelledby="languages" className="dropdown-menu">
+                       <li>
+                        <a rel="nofollow" href="#" className="dropdown-item">
+                          {" "}
+                          <span>Page 2</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a rel="nofollow" href="#" className="dropdown-item">
+                          {" "}
+                          <span>Page 3 </span>
+                        </a>
+                      </li> 
+                    </ul>*/}
+                  </li>
                   {/* <!-- Notifications dropdown--> */}
                   <li className="nav-item dropdown">
                     {" "}
@@ -203,35 +235,7 @@ export default class Header extends Component {
                       className="dropdown-menu"
                     />
                   </li>
-                  {/* <!-- Languages dropdown    --> */}
-                  <li className="nav-item dropdown" id="pageList">
-                    {/*<a
-                      id="languages"
-                      rel="nofollow"
-                      data-target="#"
-                      href="#"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false"
-                      className="nav-link language dropdown-toggle"
-                    >
-                      <span className="d-none d-sm-inline-block">Page 1</span>
-                    </a>
-                    <ul aria-labelledby="languages" className="dropdown-menu">
-                       <li>
-                        <a rel="nofollow" href="#" className="dropdown-item">
-                          {" "}
-                          <span>Page 2</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a rel="nofollow" href="#" className="dropdown-item">
-                          {" "}
-                          <span>Page 3 </span>
-                        </a>
-                      </li> 
-                    </ul>*/}
-                  </li>
+
                   {/* <!-- Log out--> */}
                   <li className="nav-item">
                     <a href="login.html" className="nav-link logout">

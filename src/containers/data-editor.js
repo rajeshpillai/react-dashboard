@@ -231,15 +231,29 @@ export default class DataEditor extends Component {
 
     var importedColumnsView = this.state.importedColumns.map(col => {
       return (
-        <div key={col.Name}>
-          <span>{col.Name}</span>
-          <select
-            defaultValue={col.CType}
-            onChange={e => this.handleChange(e, col.Name)}
-          >
-            {columnDataTypeListView}
-          </select>
+        <div className="form-group row" key={col.Name}>
+          <label className="col-sm-4 col-form-label">{col.Name}</label>
+          <div className="col-sm-8">
+            <select
+              defaultValue={col.CType}
+              className="form-control"
+              onChange={e => this.handleChange(e, col.Name)}
+            >
+              {columnDataTypeListView}
+            </select>
+            {/* <input type="password" className="form-control" id="inputPassword" placeholder="Password"> */}
+          </div>
         </div>
+
+        // <div key={col.Name}>
+        //   <span>{col.Name}</span>
+        //   <select
+        //     defaultValue={col.CType}
+        //     onChange={e => this.handleChange(e, col.Name)}
+        //   >
+        //     {columnDataTypeListView}
+        //   </select>
+        // </div>
       );
     });
 
@@ -249,6 +263,7 @@ export default class DataEditor extends Component {
           <input
             type="button"
             value="Add Data"
+            className="btn btn-primary"
             onClick={e => this.addData(e)}
           />
         );

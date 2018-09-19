@@ -9,14 +9,21 @@ import PieChart from "../components/pie-chart";
 import DataGrid from "../components/datagrid";
 import Pivot from "../components/pivot";
 import axios from "axios";
-import PageControList from "./page-control-list";
+//import PageControList from "./page-control-list";
+import PortalCommon from "./portal-common.js";
 var _ = require("lodash");
 
 const save_page_button = {
-  position: "fixed",
-  top: "9px",
-  zIndex: "9999"
-  // left: "250px"
+  // position: "fixed",
+  // top: "9px",
+  // zIndex: "9999"
+  // // left: "250px"
+  /* margin: 5px; */
+  position: "absolute",
+  top: "-43px",
+  /* right: -653px; */
+
+  right: "-300%"
 };
 
 const property_window = {
@@ -520,6 +527,25 @@ class Page extends Component {
   };
 
   render() {
+    var getComponentIcon = function(type) {
+      switch (type.toLowerCase()) {
+        case "kpi":
+          return <i className="fa fa-file-text" />;
+        case "barchart":
+          return <i className="fa fa-bar-chart" />;
+        case "linechart":
+          return <i className="fa fa-line-chart" />;
+        case "piechart":
+          return <i className="fa fa-pie-chart" />;
+        case "filter":
+          return <i className="fa fa-filter" />;
+        case "datagrid":
+          return <i className="fa fa-table" />;
+        default:
+          return <i className="fa fa-home" />;
+      }
+    };
+
     var propWindowView = (
       <div style={property_window}>{this.state.propForm}</div>
     );
@@ -542,7 +568,8 @@ class Page extends Component {
           className="nav-item"
         >
           <a className="nav-link" href="#">
-            <svg
+            {getComponentIcon(c.type)}
+            {/* <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
@@ -556,7 +583,7 @@ class Page extends Component {
             >
               <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
               <polyline points="13 2 13 9 20 9" />
-            </svg>
+            </svg> */}
             {c.displayName}
           </a>
         </li>
@@ -583,20 +610,19 @@ class Page extends Component {
         <nav className="col-md-2 d-none d-md-block bg-light sidebar">
           <div className="sidebar-sticky">
             <ul className="nav flex-column">
-              <PageControList>{li}</PageControList>
-
-              {/* <li class="nav-item">
-                            <a class="nav-link active" href="#">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                            Dashboard <span class="sr-only">(current)</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
-                            Orders
-                            </a>
-                        </li>               */}
+              {/* <PageControList>{li}</PageControList> */}
+              <PortalCommon target="pageControls" type="id">
+                {li}
+              </PortalCommon>
+              <input
+                type="button"
+                value="Save Page"
+                onClick={e => {
+                  this.onSave(e);
+                }}
+                className="btn btn-primary"
+                style={save_page_button}
+              />
             </ul>
           </div>
         </nav>
@@ -605,17 +631,17 @@ class Page extends Component {
             {/* <div>
                         <ul>{li}</ul>
                       </div> */}
-            <div>
-              {/* <span>{this.props.data.pageName}</span> */}
-              <input
+            {/* <div> */}
+            {/* <span>{this.props.data.pageName}</span> */}
+            {/* <input
                 type="button"
                 value="Save"
                 onClick={e => {
                   this.onSave(e);
                 }}
                 style={save_page_button}
-              />
-            </div>
+              /> */}
+            {/* </div> */}
             <div
               onDragOver={e => this.onDragOver(e)}
               onDrop={e => this.onDrop(e)}
@@ -637,17 +663,7 @@ class Page extends Component {
             </div>
           </div>
         </main>
-        <div id="prop-root" />
-        {/* {this.state.isPropertyWindowVisible && propWindowView}   */}
-        {/* <div >
-                  <input                    
-                    type="text"
-                    placeholder="Enter Dimension"
-                    value={this.state.dimensionName}
-                  />
-                  <button onClick={this.saveForm}>Apply</button>
-                  &nbsp;&nbsp; <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
-                </div>               */}
+        {/* <div id="prop-root" /> */}
       </div>
     );
   }

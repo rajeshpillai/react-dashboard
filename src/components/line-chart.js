@@ -1,20 +1,26 @@
 import React, { Component } from "react";
 import axios from "axios";
-import {XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart as ReLineChart, Line} from  "recharts";
+import {
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  LineChart as ReLineChart,
+  Line
+} from "recharts";
 import Toolbox from "./toolbox.js";
 import PropertyWindow from "./property-window";
-import ContainerDimensions from 'react-container-dimensions';
-import { scaleOrdinal, schemeCategory10 } from 'd3-scale';
+import ContainerDimensions from "react-container-dimensions";
+import { scaleOrdinal, schemeCategory10 } from "d3-scale";
 var _ = require("lodash");
 const colors = scaleOrdinal(schemeCategory10).range();
 
-
 const data = [
-  {"Enter Dimension": 'x1', "Enter Expression": 100},
-  {"Enter Dimension": 'x2', "Enter Expression": 200},
-  {"Enter Dimension": 'x3', "Enter Expression": 50}
+  { "Enter Dimension": "x1", "Enter Expression": 100 },
+  { "Enter Dimension": "x2", "Enter Expression": 200 },
+  { "Enter Dimension": "x3", "Enter Expression": 50 }
 ];
-
 
 export default class LineChart extends Toolbox {
   constructor(props) {
@@ -24,24 +30,24 @@ export default class LineChart extends Toolbox {
     this.fetchData = this.fetchData.bind(this);
     this.ShowConfigForm = this.ShowConfigForm.bind(this);
 
-    this.globalFilters = props.globalFilters
-    this.filters =[];    
-    this.layoutId= props.layoutId;
-    this.id =  props.id;
-    this.dimensions =props.dimensions;
-    this.measure =props.measure;
+    this.globalFilters = props.globalFilters;
+    this.filters = [];
+    this.layoutId = props.layoutId;
+    this.id = props.id;
+    this.dimensions = props.dimensions;
+    this.measure = props.measure;
 
-    if(!this.dimensions || !this.measure){
+    if (!this.dimensions || !this.measure) {
       // var dim = {Name:'employee1.city'};
       // //var dim2 = {Name:'skills1.skill'};
       // var measure = {Expression:'count(employee1.city)'};
       // var measure2 = {Expression:'count(employee1.ename)'};
 
-      var dim = {Name:'Enter Dimension'};
+      var dim = { Name: "Enter Dimension" };
       //var dim2 = {Name:'skills1.skill'};
-      var measure = {Expression:'Enter Expression'};
-      this.dimensions=[dim];
-      this.measure=[measure];
+      var measure = { Expression: "Enter Expression" };
+      this.dimensions = [dim];
+      this.measure = [measure];
       this.defaultValue = true;
     }
 
@@ -49,17 +55,16 @@ export default class LineChart extends Toolbox {
     // this.measure = [{Expression:""}];
 
     this.state = {
-      dimensions:this.dimensions,
-      measure: this.measure,   
+      dimensions: this.dimensions,
+      measure: this.measure,
       isFormVisible: props.isFormVisible,
       showSettings: true,
-      data:data
+      data: data
     };
-
   }
 
   fetchData() {
-    if(this.defaultValue){
+    if (this.defaultValue) {
       return;
     }
     // if (null == this.state.expression || this.state.expression == "") {
@@ -81,20 +86,20 @@ export default class LineChart extends Toolbox {
 
     //Derive filtesr from Global filters.
     var filterList = [];
-    if(this.props.globalFilters){
+    if (this.props.globalFilters) {
       filterList = _.clone(this.props.globalFilters);
-    //   if (this.state.dimensions && this.state.dimensions.length > 0){ 
-    //     var dimName = this.state.dimensions[0].Name;     
-    //     this.props.globalFilters.map(function(filter,i){
-    //       if(filter.ColName == dimName){
-    //         _.remove(filterList, { 'ColName': dimName });
-    //       }
-    //     })
+      //   if (this.state.dimensions && this.state.dimensions.length > 0){
+      //     var dimName = this.state.dimensions[0].Name;
+      //     this.props.globalFilters.map(function(filter,i){
+      //       if(filter.ColName == dimName){
+      //         _.remove(filterList, { 'ColName': dimName });
+      //       }
+      //     })
 
-    //  }
+      //  }
     }
     //if (this.state.filters) {
-      widgetModel.FilterList = filterList;
+    widgetModel.FilterList = filterList;
     //}
 
     var that = this;
@@ -121,20 +126,19 @@ export default class LineChart extends Toolbox {
           //   })
           //   graphData.push(obj);
           // } else if(that.state.measure.length > 1){
-          //   _.each(that.state.measure, function (ms) {   
+          //   _.each(that.state.measure, function (ms) {
           //     var obj = { 'label': ms.Expression, 'data': [] };
           //     var dimName = that.state.dimensions[0].Name;
 
           //     _.each(response.data, function (item) {
           //       var yValue = item[ms.Expression] == null? 0: item[ms.Expression];
           //       var xValue = item[that.state.dimensions[0].Name];
-          //       obj.data.push({x:xValue, y:yValue});               
+          //       obj.data.push({x:xValue, y:yValue});
           //     })
           //     graphData.push(obj);
           //   })
           // }
 
-         
           this.setState({
             // data: [
             //   {
@@ -144,9 +148,8 @@ export default class LineChart extends Toolbox {
             // ]
             //data: graphData
             //data: [{values: response.data}]  //for nvd3
-            data: response.data
-            ,
-              showSettings:true             
+            data: response.data,
+            showSettings: true
           });
         }
       })
@@ -155,94 +158,191 @@ export default class LineChart extends Toolbox {
       });
   }
 
-  handleMeasureChange = (i) =>(evt) =>{     
-      this.measure = this.measure.map((m, midx) => {
-        if (i !== midx) return m;
-        return { ...m, Expression: evt.target.value };
-      });      
-  }
+  handleMeasureChange = i => evt => {
+    this.measure = this.measure.map((m, midx) => {
+      if (i !== midx) return m;
+      return { ...m, Expression: evt.target.value };
+    });
+  };
 
-  handleDimChange = (i) =>(evt) =>{
+  handleDimChange = i => evt => {
     //debugger;
-   // console.log("this.dimensions**********",this.dimensions);
+    // console.log("this.dimensions**********",this.dimensions);
     this.dimensions = this.dimensions.map((m, midx) => {
       if (i !== midx) return m;
       return { ...m, Name: evt.target.value };
-    });    
-}
-
-  ShowConfigForm() {
-    let dims = this.state.dimensions.map((dim,i)=>{
-      return( <div  key={i}>
-        <label>Dimension:</label>
-         <input        
-           type="text"
-           placeholder="Enter Dimension"           
-           defaultValue={this.state.dimensions[i].Name}
-           onChange ={this.handleDimChange(i)}
-         />      
-       </div>)
-       })
-
-    let measures = 
-         this.state.measure.map((m,i)=>{
-          return( <div key={i}>
-            <label>Measure:</label>
-             <input         
-               type="text"
-               placeholder="Enter Expression"
-               defaultValue= {this.state.measure[i].Expression} 
-               onChange ={this.handleMeasureChange(i)}
-             />   
-             <span><a href="#" onClick={() => this.addNewMeasure()}>+</a></span>  
-             <span><a href="#" onClick={() => this.deleteMeasure(m)}>X</a></span>          
-           </div>)
-      })
-
-      let save = (<div key="button"><button onClick={() =>this.saveForm()}>Apply</button> 
-                  <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
-                  </div>)
-   
-      let ui= (
-        <PropertyWindow>
-          <div style={this.property_window}>
-            {dims}
-            {measures}
-            {save}
-          </div>
-        </PropertyWindow>
-      );   
-    return ui;
+    });
   };
 
-  addNewMeasure(){    
-    var m = {};
-    this.measure.push(m);
-    this.setState(
-      {        
-        measure: this.measure
-      });
+  ShowConfigForm() {
+    let dims = this.state.dimensions.map((dim, i) => {
+      return (
+        <li key={"dim" + i} className="input-group mb-1">
+          <input
+            type="text"
+            placeholder="Enter Dimension"
+            className="form-control"
+            value={this.state.dimensions[i].Name}
+            onChange={this.handleDimChange(i)}
+          />
+          <div className="input-group-append">
+            <a
+              href="#"
+              id="removeDimensionField"
+              className="btn btn-danger"
+              onClick={() => this.deleteDimension(dim)}
+            >
+              <i className="fa fa-remove" />
+            </a>
+          </div>
+        </li>
+
+        // <div key={i}>
+        //   <label>Dimension:</label>
+        //   <input
+        //     type="text"
+        //     placeholder="Enter Dimension"
+        //     defaultValue={this.state.dimensions[i].Name}
+        //     onChange={this.handleDimChange(i)}
+        //   />
+        // </div>
+      );
+    });
+
+    let measures = this.state.measure.map((m, i) => {
+      return (
+        <li key={"measure" + i} className="input-group mb-1">
+          <input
+            type="text"
+            placeholder="Enter Expression"
+            className="form-control"
+            value={this.state.measure[i].Expression}
+            onChange={this.handleMeasureChange(i)}
+          />
+          <div className="input-group-append">
+            {/* <a href="#" id="removeMeasuresField" className="btn btn-success">
+            <i className="fa fa-save" />
+          </a> */}
+            <a
+              href="#"
+              id="removeMeasuresField"
+              className="btn btn-danger"
+              onClick={() => this.deleteMeasure(m)}
+            >
+              <i className="fa fa-remove" />
+            </a>
+          </div>
+        </li>
+
+        // <div key={i}>
+        //   <label>Measure:</label>
+        //   <input
+        //     type="text"
+        //     placeholder="Enter Expression"
+        //     defaultValue={this.state.measure[i].Expression}
+        //     onChange={this.handleMeasureChange(i)}
+        //   />
+        //   <span>
+        //     <a href="#" onClick={() => this.addNewMeasure()}>
+        //       +
+        //     </a>
+        //   </span>
+        //   <span>
+        //     <a href="#" onClick={() => this.deleteMeasure(m)}>
+        //       X
+        //     </a>
+        //   </span>
+        // </div>
+      );
+    });
+
+    let save = (
+      <div key="button">
+        <button className="btn btn-primary" onClick={() => this.saveForm()}>
+          Apply
+        </button>
+        &nbsp;&nbsp;{" "}
+        <button
+          className="btn btn-danger"
+          onClick={e => this.toggleConfirmForm(e)}
+        >
+          Cancel
+        </button>
+      </div>
+    );
+
+    let ui = (
+      <PropertyWindow>
+        <div style={this.property_window}>
+          <h2>
+            {" "}
+            - <i>Line Chart</i>
+          </h2>
+          <hr />
+          <h5>
+            Dimension
+            {/* {"  "}
+            <a
+              href="#"
+              id="addDimensionField"
+              className="btn btn-xs btn-info"
+              onClick={() => this.addNewDimension()}
+            >
+              <i className="fa fa-plus" />
+            </a> */}
+          </h5>
+          <ul id="dimensions-wrapper" className="list-unstyled">
+            {dims}
+          </ul>
+
+          <h5>
+            Measures{" "}
+            <a
+              href="#"
+              id="addMeasuresField"
+              className="btn btn-xs btn-info"
+              onClick={() => this.addNewMeasure()}
+            >
+              <i className="fa fa-plus" />
+            </a>
+          </h5>
+          <ul id="measures-wrapper" className="list-unstyled">
+            {measures}
+          </ul>
+          {save}
+        </div>
+      </PropertyWindow>
+    );
+    return ui;
   }
 
-  deleteMeasure(m){    
-    var measure = this.measure.filter((l)=>{
+  addNewMeasure() {
+    var m = {};
+    this.measure.push(m);
+    this.setState({
+      measure: this.measure
+    });
+  }
+
+  deleteMeasure(m) {
+    var measure = this.measure.filter(l => {
       return l.Expression != m.Expression;
-    })
+    });
     this.setState({
       measure
     });
-    this.measure = measure;    
+    this.measure = measure;
   }
 
-  saveForm(){
+  saveForm() {
     this.defaultValue = false;
-    this.toggleConfirmForm();    
+    this.toggleConfirmForm();
     this.setState(
       {
         dimensions: this.dimensions,
         measure: this.measure
       },
-      () => {    
+      () => {
         this.props.onConfigurationChange({
           dimensions: this.dimensions,
           measure: this.measure,
@@ -255,14 +355,23 @@ export default class LineChart extends Toolbox {
       }
     );
   }
-  
+
   componentWillUnmount() {
     console.log("Unmounting LineChart....Why ???");
   }
 
   render() {
     console.log("LineChart: Render ", this.state.hello);
-    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a className="right" href="#" onClick={this.onDeleteBox}>X</a></span>);
+    var showSettingLinkUI = (
+      <span>
+        <a href="#" onClick={e => this.toggleConfirmForm(e)}>
+          Settings
+        </a>{" "}
+        <a className="right" href="#" onClick={this.onDeleteBox}>
+          X
+        </a>
+      </span>
+    );
 
     var defaultView = (
       <div>
@@ -270,35 +379,46 @@ export default class LineChart extends Toolbox {
       </div>
     );
 
-    var reChartLineView = this.measure.map((m,i)=>{
-      return( 
-        <Line key={i} type="monotone" dataKey={(m)?m.Expression:""} stroke={colors[i % 10]} />
-      )
+    var reChartLineView = this.measure.map((m, i) => {
+      return (
+        <Line
+          key={i}
+          type="monotone"
+          dataKey={m ? m.Expression : ""}
+          stroke={colors[i % 10]}
+        />
+      );
     });
 
-    var view = (    
+    var view = (
       <ContainerDimensions>
-          { ({ width, height }) =>         
-            <ReLineChart width={width} height={height-15} data={this.state.data}>
-              <CartesianGrid strokeDasharray="3 3"/>
-              <XAxis dataKey={(this.dimensions)?this.dimensions[0].Name:""}/>       
-              <YAxis/>
-              <Tooltip/>
-              <Legend />
-              {reChartLineView}       
-            </ReLineChart>
-          }
-      </ContainerDimensions>      
+        {({ width, height }) => (
+          <ReLineChart
+            width={width}
+            height={height - 15}
+            data={this.state.data}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey={this.dimensions ? this.dimensions[0].Name : ""} />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            {reChartLineView}
+          </ReLineChart>
+        )}
+      </ContainerDimensions>
     );
 
     console.log("LineChart render called");
 
-    return (      
+    return (
       <React.Fragment>
-        {(!this.state.data || (this.state.data && this.state.data.length == 0)) && defaultView}
-        {this.state.showSettings && showSettingLinkUI }
+        {(!this.state.data ||
+          (this.state.data && this.state.data.length == 0)) &&
+          defaultView}
+        {this.state.showSettings && showSettingLinkUI}
         {this.state.data && this.state.data.length > 0 && view}
-        {this.state.isFormVisible && this.ShowConfigForm()}        
+        {this.state.isFormVisible && this.ShowConfigForm()}
       </React.Fragment>
     );
   }

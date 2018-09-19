@@ -9,9 +9,8 @@ import {
 } from "react-router-dom";
 import Page from "./page.js";
 import "./app.css";
-import Header from "./header";
-import NewPageLink from "./new-page-link.js";
-import PageListHeader from "../components/page-list-header.js";
+// import PageListHeader from "../components/page-list-header.js";
+import PortalCommon from "./portal-common.js";
 
 class App extends Component {
   constructor(props) {
@@ -19,9 +18,10 @@ class App extends Component {
     this.serviceBaseUrl = "http://localhost:57387/api/";
     //this.onPageSelect = this.onPageSelect.bind(this);
     this.addPage = this.addPage.bind(this);
+    let app = props.data ? props.data : { pages: [] };
     this.state = {
-      app: props.data ? props.data : { pages: [] },
-      currPageName: ""
+      app: app,
+      currPageName: "Pages (" + app.pages.length + ")"
     };
     console.log("props.data", props.data);
   }
@@ -31,26 +31,29 @@ class App extends Component {
   // }
 
   // componentDidMount() {
-  //     console.log("componentDidMount-App");
-  //     if(!this.props.data){
-  //         axios
-  //         .get(this.serviceBaseUrl + "data/getAppById?appId="+this.props.match.params.id)
-  //         .then(response => {
-  //           console.log("response", response);
-  //           if (response && response.data) {
-  //             //var test = JSON.parse(response.data);
-  //             this.setState({
-  //               app:JSON.parse(response.data),
-  //               showAppForm:false
-  //             });
-  //           }
-  //         })
-  //         .catch(function(error) {
-  //           console.log("error", error);
-  //         });
-  //     }
-
+  //   console.log("componentDidMount-App");
+  //   if (!this.props.data) {
+  //     axios
+  //       .get(
+  //         this.serviceBaseUrl +
+  //           "data/getAppById?appId=" +
+  //           this.props.match.params.id
+  //       )
+  //       .then(response => {
+  //         console.log("response", response);
+  //         if (response && response.data) {
+  //           //var test = JSON.parse(response.data);
+  //           this.setState({
+  //             app: JSON.parse(response.data),
+  //             showAppForm: false
+  //           });
+  //         }
+  //       })
+  //       .catch(function(error) {
+  //         console.log("error", error);
+  //       });
   //   }
+  // }
 
   // onPageSelect(pageName){
   //     this.setState({
@@ -66,7 +69,7 @@ class App extends Component {
       appId: app.id
     };
     app.pages.push(page);
-
+    console.log("page............", page);
     //Create App
     axios
       .post(this.serviceBaseUrl + "data/createNewPage", page)
@@ -81,6 +84,12 @@ class App extends Component {
       .catch(function(error) {
         console.log("error", error);
       });
+  }
+
+  setPageName(title) {
+    this.setState({
+      currPageName: title
+    });
   }
 
   render() {
@@ -139,6 +148,7 @@ class App extends Component {
               key={app.id}
               activeclassname="page-link"
               title="Add New Page"
+              className="add-new-page-link"
             >
               +
             </Link>
@@ -148,10 +158,10 @@ class App extends Component {
     };
 
     var appId = this.state.app ? this.state.app.id : "";
-
-    var pagesLi = this.state.app.pages.map(p => {
+    var pages = this.state.app.pages ? this.state.app.pages : [];
+    var pagesLi = pages.map(p => {
       return (
-        <li>
+        <li key={"app" + p.id} onClick={() => this.setPageName(p.title)}>
           <NavLink
             to={`/app/${appId}/pages/${p.id}`}
             key={p.id}
@@ -175,26 +185,48 @@ class App extends Component {
           aria-expanded="false"
           className="nav-link language dropdown-toggle"
         >
-          <span className="d-none d-sm-inline-block">
-            Pages - {this.state.app.pages.length}
+          <span className="d-none d-sm-inline-block" id="currentPage">
+            {/* Pages ({pages.length}) */}
+            {this.state.currPageName}
           </span>
         </a>
-        <ul aria-labelledby="languages" className="dropdown-menu">
+        <ul aria-labelledby="languages" className="dropdown-menu z-9999">
           {pagesLi}
         </ul>
       </React.Fragment>
     );
 
+    var dataManagerLink = (
+      <li>
+         <Link
+            key={this.state.app.title}
+            to={{ pathname: `/app/${this.state.app.id}/editor`, state: this.state.app }}                  
+            className="float-right"
+          >
+            {" "}
+              <i className="fa fa-home" />
+              Data Manager
+          </Link>                 
+      </li>
+    );
+
     return (
       <div>
         {/* <Header app={this.props.data}  /> */}
-        <PageListHeader>{pagesView}</PageListHeader>
+        {/* <PageListHeader>{pagesView}</PageListHeader> */}
+        <PortalCommon target="pageList" type="id">
+          {pagesView}
+        </PortalCommon>
+        <PortalCommon target="dataManager" type="id">
+        {dataManagerLink}
+        </PortalCommon>
         {addNewPageView()}
         <Switch>
           <Route
             path="/app/:appid/pages/newpage"
             render={obj => {
               var app = obj.location.state;
+              console.log("app.........", app);
               //   console.log("match.params.pageid",match.params.pageid);
               return newPageFormView(app);
             }}

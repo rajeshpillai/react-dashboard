@@ -2,7 +2,16 @@ import React, { Component } from "react";
 //import ReactDOM from 'react-dom';
 import axios from "axios";
 //import { Chart, Axis, Series, Tooltip, Cursor, Line, Bar } from "react-charts";
-import {BarChart as ReBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,Cell} from  "recharts";
+import {
+  BarChart as ReBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  Cell
+} from "recharts";
 //import NVD3Chart from "react-nvd3";
 //import { VictoryChart,VictoryBar } from "victory";
 //import Chart from "chart.js";
@@ -11,19 +20,18 @@ import $ from "jquery";
 // import {XYPlot, LineSeries} from 'react-vis';
 import Toolbox from "./toolbox.js";
 import PropertyWindow from "./property-window";
-import ContainerDimensions from 'react-container-dimensions';
-import { scaleOrdinal, schemeCategory10 } from 'd3-scale';
+import ContainerDimensions from "react-container-dimensions";
+import { scaleOrdinal, schemeCategory10 } from "d3-scale";
 var _ = require("lodash");
 // import recharts from 'recharts';
 
 const data = [
-  {"Enter Dimension": 'x1', "Enter Expression": 100},
-  {"Enter Dimension": 'x2', "Enter Expression": 200},
-  {"Enter Dimension": 'x3', "Enter Expression": 50}
+  { "Enter Dimension": "x1", "Enter Expression": 100 },
+  { "Enter Dimension": "x2", "Enter Expression": 200 },
+  { "Enter Dimension": "x3", "Enter Expression": 50 }
 ];
 
 const colors = scaleOrdinal(schemeCategory10).range();
-
 
 export default class BarChart extends Toolbox {
   constructor(props) {
@@ -33,44 +41,42 @@ export default class BarChart extends Toolbox {
     this.fetchData = this.fetchData.bind(this);
     this.ShowConfigForm = this.ShowConfigForm.bind(this);
 
-    this.globalFilters = this.props.globalFilters
-    this.filters =[];
+    this.globalFilters = this.props.globalFilters;
+    this.filters = [];
 
     // var dim = {Name:'ProductInventory.Shelf'};
 
     // var measure = {Expression:'sum(ProductInventory.Quantity)'};
 
-   
-    this.layoutId= props.layoutId;
-    this.id =  props.id;   
-    this.dimensions =props.dimensions;
-    this.measure =props.measure;
+    this.layoutId = props.layoutId;
+    this.id = props.id;
+    this.dimensions = props.dimensions;
+    this.measure = props.measure;
     this.defaultValue = false;
 
     // this.dimensions = [{Name:""}];
     // this.measure = [{Expression:""}];
-    if(!this.dimensions || !this.measure){
+    if (!this.dimensions || !this.measure) {
       // var dim = {Name:'employee1.city'};
       // //var dim2 = {Name:'skills1.skill'};
       // var measure = {Expression:'count(employee1.city)'};
       // var measure2 = {Expression:'count(employee1.ename)'};
 
-      var dim = {Name:'Enter Dimension'};
+      var dim = { Name: "Enter Dimension" };
       //var dim2 = {Name:'skills1.skill'};
-      var measure = {Expression:'Enter Expression'};
-      this.dimensions=[dim];
-      this.measure=[measure];
+      var measure = { Expression: "Enter Expression" };
+      this.dimensions = [dim];
+      this.measure = [measure];
       this.defaultValue = true;
     }
 
     this.state = {
-      dimensions:this.dimensions,
-      measure: this.measure,//,measure2],   
+      dimensions: this.dimensions,
+      measure: this.measure, //,measure2],
       isFormVisible: props.isFormVisible,
       showSettings: true,
-      data:data
+      data: data
     };
-
   }
 
   // componentDidCatch(error, info){
@@ -93,30 +99,28 @@ export default class BarChart extends Toolbox {
   //     data: [{ x: 'aA', y: 10 }, { x: 'C2', y: 10 }, { x: 'C3', y: 10 }]
   //   }
   // ];
-  
-  
 
-//   data=[
-//     {
-//         label: "Series 1",
-//         data: [[0, 1], [1, 2], [2, 4], [3, 2], [4, 7]]
-//     },
-//     {
-//         label: "Series 2",
-//         data: [[0, 3], [1, 1], [2, 5], [3, 6], [4, 4]]
-//     }
-//   //   {
-//   //     label: "Series 1",
-//   //     data: [['P1', 1], ['P2', 2], ['P3', 4], ['P4', 2], ['P5', 7]]
-//   // },
-// //   {
-// //     //label: "Series 1",
-// //     data: [{'key': 'S',x:'P1',y:1},{'key': 'S',x:'P2',y:3},{'key': 'S',x:'P3',y:10}]
-// // }
-//  ];
+  //   data=[
+  //     {
+  //         label: "Series 1",
+  //         data: [[0, 1], [1, 2], [2, 4], [3, 2], [4, 7]]
+  //     },
+  //     {
+  //         label: "Series 2",
+  //         data: [[0, 3], [1, 1], [2, 5], [3, 6], [4, 4]]
+  //     }
+  //   //   {
+  //   //     label: "Series 1",
+  //   //     data: [['P1', 1], ['P2', 2], ['P3', 4], ['P4', 2], ['P5', 7]]
+  //   // },
+  // //   {
+  // //     //label: "Series 1",
+  // //     data: [{'key': 'S',x:'P1',y:1},{'key': 'S',x:'P2',y:3},{'key': 'S',x:'P3',y:10}]
+  // // }
+  //  ];
 
-fetchData() {
-    if(this.defaultValue){
+  fetchData() {
+    if (this.defaultValue) {
       return;
     }
     // if (null == this.state.expression || this.state.expression == "") {
@@ -138,20 +142,20 @@ fetchData() {
 
     //Derive filtesr from Global filters.
     var filterList = [];
-    if(this.props.globalFilters){
+    if (this.props.globalFilters) {
       filterList = _.clone(this.props.globalFilters);
-    //   if (this.state.dimensions && this.state.dimensions.length > 0){ 
-    //     var dimName = this.state.dimensions[0].Name;     
-    //     this.props.globalFilters.map(function(filter,i){
-    //       if(filter.ColName == dimName){
-    //         _.remove(filterList, { 'ColName': dimName });
-    //       }
-    //     })
+      //   if (this.state.dimensions && this.state.dimensions.length > 0){
+      //     var dimName = this.state.dimensions[0].Name;
+      //     this.props.globalFilters.map(function(filter,i){
+      //       if(filter.ColName == dimName){
+      //         _.remove(filterList, { 'ColName': dimName });
+      //       }
+      //     })
 
-    //  }
+      //  }
     }
     //if (this.state.filters) {
-      widgetModel.FilterList = filterList;
+    widgetModel.FilterList = filterList;
     //}
 
     var that = this;
@@ -178,20 +182,19 @@ fetchData() {
           //   })
           //   graphData.push(obj);
           // } else if(that.state.measure.length > 1){
-          //   _.each(that.state.measure, function (ms) {   
+          //   _.each(that.state.measure, function (ms) {
           //     var obj = { 'label': ms.Expression, 'data': [] };
           //     var dimName = that.state.dimensions[0].Name;
 
           //     _.each(response.data, function (item) {
           //       var yValue = item[ms.Expression] == null? 0: item[ms.Expression];
           //       var xValue = item[that.state.dimensions[0].Name];
-          //       obj.data.push({x:xValue, y:yValue});               
+          //       obj.data.push({x:xValue, y:yValue});
           //     })
           //     graphData.push(obj);
           //   })
           // }
 
-         
           this.setState({
             // data: [
             //   {
@@ -201,9 +204,8 @@ fetchData() {
             // ]
             //data: graphData
             //data: [{values: response.data}]  //for nvd3
-            data: response.data
-            ,
-              showSettings:true             
+            data: response.data,
+            showSettings: true
           });
         }
       })
@@ -212,21 +214,21 @@ fetchData() {
       });
   }
 
-  handleMeasureChange = (i) =>(evt) =>{
-      //debugger;
-      //console.log("this.measure**********",this.measure);
-      this.measure = this.measure.map((m, midx) => {
-        if (i !== midx) return m;
-        return { ...m, Expression: evt.target.value };
-      });
-      //console.log("this.measure**********",this.measure);
-      
-      //this.setState({ measure: this.measure });
-  }
-
-  handleDimChange = (i) =>(evt) =>{
+  handleMeasureChange = i => evt => {
     //debugger;
-   // console.log("this.dimensions**********",this.dimensions);
+    //console.log("this.measure**********",this.measure);
+    this.measure = this.measure.map((m, midx) => {
+      if (i !== midx) return m;
+      return { ...m, Expression: evt.target.value };
+    });
+    //console.log("this.measure**********",this.measure);
+
+    //this.setState({ measure: this.measure });
+  };
+
+  handleDimChange = i => evt => {
+    //debugger;
+    // console.log("this.dimensions**********",this.dimensions);
     this.dimensions = this.dimensions.map((m, midx) => {
       if (i !== midx) return m;
       return { ...m, Name: evt.target.value };
@@ -235,81 +237,173 @@ fetchData() {
 
     //this.setState({hello:"Urvashi"});
 
-   //this.setState({ dimensions: this.dimensions });
-}
-
-  ShowConfigForm() {
-
-    
-   
-    let dims = this.state.dimensions.map((dim,i)=>{
-      return( <div  key={i}>
-        <label>Dimension:</label>
-         <input        
-           type="text"
-           placeholder="Enter Dimension"           
-           defaultValue={this.state.dimensions[i].Name}
-           onChange ={this.handleDimChange(i)}
-         />      
-       </div>)
-       })
-
-    let measures = 
-         this.state.measure.map((m,i)=>{
-          return( <div key={i}>
-            <label>Measure:</label>
-             <input         
-               type="text"
-               placeholder="Enter Expression"
-               defaultValue= {this.state.measure[i].Expression} 
-               onChange ={this.handleMeasureChange(i)}
-             />  
-             <span><a href="#" onClick={() => this.addNewMeasure()}>+</a></span>  
-             <span><a href="#" onClick={() => this.deleteMeasure(m)}>X</a></span>         
-           </div>)
-      })
-
-      let save = (<div key="button"><button onClick={() =>this.saveForm()}>Apply</button> 
-                  <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
-                  </div>)
-   
-      let ui= (
-        <PropertyWindow>
-          <div style={this.property_window}>
-            {dims}
-            {measures}
-            {save}
-          </div>
-        </PropertyWindow>
-      );   
-    return ui;
+    //this.setState({ dimensions: this.dimensions });
   };
 
-  addNewMeasure(){    
-    var m = {};
-    this.measure.push(m);
-    this.setState(
-      {        
-        measure: this.measure
-      });
+  ShowConfigForm() {
+    let dims = this.state.dimensions.map((dim, i) => {
+      return (
+        <li key={"dim" + i} className="input-group mb-1">
+          <input
+            type="text"
+            placeholder="Enter Dimension"
+            className="form-control"
+            value={this.state.dimensions[i].Name}
+            onChange={this.handleDimChange(i)}
+          />
+          <div className="input-group-append">
+            <a
+              href="#"
+              id="removeDimensionField"
+              className="btn btn-danger"
+              onClick={() => this.deleteDimension(dim)}
+            >
+              <i className="fa fa-remove" />
+            </a>
+          </div>
+        </li>
+        // <div key={i}>
+        //   <label>Dimension:</label>
+        //   <input
+        //     type="text"
+        //     placeholder="Enter Dimension"
+        //     defaultValue={this.state.dimensions[i].Name}
+        //     onChange={this.handleDimChange(i)}
+        //   />
+        // </div>
+      );
+    });
+
+    let measures = this.state.measure.map((m, i) => {
+      return (
+        <li key={"measure" + i} className="input-group mb-1">
+          <input
+            type="text"
+            placeholder="Enter Expression"
+            className="form-control"
+            value={this.state.measure[i].Expression}
+            onChange={this.handleMeasureChange(i)}
+          />
+          <div className="input-group-append">
+            {/* <a href="#" id="removeMeasuresField" className="btn btn-success">
+            <i className="fa fa-save" />
+          </a> */}
+            <a
+              href="#"
+              id="removeMeasuresField"
+              className="btn btn-danger"
+              onClick={() => this.deleteMeasure(m)}
+            >
+              <i className="fa fa-remove" />
+            </a>
+          </div>
+        </li>
+
+        // <div key={i}>
+        //   <label>Measure:</label>
+        //   <input
+        //     type="text"
+        //     placeholder="Enter Expression"
+        //     defaultValue={this.state.measure[i].Expression}
+        //     onChange={this.handleMeasureChange(i)}
+        //   />
+        //   <span>
+        //     <a href="#" onClick={() => this.addNewMeasure()}>
+        //       +
+        //     </a>
+        //   </span>
+        //   <span>
+        //     <a href="#" onClick={() => this.deleteMeasure(m)}>
+        //       X
+        //     </a>
+        //   </span>
+        // </div>
+      );
+    });
+
+    let save = (
+      <div key="button">
+        <button className="btn btn-primary" onClick={() => this.saveForm()}>
+          Apply
+        </button>
+        &nbsp;&nbsp;{" "}
+        <button
+          className="btn btn-danger"
+          onClick={e => this.toggleConfirmForm(e)}
+        >
+          Cancel
+        </button>
+      </div>
+    );
+
+    let ui = (
+      <PropertyWindow>
+        <div style={this.property_window}>
+          <h2>
+            PROPERTIES - <i>Bar Chart</i>
+          </h2>
+          <hr />
+          <h5>
+            Dimension
+            {/* {"  "}
+            <a
+              href="#"
+              id="addDimensionField"
+              className="btn btn-xs btn-info"
+              onClick={() => this.addNewDimension()}
+            >
+              <i className="fa fa-plus" />
+            </a> */}
+          </h5>
+          <ul id="dimensions-wrapper" className="list-unstyled">
+            {dims}
+          </ul>
+
+          <h5>
+            Measures{" "}
+            <a
+              href="#"
+              id="addMeasuresField"
+              className="btn btn-xs btn-info"
+              onClick={() => this.addNewMeasure()}
+            >
+              <i className="fa fa-plus" />
+            </a>
+          </h5>
+          <ul id="measures-wrapper" className="list-unstyled">
+            {measures}
+          </ul>
+          {save}
+        </div>
+      </PropertyWindow>
+    );
+    return ui;
   }
 
-  deleteMeasure(m){    
-    var measure = this.measure.filter((l)=>{
+  addNewMeasure() {
+    var m = {};
+    this.measure.push(m);
+    this.setState({
+      measure: this.measure
+    });
+  }
+
+  deleteMeasure(m) {
+    var measure = this.measure.filter(l => {
       return l.Expression != m.Expression;
-    })
+    });
     this.setState({
       measure
     });
-    this.measure = measure;    
+    this.measure = measure;
   }
 
-  saveForm(){
+  saveForm() {
     this.defaultValue = false;
     this.toggleConfirmForm();
-    console.log("this.state",this.state);
-    console.log("this.dimensions",this.dimensions);
-    console.log("this.measure",this.measure);
+    console.log("this.state", this.state);
+    console.log("this.dimensions", this.dimensions);
+    console.log("this.measure", this.measure);
     // this.props.onConfigurationChange({
     //   measure: this.state.measure,
     //   dimensions: this.state.dimensions,
@@ -338,7 +432,6 @@ fetchData() {
     //   this.fetchData();
     // });
 
-    
     // this.setState({hello:"Urvashi"},
     //   () => {
     //   console.log("FAILURE>>>>>>>");
@@ -351,8 +444,8 @@ fetchData() {
       },
       () => {
         //debugger;
-       // console.log("this.dimensionsthis.dimensions",this.dimensions);
-       // console.log("this.measurethis.measure",this.measure);
+        // console.log("this.dimensionsthis.dimensions",this.dimensions);
+        // console.log("this.measurethis.measure",this.measure);
         this.props.onConfigurationChange({
           dimensions: this.dimensions,
           measure: this.measure,
@@ -365,7 +458,6 @@ fetchData() {
       }
     );
   }
-  
 
   // componentDidUpdate(prevProps, prevState) {
   //   if (prevProps.globalFilters != this.props.globalFilters) {
@@ -375,7 +467,7 @@ fetchData() {
   //   //   this.height =  window.getComputedStyle($(".react-grid-item")[0]).height.replace("px","");
   //   //   this.width =  window.getComputedStyle($(".react-grid-item")[0]).width.replace("px","");
   //   // }
-    
+
   // }
   // componentDidMount() {
   //   console.log("componentDidMount");
@@ -385,13 +477,13 @@ fetchData() {
   //   // this.chart.addCategoryAxis("x", "employee1.city");
   //   // this.chart.addMeasureAxis("y", "count(employee1.ename)");
   //   // this.chart.addSeries(null, dimple.plot.bar);
-   
+
   //   // this.fetchData();
   //   // if($(".react-grid-item").length > 0){
   //   //   this.height =  window.getComputedStyle($(".react-grid-item")[0]).height.replace("px","");
   //   //   this.width =  window.getComputedStyle($(".react-grid-item")[0]).width.replace("px","");
   //   // }
-    
+
   // //   var ctx = this.canv.getContext("2d");
   // //   this.chart = new Chart(ctx, {
   // //     type: 'bar',
@@ -455,14 +547,14 @@ fetchData() {
   //  //  if($(".react-grid-item").length > 0){
   //  //   width =  $(".react-grid-item").getBoundingClientRect().width;
   //  //  }
-    
+
   //   //alert(height);
   //   //alert(width);
   //   console.log("height",this.height);
   //   console.log("width",this.width);
   // }
   // static getDerivedStateFromProps(props, state) {
-  //   //debugger;   
+  //   //debugger;
   //   var isChanged = false;
   //   var newState = {...state};
   //   if(props.containerHeight != state.containerHeight){
@@ -489,7 +581,16 @@ fetchData() {
 
   render() {
     console.log("BARCHART: Render ", this.state.hello);
-    var showSettingLinkUI = (<span><a href="#" onClick={(e) => this.toggleConfirmForm(e)}>Settings</a> <a className="right" href="#" onClick={this.onDeleteBox}>X</a></span>);
+    var showSettingLinkUI = (
+      <span>
+        <a href="#" onClick={e => this.toggleConfirmForm(e)}>
+          Settings
+        </a>{" "}
+        <a className="right" href="#" onClick={this.onDeleteBox}>
+          X
+        </a>
+      </span>
+    );
 
     var defaultView = (
       <div>
@@ -497,19 +598,19 @@ fetchData() {
       </div>
     );
 
-    var data1 = [
-      {x: 0, y: 8},
-      {x: 1, y: 5},
-      {x: 2, y: 4},
-      {x: 3, y: 9},
-      {x: 4, y: 1},
-      {x: 5, y: 7},
-      {x: 6, y: 6},
-      {x: 7, y: 3},
-      {x: 8, y: 2},
-      {x: 9, y: 0}
-    ];
-    
+    // var data1 = [
+    //   { x: 0, y: 8 },
+    //   { x: 1, y: 5 },
+    //   { x: 2, y: 4 },
+    //   { x: 3, y: 9 },
+    //   { x: 4, y: 1 },
+    //   { x: 5, y: 7 },
+    //   { x: 6, y: 6 },
+    //   { x: 7, y: 3 },
+    //   { x: 8, y: 2 },
+    //   { x: 9, y: 0 }
+    // ];
+
     // // var data = [
     // //   { "Word":"Hello", "Awesomeness":2000 },
     // //   { "Word":"World", "Awesomeness":3000 }
@@ -521,8 +622,8 @@ fetchData() {
     // if(chart && this.state.data){
     //   //debugger;
     //   chart.data = data;
-      
-    //   var svg = $("#chart svg");      
+
+    //   var svg = $("#chart svg");
     //   //debugger;
     //    svg.height(svg.parent().height()-10);
     //    svg.width(svg.parent().width()-10);
@@ -530,116 +631,115 @@ fetchData() {
     //   chart.draw();
 
     //   //chart.draw(0,true);
- //   }
+    //   }
 
-  // this.height =  $(".react-grid-item").height();
-  // this.width =  $(".react-grid-item").width()-10;
-// //  if($(".react-grid-item").length > 0){
-// //   width =  $(".react-grid-item").getBoundingClientRect().width;
-// //  }
- 
-//  //alert(height);
-//  //alert(width);
-//  console.log("height",this.height);
-//  console.log("width",this.width);
- var data = [ 
-  {
-    key: "Cumulative Return",
-    values: [
-      { 
-        "label" : "A Label" ,
-        "value" : -29.765957771107
-      } , 
-      { 
-        "label" : "B Label" , 
-        "value" : 0
-      } , 
-      { 
-        "label" : "C Label" , 
-        "value" : 32.807804682612
-      } , 
-      { 
-        "label" : "D Label" , 
-        "value" : 196.45946739256
-      } , 
-      { 
-        "label" : "E Label" ,
-        "value" : 0.19434030906893
-      } , 
-      { 
-        "label" : "F Label" , 
-        "value" : -98.079782601442
-      } , 
-      { 
-        "label" : "G Label" , 
-        "value" : -13.925743130903
-      } , 
-      { 
-        "label" : "H Label" , 
-        "value" : -5.1387322875705
-      }
-    ]
-  }
-];
+    // this.height =  $(".react-grid-item").height();
+    // this.width =  $(".react-grid-item").width()-10;
+    // //  if($(".react-grid-item").length > 0){
+    // //   width =  $(".react-grid-item").getBoundingClientRect().width;
+    // //  }
 
-    var reChartBarView = this.measure.map((m,i)=>{
+    //  //alert(height);
+    //  //alert(width);
+    //  console.log("height",this.height);
+    //  console.log("width",this.width);
+    //  var data = [
+    //   {
+    //     key: "Cumulative Return",
+    //     values: [
+    //       {
+    //         "label" : "A Label" ,
+    //         "value" : -29.765957771107
+    //       } ,
+    //       {
+    //         "label" : "B Label" ,
+    //         "value" : 0
+    //       } ,
+    //       {
+    //         "label" : "C Label" ,
+    //         "value" : 32.807804682612
+    //       } ,
+    //       {
+    //         "label" : "D Label" ,
+    //         "value" : 196.45946739256
+    //       } ,
+    //       {
+    //         "label" : "E Label" ,
+    //         "value" : 0.19434030906893
+    //       } ,
+    //       {
+    //         "label" : "F Label" ,
+    //         "value" : -98.079782601442
+    //       } ,
+    //       {
+    //         "label" : "G Label" ,
+    //         "value" : -13.925743130903
+    //       } ,
+    //       {
+    //         "label" : "H Label" ,
+    //         "value" : -5.1387322875705
+    //       }
+    //     ]
+    //   }
+    // ];
+
+    var reChartBarView = this.measure.map((m, i) => {
       //var className = (i % 2 == 0)? "gray": "yellow";
-      return( 
-        <Bar key={i} dataKey={(m)?m.Expression:""}  fill={colors[i % 10]} >
-            {/* {
+      return (
+        <Bar key={i} dataKey={m ? m.Expression : ""} fill={colors[i % 10]}>
+          {/* {
                   data.map((entry, index) => (
                     <Cell className={className}  fill={data[index]["count(skill.skill)"] == 84 ? 'yellow' : 'red' }/>
                   ))
                 } */}
         </Bar>
-      )
+      );
     });
 
     var view = (
-    //   <XYPlot width={this.props.containerWidth} height={this.props.containerHeight}>
-    //   <LineSeries data={data1} />
-    // </XYPlot>
+      //   <XYPlot width={this.props.containerWidth} height={this.props.containerHeight}>
+      //   <LineSeries data={data1} />
+      // </XYPlot>
       // <ChartistGraph data={lineChartData} options={lineChartOptions} type={'Line'} />
       // <span>asasas</span>
-    //   <VictoryChart 
-    //   domainPadding={{ x: 50, y: [0, 20] }}
-    //   scale={{ x: "time" }}
-    // >
-    //   <VictoryBar
-    //     dataComponent={
-    //       <Bar />
-    //     }
-    //     style={{
-    //       data: { fill: "blue" }
-    //     }}
-    //     data={[
-    //       { x: new Date(1986, 1, 1), y: 2 },
-    //       { x: new Date(1996, 1, 1), y: 3 },
-    //       { x: new Date(2006, 1, 1), y: 5 },
-    //       { x: new Date(2016, 1, 1), y: 4 }
-    //     ]}
-    //   />
-    // </VictoryChart>
-  <ContainerDimensions>
-      { ({ width, height }) => 
-        // <NVD3Chart id="barChart" 
-        //   width={width} height={height}  type="discreteBarChart" datum={this.state.data} x={(this.state.dimensions)?this.state.dimensions[0].Name:""} y={(this.state.measure)?this.state.measure[0].Expression:""} />
+      //   <VictoryChart
+      //   domainPadding={{ x: 50, y: [0, 20] }}
+      //   scale={{ x: "time" }}
+      // >
+      //   <VictoryBar
+      //     dataComponent={
+      //       <Bar />
+      //     }
+      //     style={{
+      //       data: { fill: "blue" }
+      //     }}
+      //     data={[
+      //       { x: new Date(1986, 1, 1), y: 2 },
+      //       { x: new Date(1996, 1, 1), y: 3 },
+      //       { x: new Date(2006, 1, 1), y: 5 },
+      //       { x: new Date(2016, 1, 1), y: 4 }
+      //     ]}
+      //   />
+      // </VictoryChart>
+      <ContainerDimensions>
+        {({ width, height }) => (
+          // <NVD3Chart id="barChart"
+          //   width={width} height={height}  type="discreteBarChart" datum={this.state.data} x={(this.state.dimensions)?this.state.dimensions[0].Name:""} y={(this.state.measure)?this.state.measure[0].Expression:""} />
 
-        <ReBarChart width={width} height={height-15} data={this.state.data}>
-            <CartesianGrid strokeDasharray="3 3"/>
-            <XAxis dataKey={(this.dimensions)?this.dimensions[0].Name:""}/>       
-            <YAxis/>
-            <Tooltip/>
+          <ReBarChart width={width} height={height - 15} data={this.state.data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey={this.dimensions ? this.dimensions[0].Name : ""} />
+            <YAxis />
+            <Tooltip />
             <Legend />
             {reChartBarView}
             {/* <Bar dataKey={(this.measure)?this.measure[0].Expression:""} fill="#8884d8" />        */}
             {/* <Bar dataKey={(this.measure)?this.measure[1].Expression:""} fill="#82ca9d" /> */}
             {/* <Bar dataKey="uv" fill="#82ca9d" /> */}
-        </ReBarChart>
-      }
-  </ContainerDimensions>
-      
-      
+          </ReBarChart>
+        )}
+      </ContainerDimensions>
+
       // <Chart data={this.state.data}>
       //       <Axis primary type="ordinal" />
       //       <Axis type="linear" stacked />
@@ -652,10 +752,12 @@ fetchData() {
 
     console.log("barchart render called");
 
-    return (      
+    return (
       <React.Fragment>
-        {(!this.state.data || (this.state.data && this.state.data.length == 0)) && defaultView}
-        {this.state.showSettings && showSettingLinkUI }
+        {(!this.state.data ||
+          (this.state.data && this.state.data.length == 0)) &&
+          defaultView}
+        {this.state.showSettings && showSettingLinkUI}
         {this.state.data && this.state.data.length > 0 && view}
         {this.state.isFormVisible && this.ShowConfigForm()}
         {/* <div style={{position:"relative",height:"50vh"}} >

@@ -213,6 +213,7 @@ class AppCollection extends Component {
         <Router>
           <div className="page">
             <Header />
+            <div id="prop-root" />
             <div className="container-fluid">
               <Switch>
                 <Route
