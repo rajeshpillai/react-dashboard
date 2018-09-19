@@ -41,6 +41,8 @@ class Page extends Component {
 
   componentDidMount() {
     //if(!this.props.app){
+    
+
     axios
       .post(this.serviceBaseUrl + "data/getPageData", {
         appTitle: "",
@@ -60,6 +62,28 @@ class Page extends Component {
       .catch(function(error) {
         console.log("error", error);
       });
+
+      let pageName= this.props.data ? this.props.data.pageName : "";
+      if(!pageName){
+        axios
+        .post(this.serviceBaseUrl + "data/getPageMetaData", {
+          appTitle: "",
+          appId: this.props.match.params.appid,
+          pageId: this.props.match.params.pageid
+        })
+        .then(response => {
+          console.log("response-getPageMetaData", response);
+          if (response && response.data) {         
+            if(response.data){
+              this.props.setPageName(response.data.Title);
+            }          
+          }
+        })
+        .catch(function(error) {
+          console.log("error", error);
+        });
+      }
+      
     //}
   }
 
@@ -89,7 +113,8 @@ class Page extends Component {
     isPropertyWindowVisible: false,
     appId: this.props.data ? this.props.data.appId : null,
     pageId: this.props.data ? this.props.data.pageId : null,
-    appTitle: this.props.app ? this.props.app.title : null
+    appTitle: this.props.app ? this.props.app.title : null,
+    pageName: this.props.data ? this.props.data.pageName : ""
   };
 
   comps = {
@@ -431,10 +456,11 @@ class Page extends Component {
     var stateData = this.state;
     if (stateData.newLayout) {
       stateData.newLayout.map(function(newL, i) {
-        var item = stateData.layout[i].item;
+        var item = stateData.layout[i].item;        
         var itemType = stateData.layout[i].itemType;
         stateData.layout[i] = newL;
         if (item) {
+          item.isFormVisible = false;
           stateData.layout[i].item = item;
           stateData.layout[i].itemType = itemType;
         }
@@ -479,7 +505,8 @@ class Page extends Component {
       return l;
     });
     this.setState({
-      layout
+      layout,
+      newLayout:layout
     });
   };
 
@@ -628,6 +655,7 @@ class Page extends Component {
         </nav>
         <main role="main" className="col-md-12 col-lg-12 px-2">
           <div>
+            {/* <PortalCommon target="currentPage" type="id" emptyTheTargetFirst={true}>{this.props.data ? this.props.data.pageName : ""}</PortalCommon> */}
             {/* <div>
                         <ul>{li}</ul>
                       </div> */}

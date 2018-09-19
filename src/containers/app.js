@@ -18,42 +18,47 @@ class App extends Component {
     this.serviceBaseUrl = "http://localhost:57387/api/";
     //this.onPageSelect = this.onPageSelect.bind(this);
     this.addPage = this.addPage.bind(this);
+    this.setPageName = this.setPageName.bind(this);
     let app = props.data ? props.data : { pages: [] };
     this.state = {
       app: app,
       currPageName: "Pages (" + app.pages.length + ")"
     };
-    console.log("props.data", props.data);
+    console.log("props-APP", props);
+
+
   }
   // componentDidUpdate(prevProps, prevState) {
   //     if (prevProps.data != this.state.app) {
   //     }
   // }
 
-  // componentDidMount() {
-  //   console.log("componentDidMount-App");
-  //   if (!this.props.data) {
-  //     axios
-  //       .get(
-  //         this.serviceBaseUrl +
-  //           "data/getAppById?appId=" +
-  //           this.props.match.params.id
-  //       )
-  //       .then(response => {
-  //         console.log("response", response);
-  //         if (response && response.data) {
-  //           //var test = JSON.parse(response.data);
-  //           this.setState({
-  //             app: JSON.parse(response.data),
-  //             showAppForm: false
-  //           });
-  //         }
-  //       })
-  //       .catch(function(error) {
-  //         console.log("error", error);
-  //       });
-  //   }
-  // }
+  componentDidMount() {
+    console.log("componentDidMount-App");
+    var that=this;
+    if (!this.props.data) {
+      axios
+        .get(
+          this.serviceBaseUrl +
+            "data/getAppByIdAsString?appId=" +
+            this.props.match.params.id
+        )
+        .then(response => {
+          console.log("response", response);
+          if (response && response.data) {
+            //var test = JSON.parse(response.data);
+            that.setState({
+              app: JSON.parse(response.data),
+              showAppForm: false,
+              currPageName: "Pages (" + JSON.parse(response.data).pages.length + ")"
+            });
+          }
+        })
+        .catch(function(error) {
+          console.log("error", error);
+        });
+    }
+  }
 
   // onPageSelect(pageName){
   //     this.setState({
@@ -86,13 +91,14 @@ class App extends Component {
       });
   }
 
-  setPageName(title) {
+  setPageName(title) {    
     this.setState({
       currPageName: title
     });
   }
 
   render() {
+    //debugger;
     // var appId = this.state.app.id;
     // var pages = this.state.app.pages.map(p => {
     //   return (
@@ -156,7 +162,7 @@ class App extends Component {
         );
       }
     };
-
+    
     var appId = this.state.app ? this.state.app.id : "";
     var pages = this.state.app.pages ? this.state.app.pages : [];
     var pagesLi = pages.map(p => {
@@ -236,14 +242,25 @@ class App extends Component {
             path="/app/:appid/pages/:pageid"
             render={({ match }) => {
               //   console.log("match.params.pageid",match.params.pageid);
+              //console.log("this.state___________",this.state);
+             var page= this.state.app.pages.filter(item=>{
+                return item.id == match.params.pageid
+              });
+              var pageName = "";
+              if(page && page.length > 0){
+                pageName = page[0].title;
+              }
+              //alert(pageName);
               return (
                 <Page
                   key={match.params.pageid}
-                  app={this.state.app}
+                  app={this.state.app}                  
                   data={{
                     appId: match.params.appid,
-                    pageId: match.params.pageid
-                  }}
+                    pageId: match.params.pageid,
+                    pageName: pageName
+                  }} 
+                  setPageName={this.setPageName}                  
                   match={match}
                 />
               );
