@@ -230,9 +230,10 @@ export default class DataGrid extends Toolbox {
         .then(response => {
           console.log("response", response);
           //debugger;
-          if (response && response.data) {
-            //console.log("response.data************", JSON.parse(response.data));
-            this.totalRecords = parseInt(response.data[0]["totalrowscount"]);
+          if (response && response.data && response.data.Data) {
+            let data = response.data.Data;
+            //console.log("response.data************", JSON.parse(data));
+            this.totalRecords = parseInt(data[0]["totalrowscount"]);
             if (this.totalRecords <= this.pageSize) {
               this.enablePagination = false;
             }
@@ -279,7 +280,8 @@ export default class DataGrid extends Toolbox {
           console.log("response", response);
           this.isFirstTime = false;
           //this.props.filterChanged = false;
-          if (response && response.data) {
+          if (response && response.data&& response.data.Data) {
+            let data = response.data.Data;
             //console.log("response.data************", JSON.parse(response.data));
             //  var data = this.state.data;
             //  if(this.currentPage > 1){
@@ -287,7 +289,7 @@ export default class DataGrid extends Toolbox {
             //  } else {
             //   data = response.data
             //  }
-            var data = response.data;
+            //var data = response.data;
             this.setState({
               data: data,
               count: this.totalRecords,

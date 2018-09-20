@@ -100,7 +100,8 @@ export default class PieChart extends Toolbox {
       .post(this.serviceGetDataUrl, widgetModel)
       .then(response => {
         console.log("response", response);
-        if (response && response.data) {
+        if (response && response.data && response.data.Data) {
+          let data = response.data.Data;
           // // var graphData = [];
           // // _.each(response.data, function (item) {
           // //       var yValue = item[that.state.measure[0].Expression];
@@ -141,10 +142,9 @@ export default class PieChart extends Toolbox {
             //   }
             // ]
             //data: graphData
-            //data: [{values: response.data}]  //for nvd3
-            data: response.data
-            ,
-              showSettings:true             
+            //data: [{values: data}]  //for nvd3
+            data,
+            showSettings:true             
           });
         }
       })

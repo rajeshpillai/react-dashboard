@@ -163,9 +163,11 @@ export default class BarChart extends Toolbox {
       .post(this.serviceGetDataUrl, widgetModel)
       .then(response => {
         console.log("response", response);
-        if (response && response.data) {
+        if (response && response.data && response.data.Data) {
+          let data = response.data.Data;
+          
           // // var graphData = [];
-          // // _.each(response.data, function (item) {
+          // // _.each(data, function (item) {
           // //       var yValue = item[that.state.measure[0].Expression];
           // //       var xValue = item[that.state.dimensions[0].Name];
           // //       graphData.push({x:xValue, y:yValue});
@@ -175,7 +177,7 @@ export default class BarChart extends Toolbox {
           // var graphData = [];
           // if(that.state.measure.length == 1){
           //   var obj = { 'label': that.state.dimensions[0].Name, 'data': [] };
-          //   _.each(response.data, function (item) {
+          //   _.each(data, function (item) {
           //     var yValue = item[that.state.measure[0].Expression];
           //     var xValue = item[that.state.dimensions[0].Name];
           //     obj.data.push({x:xValue, y:yValue});
@@ -186,7 +188,7 @@ export default class BarChart extends Toolbox {
           //     var obj = { 'label': ms.Expression, 'data': [] };
           //     var dimName = that.state.dimensions[0].Name;
 
-          //     _.each(response.data, function (item) {
+          //     _.each(data, function (item) {
           //       var yValue = item[ms.Expression] == null? 0: item[ms.Expression];
           //       var xValue = item[that.state.dimensions[0].Name];
           //       obj.data.push({x:xValue, y:yValue});
@@ -203,8 +205,8 @@ export default class BarChart extends Toolbox {
             //   }
             // ]
             //data: graphData
-            //data: [{values: response.data}]  //for nvd3
-            data: response.data,
+            //data: [{values: data}]  //for nvd3
+            data: data,
             showSettings: true
           });
         }

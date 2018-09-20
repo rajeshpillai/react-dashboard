@@ -104,11 +104,12 @@ export default class Pivot extends Component {
       .post(this.serviceGetDataUrl, widgetModel)
       .then(response => {
         console.log("response", response);
-        if (response && response.data) {
+        if (response && response.data && response.data.Data) {
+          let data = response.data.Data;
             console.log("response", response.data);
             //debugger;
           this.setState({            
-            data: response.data,
+            data,
             showSettings:true             
           });
         }

@@ -78,24 +78,25 @@ export default class DataModel extends Component {
       .then(response => {
         console.log("response", response);
         //debugger;
-        if (response && response.data) {
-          console.log("response.data************", response.data);
+        if (response && response.data && response.data.Data) {
+          let data = response.data.Data;
+          console.log("response.data.Data************", data);
           var app = this.state.app;
           app.tables = this.state.app.tables.map(f => {
             if (f.name == tableName) {
-              f.columns = response.data;
+              f.columns = data;
             }
             return f;
           });
           if (tableName == this.table1) {
             this.setState({
               app,
-              columns1: response.data
+              columns1: data
             });
           } else {
             this.setState({
               app,
-              columns2: response.data
+              columns2: data
             });
           }
         }
@@ -121,10 +122,11 @@ export default class DataModel extends Component {
       .then(response => {
         console.log("response", response);
         //debugger;
-        if (response && response.data) {
+        if (response && response.data && response.data.Data) {
+          let data = response.data.Data;
           console.log("response.data************", response.data);
           this.setState({
-            associations: [response.data]
+            associations: [data]
           });
         }
       })
@@ -222,12 +224,16 @@ export default class DataModel extends Component {
         AppTitle: this.state.app.title
       })
       .then(response => {
+        //if(response.data.Status.toLowerCase() == "success"){
         var app = this.state.app;
         app.associations = this.associations;
         this.setState({
           app
         });
         console.log("app*******************", app);
+      // } else {
+      //   alert(response.data.Error);
+      // }
 
         //console.log("response", response);
         //debugger;

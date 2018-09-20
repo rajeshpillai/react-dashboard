@@ -31,14 +31,29 @@ export default class DataEditor extends Component {
         console.log("response", response);
         //debugger;
         if (response && response.data) {
-          console.log("response.data************", response.data);
-          //var app = this.state.app;
-          //app.tables = response.data;
-          var allTables = response.data;
-          this.setState({
-            allTables
-          });
-        }
+          if(response.data.Status.toLowerCase() == "success"){
+            let data = response.data.Data;
+            console.log("response.data.Data************", data);
+            //var app = this.state.app;
+            //app.tables = response.data;
+            var allTables = data;
+            this.setState({
+              allTables
+            });
+          } else {
+            alert(response.data.Error);
+          }
+      }
+
+        // if (response && response.data) {
+        //   console.log("response.data************", response.data);
+        //   //var app = this.state.app;
+        //   //app.tables = response.data;
+        //   var allTables = response.data;
+        //   this.setState({
+        //     allTables
+        //   });
+        // }
       })
       .catch(function(error) {
         console.log("error", error);
@@ -92,6 +107,18 @@ export default class DataEditor extends Component {
     axios
       .post(this.serviceBaseUrl + "data/getColumnsDatatype", formData, config)
       .then(response => {
+
+        // if(response){
+        //   if(response.Status.toLowerCase() == "success"){
+        //     let data = response.data.Data;
+        //     this.setState({
+        //       importedColumns: data
+        //     });            
+        //   } else {
+        //     alert(response.Error);
+        //   }
+        // }
+
         if (response && response.data) {
           this.setState({
             importedColumns: response.data
@@ -118,6 +145,14 @@ export default class DataEditor extends Component {
     axios
       .post(this.serviceBaseUrl + "data/importTable", formData, config)
       .then(response => {
+        if(response && response.data){
+          if(response.data.Status.toLowerCase() == "success"){
+            
+          } else {
+
+          }
+        }
+        
         // var app = this.state.app;
         // app.associations = this.associations;
         // this.setState({
@@ -182,6 +217,15 @@ export default class DataEditor extends Component {
     axios
       .post(this.serviceBaseUrl + "data/addData", data)
       .then(response => {
+        if(response && response.data){
+          if(response.data.Status.toLowerCase() == "success"){
+            //Refresh the table list
+            this.fetchTables();
+            alert("Data Imported successfully !!");
+          } else {
+            alert(response.data.Error);
+          }
+        }
         // var app = this.state.app;
         // app.associations = this.associations;
         // this.setState({

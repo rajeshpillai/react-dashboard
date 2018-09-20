@@ -71,9 +71,10 @@ export default class Kpi extends Toolbox {
       .post(this.serviceGetDataUrl, widgetModel)
       .then(response => {
         console.log("response", response);
-        if (response && response.data) {
+        if (response && response.data && response.data.Data) {
+          let data = response.data.Data;
           this.setState({
-            value: response.data[0][this.state.expression],
+            value: data[0][this.state.expression],
             measureText: this.state.expression
           });
         }
