@@ -8,7 +8,7 @@ import Header from "./header";
 var _ = require("lodash");
 
 const newApp = {
-  paddingTop: "50px"
+  paddingTop: "10px"
 };
 
 const dataEditorLink = {
@@ -98,7 +98,7 @@ class AppCollection extends Component {
       pages: [],
       tables: []
     };
-    apps.push(app);
+   
 
     //Create App
     axios
@@ -106,6 +106,7 @@ class AppCollection extends Component {
       .post(this.serviceBaseUrl + "data/createNewApp", app)
       .then(response => {
         console.log("response", response);
+        apps.push(app);
         this.setState({
           apps
         });

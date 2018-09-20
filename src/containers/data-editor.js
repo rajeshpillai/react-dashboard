@@ -401,7 +401,7 @@ export default class DataEditor extends Component {
               <div className="all-table-wrapper">{allTableListView}</div>
             </div>
             <div>
-              <input type="button" value="Save" onClick={e => this.save(e)} />
+              <input type="button" className="btn btn-primary" value="Save" onClick={e => this.save(e)} />
             </div>
             {/* <div>
             <strong>{app.title} Table List:</strong>

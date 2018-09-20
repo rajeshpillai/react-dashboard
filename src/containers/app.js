@@ -19,10 +19,13 @@ class App extends Component {
     //this.onPageSelect = this.onPageSelect.bind(this);
     this.addPage = this.addPage.bind(this);
     this.setPageName = this.setPageName.bind(this);
+    this.showNewPageForm = this.showNewPageForm.bind(this);
+    this.hideNewPageForm = this.hideNewPageForm.bind(this);
     let app = props.data ? props.data : { pages: [] };
     this.state = {
       app: app,
-      currPageName: "Pages (" + app.pages.length + ")"
+      currPageName: "Pages (" + app.pages.length + ")",
+      showPageForm: false
     };
     console.log("props-APP", props);
 
@@ -73,16 +76,21 @@ class App extends Component {
       title: this.inpPageName.value,
       appId: app.id
     };
-    app.pages.push(page);
+    
     console.log("page............", page);
+    var that = this;
     //Create App
     axios
       .post(this.serviceBaseUrl + "data/createNewPage", page)
       .then(response => {
         console.log("response", response);
         if (response && response.data) {
-          this.setState({
-            app: response.data
+          let data = JSON.parse(response.data);
+          app.pages.push(page);
+          that.setState({
+            app: data,
+            currPageName: "Pages (" + data.pages.length + ")",
+            showPageForm:false
           });
         }
       })
@@ -94,6 +102,18 @@ class App extends Component {
   setPageName(title) {    
     this.setState({
       currPageName: title
+    });
+  }
+
+  showNewPageForm(){
+    this.setState({
+      showPageForm: true
+    });
+  }
+
+  hideNewPageForm(){
+    this.setState({
+      showPageForm: false
     });
   }
 
@@ -112,20 +132,48 @@ class App extends Component {
 
     var newPageFormView = app => {
       return (
-        <div>
-          <div>
-            <label>Page Name</label>
-          </div>
-          <div>
-            <input
-              ref={inpPageName => (this.inpPageName = inpPageName)}
-              type="text"
-              placeholder="Enter Page Name"
-              defaultValue=""
-            />
-            <button onClick={this.addPage}>Save</button>
+<div className="col-sm-6 card pt-3">
+        <div className="input-group mb-3">
+          <input
+            ref={inpPageName => (this.inpPageName = inpPageName)}
+            type="text"
+            placeholder="Enter Page Name"
+            className="form-control"
+            defaultValue=""
+          />
+          <div className="input-group-append">
+            <button
+              className="btn btn-outline-primary"
+              type="button"
+              onClick={this.addPage}
+            >
+              Save
+            </button>
+            <button
+              className="btn btn-outline-danger"
+              type="button"
+              onClick={this.hideNewPageForm}
+            >
+              Cancel
+            </button>
           </div>
         </div>
+      </div>
+      
+        // <div>
+        //   <div>
+        //     <label>Page Name</label>
+        //   </div>
+        //   <div>
+        //     <input
+        //       ref={inpPageName => (this.inpPageName = inpPageName)}
+        //       type="text"
+        //       placeholder="Enter Page Name"
+        //       defaultValue=""
+        //     />
+        //     <button onClick={this.addPage}>Save</button>
+        //   </div>
+        // </div>
       );
     };
 
@@ -179,7 +227,37 @@ class App extends Component {
       );
     });
 
-    var pagesView = (
+    var pagesView=pages.map(d => {
+      return (
+        <React.Fragment key={d.id}>         
+          <div className="col-sm-3">
+            <div className="card">
+              <div className="card-header">
+                <Link
+                  key={d.id}
+                  to={{ pathname: `/app/${appId}/pages/${d.id}`, state: d }}
+                >
+                  <span>{d.title}</span>
+                </Link>
+                <a href="#" className="float-right ml-3">
+                  <i className="fa fa-times text-danger" />
+                </a>
+                {/* <Link
+                  key={d.title}
+                  to={{ pathname: `/app/${d.id}/editor`, state: d }}
+                  style={dataEditorLink}
+                  className="float-right"
+                >
+                  <i className="fa fa-edit" />
+                </Link> */}
+              </div>             
+            </div>
+          </div>
+        </React.Fragment>
+      );
+    });
+
+    var pagesViewInHeader = (
       <React.Fragment>
         <a
           id="languages"
@@ -221,13 +299,45 @@ class App extends Component {
         {/* <Header app={this.props.data}  /> */}
         {/* <PageListHeader>{pagesView}</PageListHeader> */}
         <PortalCommon target="pageList" type="id">
-          {pagesView}
+          {pagesViewInHeader}
         </PortalCommon>
         <PortalCommon target="dataManager" type="id">
         {dataManagerLink}
         </PortalCommon>
         {addNewPageView()}
-        <Switch>
+        <Switch><Route
+                  exact={true}
+                  path="/app/:appid/pages"
+                  render={({ match }) => {
+                    return (
+                      <div>
+                        <div className="my-pages">                                                      
+                          <div>
+                            <div className="row">
+                              <div className="col-sm-6">
+                                <h3 className="mt-2 mb-2 ml-2">My Pages</h3>
+                              </div>
+                              <div className="col-sm-6">
+                                <a
+                                  onClick={e => this.showNewPageForm()}
+                                  href="#"
+                                  className="btn btn-info  mt-2 mb-2 ml-2 mr-2 float-right"
+                                >
+                                  <i className="fa fa-plus" /> Create New Page{" "}
+                                </a>
+                               
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row"> {this.state.showPageForm && newPageFormView()}</div>
+                        </div>
+                        {/* {this.state.showAppForm && newAppFormView} */}
+                        <div className="row">{pagesView}</div>
+                      </div>
+                    );
+                  }}
+                />
+
           <Route
             path="/app/:appid/pages/newpage"
             render={obj => {
