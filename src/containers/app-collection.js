@@ -5,6 +5,7 @@ import DataEditor from "./data-editor";
 import "./app-collection.css";
 import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
 import Header from "./header";
+var config = require('../config');
 var _ = require("lodash");
 
 const newApp = {
@@ -22,7 +23,7 @@ class AppCollection extends Component {
     //this.onSetTitle = this.onSetTitle.bind(this);
     this.addApp = this.addApp.bind(this);
     this.hideNewAppForm = this.hideNewAppForm.bind(this);
-    this.serviceBaseUrl = "http://localhost:57387/api/";
+    this.serviceBaseUrl = config.serviceBaseUrl;
     this.state = {
       apps: [],
       showAppForm: false

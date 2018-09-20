@@ -12,6 +12,7 @@ import axios from "axios";
 //import PageControList from "./page-control-list";
 import PortalCommon from "./portal-common.js";
 var _ = require("lodash");
+var config = require('../config');
 
 const save_page_button = {
   // position: "fixed",
@@ -37,7 +38,7 @@ const property_window = {
 };
 
 class Page extends Component {
-  serviceBaseUrl = "http://localhost:57387/api/";
+  serviceBaseUrl = config.serviceBaseUrl;
 
   componentDidMount() {
     //if(!this.props.app){

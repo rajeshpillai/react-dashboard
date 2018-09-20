@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 var _ = require("lodash");
+var config = require('../config');
 
 export default class Toolbox extends Component {
   constructor(props) {
@@ -32,7 +33,7 @@ export default class Toolbox extends Component {
       zIndex: "1000"
     };
 
-    this.serviceBaseUrl = "http://localhost:57387/api/";
+    this.serviceBaseUrl = config.serviceBaseUrl;// "http://localhost:57387/api/";
     this.serviceGetDataUrl = this.serviceBaseUrl + "data/getData";
     this.appId = props.appId;
   }

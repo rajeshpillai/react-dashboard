@@ -11,11 +11,12 @@ import Page from "./page.js";
 import "./app.css";
 // import PageListHeader from "../components/page-list-header.js";
 import PortalCommon from "./portal-common.js";
+var config = require('../config');
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.serviceBaseUrl = "http://localhost:57387/api/";
+    this.serviceBaseUrl = config.serviceBaseUrl;
     //this.onPageSelect = this.onPageSelect.bind(this);
     this.addPage = this.addPage.bind(this);
     this.setPageName = this.setPageName.bind(this);

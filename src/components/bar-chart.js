@@ -250,7 +250,7 @@ export default class BarChart extends Toolbox {
             type="text"
             placeholder="Enter Dimension"
             className="form-control"
-            value={this.state.dimensions[i].Name}
+            defaultValue={this.state.dimensions[i].Name}
             onChange={this.handleDimChange(i)}
           />
           <div className="input-group-append">
@@ -283,7 +283,7 @@ export default class BarChart extends Toolbox {
             type="text"
             placeholder="Enter Expression"
             className="form-control"
-            value={this.state.measure[i].Expression}
+            defaultValue={this.state.measure[i].Expression}
             onChange={this.handleMeasureChange(i)}
           />
           <div className="input-group-append">

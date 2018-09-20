@@ -6,6 +6,7 @@ import { join } from "path";
 import "./data-editor.css";
 import DataModel from "./data-model";
 var _ = require("lodash");
+var config = require('../config');
 
 export default class DataEditor extends Component {
   constructor(props) {
@@ -21,7 +22,7 @@ export default class DataEditor extends Component {
       importedColumns: []
     };
 
-    this.serviceBaseUrl = "http://localhost:57387/api/";
+    this.serviceBaseUrl = config.serviceBaseUrl;
   }
 
   fetchTables() {

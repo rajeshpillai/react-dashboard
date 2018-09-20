@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 //import Page from "./page.js";
 import { join } from "path";
 import "./data-editor.css";
+var config = require('../config');
 
 export default class DataModel extends Component {
   constructor(props) {
@@ -30,7 +31,7 @@ export default class DataModel extends Component {
 
     this.table1 = "";
     this.table2 = "";
-    this.serviceBaseUrl = "http://localhost:57387/api/";
+    this.serviceBaseUrl = config.serviceBaseUrl;
   }
 
   // componentWillReceiveProps(nextProps){
