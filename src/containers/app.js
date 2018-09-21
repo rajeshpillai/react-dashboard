@@ -11,6 +11,7 @@ import Page from "./page.js";
 import "./app.css";
 // import PageListHeader from "../components/page-list-header.js";
 import PortalCommon from "./portal-common.js";
+import Utility from "../common/utility";
 var config = require('../config');
 
 class App extends Component {
@@ -22,6 +23,7 @@ class App extends Component {
     this.setPageName = this.setPageName.bind(this);
     this.showNewPageForm = this.showNewPageForm.bind(this);
     this.hideNewPageForm = this.hideNewPageForm.bind(this);
+    this.deletePage = this.deletePage.bind(this);
     let app = props.data ? props.data : { pages: [] };
     this.state = {
       app: app,
@@ -116,6 +118,44 @@ class App extends Component {
     this.setState({
       showPageForm: false
     });
+  }
+
+  deletePage(appId,page) {  
+    var that = this;
+    var config = {
+      message:"Are you sure you want to delete " + page.title + "?",
+      onDeleteClick: function(){        
+        axios
+          .post(that.serviceBaseUrl + "data/deletePage?appId="+ appId + "&pageId=" + page.id)
+          .then(response => {
+            console.log("response", response);
+            if (response && response.data) {
+              let apps =JSON.parse(response.data);   
+              if(apps)               {
+                let app = apps.filter(item=>{
+                  return item.id == appId;
+                })
+
+                if(app.length > 0){
+                  app = app[0];
+                }
+              
+              that.setState({                   
+                app: app,
+                currPageName: "Pages (" + app.pages.length + ")",
+                showPageForm: false
+              });
+              that.props.setUpdateApps(apps);
+            }
+            }
+          })
+          .catch(function(error) {
+            console.log("error", error);
+          });
+      },
+      onNoClick: null
+    }
+    Utility.showDeleteConfirmBox(config);    
   }
 
   render() {
@@ -240,7 +280,7 @@ class App extends Component {
                 >
                   <span>{d.title}</span>
                 </Link>
-                <a href="#" className="float-right ml-3">
+                <a href="#" className="float-right ml-3" onClick={()=>this.deletePage(appId,d)}>
                   <i className="fa fa-times text-danger" />
                 </a>
                 {/* <Link

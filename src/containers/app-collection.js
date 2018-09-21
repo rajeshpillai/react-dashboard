@@ -5,6 +5,7 @@ import DataEditor from "./data-editor";
 import "./app-collection.css";
 import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
 import Header from "./header";
+import Utility from "../common/utility";
 var config = require('../config');
 var _ = require("lodash");
 
@@ -23,6 +24,8 @@ class AppCollection extends Component {
     //this.onSetTitle = this.onSetTitle.bind(this);
     this.addApp = this.addApp.bind(this);
     this.hideNewAppForm = this.hideNewAppForm.bind(this);
+    this.deleteApp = this.deleteApp.bind(this);
+    this.setUpdateApps = this.setUpdateApps.bind(this);
     this.serviceBaseUrl = config.serviceBaseUrl;
     this.state = {
       apps: [],
@@ -129,8 +132,39 @@ class AppCollection extends Component {
   //     title:title
   //   });
   // }
+  deleteApp(app) {  
+    var that = this;
+    var config = {
+      message:"Are you sure you want to delete " + app.title + "?",
+      onDeleteClick: function(){        
+        axios
+          .post(that.serviceBaseUrl + "data/deleteApp?appId="+app.id)
+          .then(response => {
+            console.log("response", response);
+            if (response && response.data) {
+              let data =JSON.parse(response.data);                  
+              that.setState({                   
+                apps: data
+              });
+            }
+          })
+          .catch(function(error) {
+            console.log("error", error);
+          });
+      },
+      onNoClick: null
+    }
+    Utility.showDeleteConfirmBox(config);    
+  }
+
+  setUpdateApps(apps){
+    this.setState({
+      apps
+    });
+  }
 
   render() {
+    
     var apps = this.state.apps.map(d => {
       return (
         <React.Fragment key={d.id}>
@@ -156,7 +190,7 @@ class AppCollection extends Component {
                 >
                   <span>{d.title}</span>
                 </Link>
-                <a href="#" className="float-right ml-3">
+                <a href="#" className="float-right ml-3" onClick={()=>this.deleteApp(d)}>
                   <i className="fa fa-times text-danger" />
                 </a>
                 <Link
@@ -216,7 +250,7 @@ class AppCollection extends Component {
           <div className="page">
             <Header />
             <div id="prop-root" />
-            <div className="container-fluid">
+            <div className="container-fluid">          
               <Switch>
                 <Route
                   exact={true}
@@ -268,6 +302,7 @@ class AppCollection extends Component {
                         key={obj.match.params.id}
                         data={app}
                         match={obj.match}
+                        setUpdateApps = {this.setUpdateApps}
                       />
                     );
                   }}
