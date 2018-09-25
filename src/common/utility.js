@@ -10,7 +10,7 @@ var utility = (function(){
             message: (config && config.message)?config.message: 'Are you sure you want to delete?',
             buttons: [
               {
-                label: 'Delete',
+                label: (config && config.yesLabel)?config.yesLabel:'Delete',
                 onClick: () => {
                     if(config && config.onDeleteClick){
                         config.onDeleteClick();
@@ -18,7 +18,7 @@ var utility = (function(){
                 }
               },
               {
-                label: 'Cancel',
+                label: (config && config.noLabel)?config.noLabel:'Cancel',
                 onClick: () => {
                     if(config && config.onNoClick){
                         config.onNoClick();

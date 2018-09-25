@@ -266,9 +266,9 @@ export default class Kpi extends Toolbox {
       <React.Fragment>
         {(this.state.measure == null || this.state.measure.length == 0) &&
           defaultView}
-        {this.state.showSettings && showSettingLinkUI}
+        {this.state.showSettings && this.props.mode != "preview" && showSettingLinkUI}
         {this.state.measure != null && this.state.measure.length > 0 && view}
-        {this.state.isFormVisible && this.ShowConfigForm()}
+        {this.state.isFormVisible && this.props.mode != "preview" && this.ShowConfigForm()}
       </React.Fragment>
     );
   }

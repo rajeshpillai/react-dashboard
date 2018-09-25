@@ -599,13 +599,13 @@ export default class Filter extends Toolbox {
         {(!this.state.dimensions ||
           (this.state.dimensions && this.state.dimensions.length == 0)) &&
           defaultView}
-        {this.state.showSettings && showSettingLinkUI}
+        {this.state.showSettings && this.props.mode != "preview" && showSettingLinkUI}
         {this.state.dimensions && this.state.dimensions.length > 0 && view}
         {this.state.dimensions &&
           this.state.dimensions.length > 0 &&
           this.enablePagination &&
           paginationButtonView}
-        {this.state.isFormVisible && this.ShowConfigForm()}
+        {this.state.isFormVisible && this.props.mode != "preview" && this.ShowConfigForm()}
       </React.Fragment>
     );
   }

@@ -417,9 +417,9 @@ export default class LineChart extends Toolbox {
         {(!this.state.data ||
           (this.state.data && this.state.data.length == 0)) &&
           defaultView}
-        {this.state.showSettings && showSettingLinkUI}
+        {this.state.showSettings && this.props.mode != "preview" && showSettingLinkUI}
         {this.state.data && this.state.data.length > 0 && view}
-        {this.state.isFormVisible && this.ShowConfigForm()}
+        {this.state.isFormVisible && this.props.mode != "preview" && this.ShowConfigForm()}
       </React.Fragment>
     );
   }

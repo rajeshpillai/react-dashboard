@@ -3,6 +3,7 @@ import ReactGridLayout from "react-grid-layout";
 import Kpi from "../components/kpi";
 import Filter from "../components/filter";
 import BarChart from "../components/bar-chart";
+import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
 //import NewBarChart from './components/newbarchart';
 import LineChart from "../components/line-chart";
 import PieChart from "../components/pie-chart";
@@ -25,6 +26,19 @@ const save_page_button = {
   /* right: -653px; */
 
   right: "-300%"
+};
+
+const preview_page_button = {
+  // position: "fixed",
+  // top: "9px",
+  // zIndex: "9999"
+  // // left: "250px"
+  /* margin: 5px; */
+  position: "absolute",
+  top: "-43px",
+  /* right: -653px; */
+
+  right: "-230%"
 };
 
 const property_window = {
@@ -115,7 +129,8 @@ class Page extends Component {
     appId: this.props.data ? this.props.data.appId : null,
     pageId: this.props.data ? this.props.data.pageId : null,
     appTitle: this.props.app ? this.props.app.title : null,
-    pageName: this.props.data ? this.props.data.pageName : ""
+    pageName: this.props.data ? this.props.data.pageName : ""//,
+    //mode: (this.props.data && this.props.data.mode) ? this.props.data.mode : "preview",
   };
 
   comps = {
@@ -135,6 +150,7 @@ class Page extends Component {
           onSetPropertyWindowActive={d => this.onSetPropertyWindowActive(d)}
           isFormVisible={config.isFormVisible}
           appId={this.props.match.params.appid}
+          mode={this.props.data.mode}
         />
       );
     },
@@ -169,6 +185,7 @@ class Page extends Component {
           onSetPropertyWindowActive={d => this.onSetPropertyWindowActive(d)}
           isFormVisible={config.isFormVisible}
           appId={this.props.match.params.appid}
+          mode={this.props.data.mode}
         />
       );
     },
@@ -189,6 +206,7 @@ class Page extends Component {
           onSetPropertyWindowActive={d => this.onSetPropertyWindowActive(d)}
           isFormVisible={config.isFormVisible}
           appId={this.props.match.params.appid}
+          mode={this.props.data.mode}
         />
       );
     },
@@ -209,6 +227,7 @@ class Page extends Component {
           onSetPropertyWindowActive={d => this.onSetPropertyWindowActive(d)}
           isFormVisible={config.isFormVisible}
           appId={this.props.match.params.appid}
+          mode={this.props.data.mode}
         />
       );
     },
@@ -227,6 +246,7 @@ class Page extends Component {
           onSetPropertyWindowActive={d => this.onSetPropertyWindowActive(d)}
           isFormVisible={config.isFormVisible}
           appId={this.props.match.params.appid}
+          mode={this.props.data.mode}
         />
       );
     },
@@ -247,6 +267,7 @@ class Page extends Component {
           onSetPropertyWindowActive={d => this.onSetPropertyWindowActive(d)}
           isFormVisible={config.isFormVisible}
           appId={this.props.match.params.appid}
+          mode={this.props.data.mode}
         />
       );
     },
@@ -264,6 +285,7 @@ class Page extends Component {
           onConfigurationChange={c => this.onConfigurationChange(c)}
           onDeleteBox={d => this.onDeleteBox(d)}
           appId={this.props.match.params.appid}
+          mode={this.props.data.mode}
         />
       );
     }
@@ -585,10 +607,7 @@ class Page extends Component {
     // layout is an array of objects, see the demo for more complete usage11
     var layout = this.state.layout;
     var li = this.state.uiComponents.map(c => {
-      return (
-        // <li key={c} draggable onDragStart={e => this.onDragStart(e, c)}>
-        //   {c}
-        // </li>
+      return (    
         <li
           key={c.type}
           draggable
@@ -596,22 +615,7 @@ class Page extends Component {
           className="nav-item"
         >
           <a className="nav-link" href="#">
-            {getComponentIcon(c.type)}
-            {/* <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="feather feather-file"
-            >
-              <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
-              <polyline points="13 2 13 9 20 9" />
-            </svg> */}
+            {getComponentIcon(c.type)}            
             {c.displayName}
           </a>
         </li>
@@ -621,6 +625,7 @@ class Page extends Component {
     var box = layout.map(l => {
       console.log("this.comps", this.comps);
       var clss = l.itemType == "DataGrid" ? "gridOverFlow" : "";
+      clss = this.props.data.mode == "preview" ? "grid-item-preview" : "";
       return (
         <div
           key={l.item.layoutId}
@@ -633,7 +638,47 @@ class Page extends Component {
       );
     });
 
+    var editPageLink=(
+      <Link  className="btn" style={save_page_button} to={{ pathname: `/app/${this.state.appId}/pages/${this.state.pageId}` }}>
+      Edit Page
+      {/* to={{ pathname: `/app/${d.id}/pages`, state: d }} */}
+    </Link>      
+    );
+    var previewPageLink=(
+      <Link  className="btn" style={preview_page_button} to={{ pathname: `/app/${this.state.appId}/pages/${this.state.pageId}/preview` }}>
+      Preview Page
+      {/* to={{ pathname: `/app/${d.id}/pages`, state: d }} */}
+    </Link>  
+    );
+
     return (
+      <React.Fragment>
+        {/* <Route
+            path="/app/:appid/pages/:pageid/preview"
+            render={({ match }) => {
+              //   console.log("match.params.pageid",match.params.pageid);
+              //console.log("this.state___________",this.state);
+            
+              var pageName =this.state.pageName;              
+              //alert(pageName);
+              return (
+                <Page
+                  key={match.params.pageid}
+                  app={this.state.app}                  
+                  data={{
+                    appId: match.params.appid,
+                    pageId: match.params.pageid,
+                    pageName: pageName,
+                    mode: "preview"
+                  }} 
+                  setPageName={()=>this.setPageName(pageName)}                  
+                  match={match} 
+                  
+                />
+              );
+            }}
+          /> */}
+
       <div className="row">
         <nav className="col-md-2 d-none d-md-block bg-light sidebar">
           <div className="sidebar-sticky">
@@ -642,7 +687,11 @@ class Page extends Component {
               <PortalCommon target="pageControls" type="id">
                 {li}
               </PortalCommon>
-              <input
+              {/* Edit Button */}
+              {this.props.data.mode == "preview" && editPageLink}
+              {this.props.data.mode != "preview" && previewPageLink}
+              {/* Save Button */}
+              {this.props.data.mode != "preview" && <input
                 type="button"
                 value="Save Page"
                 onClick={e => {
@@ -650,7 +699,8 @@ class Page extends Component {
                 }}
                 className="btn btn-primary"
                 style={save_page_button}
-              />
+              />}
+              
             </ul>
           </div>
         </nav>
@@ -679,13 +729,15 @@ class Page extends Component {
                 draggableCancel="input,textarea"
                 className="layout"
                 layout={layout}
-                cols={12}
-                rowHeight={100}
+                 cols={12}
+                 rowHeight={100}
                 //cols={24}
                 //rowHeight={1}
                 width={1200}
                 onLayoutChange={this.onLayoutChange}
                 onResizeStop={this.onResizeStop}
+                isDraggable={this.props.data.mode == "preview"? false:true}
+                isResizable={this.props.data.mode == "preview"? false:true}
               >
                 {box}
               </ReactGridLayout>
@@ -694,6 +746,7 @@ class Page extends Component {
         </main>
         {/* <div id="prop-root" /> */}
       </div>
+      </React.Fragment>
     );
   }
 }

@@ -759,9 +759,9 @@ export default class BarChart extends Toolbox {
         {(!this.state.data ||
           (this.state.data && this.state.data.length == 0)) &&
           defaultView}
-        {this.state.showSettings && showSettingLinkUI}
+        {this.state.showSettings && this.props.mode != "preview" && showSettingLinkUI}
         {this.state.data && this.state.data.length > 0 && view}
-        {this.state.isFormVisible && this.ShowConfigForm()}
+        {this.state.isFormVisible && this.props.mode != "preview" && this.ShowConfigForm()}
         {/* <div style={{position:"relative",height:"50vh"}} >
          <canvas ref={(canv)=>this.canv = canv}  width="100%" height="100%"></canvas>
         </div> */}

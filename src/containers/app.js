@@ -25,6 +25,7 @@ class App extends Component {
     this.hideNewPageForm = this.hideNewPageForm.bind(this);
     this.deletePage = this.deletePage.bind(this);
     let app = props.data ? props.data : { pages: [] };
+    if(!app.pages){app.pages=[];}
     this.state = {
       app: app,
       currPageName: "Pages (" + app.pages.length + ")",
@@ -356,7 +357,7 @@ class App extends Component {
                           <div>
                             <div className="row">
                               <div className="col-sm-6">
-                                <h3 className="mt-2 mb-2 ml-2">My Pages</h3>
+                                <h3 className="mt-2 mb-2 ml-2">{this.state.app.title} - My Pages</h3>
                               </div>
                               <div className="col-sm-6">
                                 <a
@@ -390,6 +391,37 @@ class App extends Component {
           />
           {/* {pagesRoutesView(this.props.data.pages)}                     */}
           <Route
+            path="/app/:appid/pages/:pageid/preview"
+            render={({ match }) => {
+              //   console.log("match.params.pageid",match.params.pageid);
+              //console.log("this.state___________",this.state);
+             var page= this.state.app.pages.filter(item=>{
+                return item.id == match.params.pageid
+              });
+              var pageName = "";
+              if(page && page.length > 0){
+                pageName = page[0].title;
+              }
+              //alert(pageName);
+              return (
+                <Page
+                  key={match.params.pageid}
+                  app={this.state.app}                  
+                  data={{
+                    appId: match.params.appid,
+                    pageId: match.params.pageid,
+                    pageName: pageName,
+                    mode: "preview"
+                  }} 
+                  setPageName={()=>this.setPageName(pageName)}                  
+                  match={match} 
+                  
+                />
+              );
+            }}
+          />
+
+          <Route
             path="/app/:appid/pages/:pageid"
             render={({ match }) => {
               //   console.log("match.params.pageid",match.params.pageid);
@@ -409,14 +441,17 @@ class App extends Component {
                   data={{
                     appId: match.params.appid,
                     pageId: match.params.pageid,
-                    pageName: pageName
+                    pageName: pageName,
+                    mode: "edit"
                   }} 
-                  setPageName={this.setPageName}                  
-                  match={match}
+                  setPageName={()=>this.setPageName(pageName)}                  
+                  match={match} 
+                  
                 />
               );
             }}
           />
+          
         </Switch>
       </div>
     );

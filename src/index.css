@@ -154,6 +154,12 @@ li b {
   background-color: #ddd;
 }
 
+.grid-item-preview{
+  border: none !important;
+  background-color : #fff;
+  padding: 5px;
+}
+
 /* Table scroll start */
 /* .table-fixed{
   width: 100%;

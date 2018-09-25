@@ -4,7 +4,10 @@ import axios from "axios";
 import PropertyWindow from "./property-window";
 import Toolbox from "./toolbox.js";
 import ContainerDimensions from "react-container-dimensions";
+import DataTable from './datatable/index';
 import $ from "jquery";
+import "./datagrid.css";
+import Pagination from './pagination';
 var _ = require("lodash");
 
 const table_Scroll = {
@@ -12,6 +15,13 @@ const table_Scroll = {
   height: "400px",
   overflow: "scroll"
 };
+
+const search_textbox={
+  backgroundColor: "#ffffff",
+  border: "1px solid black",
+  opacity: "1"
+}
+
 
 const defaultData = [
   { "Enter Dimension": "x1", "Enter Expression": 100 },
@@ -29,6 +39,7 @@ export default class DataGrid extends Toolbox {
     this.ShowConfigForm = this.ShowConfigForm.bind(this);
     this.nextPage = this.nextPage.bind(this);
     this.previousPage = this.previousPage.bind(this);
+    this.onGotoPage = this.onGotoPage.bind(this);
     this.getData = this.getData.bind(this);
     this.toggleSearch = this.toggleSearch.bind(this);
     this.searchData = this.searchData.bind(this);
@@ -40,11 +51,11 @@ export default class DataGrid extends Toolbox {
     this.filters = [];
     this.searchList = [];
 
-    this.pageSize = 15;
+    //this.state.pageSize = 10;
     this.totalRecords = 0;
     this.enablePagination = true;
     this.isFirstTime = true;
-    this.currentPage = 0;
+    this.currentPage = 1;
     this.totalPageCount = 0;
     this.layoutId = props.layoutId;
     this.id = props.id;
@@ -52,6 +63,9 @@ export default class DataGrid extends Toolbox {
     this.measure = props.measure;
     this.defaultValue = false;
     this.searchList = [];
+
+    this.tdWidth=33.33;
+    this.thWidth = 33.33;
 
     var cols = props.cols;
     if (!this.dimensions || !this.measure) {
@@ -100,7 +114,8 @@ export default class DataGrid extends Toolbox {
       cols: cols,
       isFormVisible: props.isFormVisible,
       showSettings: true,
-      data: defaultData
+      data: defaultData,
+      pageSize:10
     };
 
     //this.fetchData();
@@ -216,13 +231,13 @@ export default class DataGrid extends Toolbox {
     widgetModel.FilterList = filterList;
     //}
 
-    widgetModel.PageSize = this.pageSize;
+    widgetModel.PageSize = this.state.pageSize;
     widgetModel.EnablePagination = this.enablePagination;
     // if(this.filterChanged){
     //   this.isFirstTime = true;
     // }
     if (this.enablePagination == true && this.isFirstTime) {
-      //widgetModel.PageSize = this.pageSize;
+      //widgetModel.PageSize = this.state.pageSize;
       widgetModel.IsRecordCountReq = true;
       //Get Total Records count
       axios
@@ -234,7 +249,7 @@ export default class DataGrid extends Toolbox {
             let data = response.data.Data;
             //console.log("response.data************", JSON.parse(data));
             this.totalRecords = parseInt(data[0]["totalrowscount"]);
-            if (this.totalRecords <= this.pageSize) {
+            if (this.totalRecords <= this.state.pageSize) {
               this.enablePagination = false;
             }
             this.currentPage = 1;
@@ -255,19 +270,19 @@ export default class DataGrid extends Toolbox {
     if (this.state.dimensions && this.state.dimensions.length > 0) {
       name = this.state.dimensions[0].Name;
     }
-    widgetModel.PageSize = this.pageSize;
+    widgetModel.PageSize = this.state.pageSize;
 
     if (this.isFirstTime) {
       this.startRowNum = 0;
     }
-    this.totalPageCount = Math.floor(this.totalRecords / this.pageSize);
+    this.totalPageCount = Math.floor(this.totalRecords / this.state.pageSize);
 
     //widgetModel.curentPage = this.state.currentPage;
 
     // if(this.isFirstTime){
     //   this.startRowNum = 0;
     // } else {
-    //   this.startRowNum = parseInt(this.startRowNum) + parseInt(this.pageSize);
+    //   this.startRowNum = parseInt(this.startRowNum) + parseInt(this.state.pageSize);
     //   if (this.startRowNum < 0) { this.startRowNum = 0; }
     // }
     widgetModel.IsRecordCountReq = false;
@@ -649,12 +664,12 @@ export default class DataGrid extends Toolbox {
       if (this.isFirstTime) {
         this.startRowNum = 0;
       } else {
-        this.startRowNum = parseInt(this.startRowNum) + parseInt(this.pageSize);
-        if (this.currentPage != Math.floor(this.startRowNum / this.pageSize)) {
-          this.currentPage = Math.floor(this.startRowNum / this.pageSize);
+        this.startRowNum = parseInt(this.startRowNum) + parseInt(this.state.pageSize);
+        if (this.currentPage != Math.floor(this.startRowNum / this.state.pageSize)) {
+          this.currentPage = Math.floor(this.startRowNum / this.state.pageSize);
         }
         if (this.startRowNum > this.totalRecords) {
-          this.startRowNum = this.totalRecords - parseInt(this.pageSize);
+          this.startRowNum = this.totalRecords - parseInt(this.state.pageSize);
         }
       }
       this.fetchData();
@@ -667,8 +682,8 @@ export default class DataGrid extends Toolbox {
     }
 
     this.currentPage = this.currentPage - 1;
-    if (this.curentPage != Math.floor(this.startRowNum / this.pageSize)) {
-      this.currentPage = Math.floor(this.startRowNum / this.pageSize);
+    if (this.curentPage != Math.floor(this.startRowNum / this.state.pageSize)) {
+      this.currentPage = Math.floor(this.startRowNum / this.state.pageSize);
     }
     if (this.currentPage <= 0) {
       this.currentPage = 1;
@@ -676,9 +691,9 @@ export default class DataGrid extends Toolbox {
       if (this.isFirstTime) {
         this.startRowNum = 0;
       } else {
-        this.startRowNum = parseInt(this.startRowNum) - parseInt(this.pageSize);
-        if (this.currentPage != Math.floor(this.startRowNum / this.pageSize)) {
-          this.currentPage = Math.floor(this.startRowNum / this.pageSize);
+        this.startRowNum = parseInt(this.startRowNum) - parseInt(this.state.pageSize);
+        if (this.currentPage != Math.floor(this.startRowNum / this.state.pageSize)) {
+          this.currentPage = Math.floor(this.startRowNum / this.state.pageSize);
         }
         if (this.startRowNum < 0) {
           this.startRowNum = 0;
@@ -743,6 +758,22 @@ export default class DataGrid extends Toolbox {
     //});
   }
 
+  getHeaders =()=> {
+    let tableHeaders=[];
+    this.state.cols.map((col, i) =>{
+      tableHeaders.push({title:col.displayName, accessor:col.displayName, index:i+1})
+    })
+    return tableHeaders;
+  };
+
+  onGotoPage(pageNo){
+    if(pageNo > this.currentPage){
+      this.nextPage();
+    } else{
+      this.previousPage();
+    }
+  }
+
   render() {
     console.log("DataGrid: Render");
     var showSettingLinkUI = (
@@ -767,9 +798,9 @@ export default class DataGrid extends Toolbox {
 
     var searchButtonView = col => {
       return (
-        <span className="right">
+        <span  className="float-right">
           <a href="#" onClick={() => this.toggleSearch(col)}>
-            Search
+            <i class="fa fa-search" aria-hidden="true"></i>
           </a>
         </span>
       );
@@ -777,7 +808,7 @@ export default class DataGrid extends Toolbox {
 
     var searchTextBoxView = col => {
       return (
-        <input
+        <input className="search_textbox"
           type="text"
           onKeyUp={e => this.searchData(e, col)}
           onBlur={e => this.onSearchBlur(e, col)}
@@ -787,7 +818,7 @@ export default class DataGrid extends Toolbox {
 
     var thHeading = this.state.cols.map((col, i) => {
       return (
-        <th key={i}>
+        <th key={i} style={{width:this.tdWidth+"%"}}>
           {col.displayName}
           {col.allowSearch && searchButtonView(col)}
           {col.showSearch && searchTextBoxView(col)}
@@ -795,6 +826,7 @@ export default class DataGrid extends Toolbox {
       );
     });
 
+    
     // var thDim = this.state.dimensions.map((dim)=>{
     //         return (<th key={dim.Name}>{dim.Name}  <span>Search</span></th>)
     //     });
@@ -805,7 +837,7 @@ export default class DataGrid extends Toolbox {
 
     var td = rowIndex => {
       return this.state.cols.map((col, i) => {
-        return <td key={i}> {getTDData(rowIndex, col.name)}</td>;
+        return <td key={i} style={{width:this.tdWidth+"%"}}> {getTDData(rowIndex, col.name)}</td>;
       });
     };
 
@@ -827,13 +859,24 @@ export default class DataGrid extends Toolbox {
         <input type="button" onClick={this.nextPage} value="Next" />
       </div>
     );
-    var view = (
+    var view = (width,height)=>{
+      this.tdWidth = (100/3)-1;
+      this.thWidth=(100/3)-1;
+      let bodyHeight = height-130;
+
+      // var records = Math.ceil(height/21);
+      // console.log("records.........",records);
+      // if(this.state.pageSize < records){
+      //   this.setState({
+      //     pageSize:records
+      //   })
+      // }
       // <ContainerDimensions>
       // { ({ width, height }) =>
-      <table
+      return (<table
         id={"table_" + this.id}
-        height="100%"
-        className="scrollTable table table-sm table-bordered table-striped"
+        // height="100%"
+        className="table table-sm table-bordered table-fixed"
       >
         <thead className="thead-dark fixedHeader">
           <tr>
@@ -842,22 +885,62 @@ export default class DataGrid extends Toolbox {
             {thHeading}
           </tr>
         </thead>
-        <tbody className="scrollContent" onScroll={this.onScroll}>
-          {tr}
+        <tbody className="scrollContent" style={{height:bodyHeight+"px"}}  >
+        {/* onScroll={this.onScroll} */}
+          {tr}  
         </tbody>
-      </table>
+      </table>)
       //     }
       // </ContainerDimensions>
-    );
+                  };
 
     return (
       <React.Fragment>
         {(!this.state.data ||
           (this.state.data && this.state.data.length == 0)) &&
           defaultView}
-        {this.state.showSettings && showSettingLinkUI}
+        {this.state.showSettings && this.props.mode != "preview" && showSettingLinkUI}
+        {/* <DataTable className="data-table"
+            // title="USER PROFILES"
+            keyField="id"
+            edit={true}
+            pagination={{
+              enabled: true,
+              pageLength: 5,
+              type: "long"  // long, short
+            }}
+            width="100%"
+             headers={this.getHeaders()}
+            data={this.state.data}
+            noData="No records!" 
+            // onUpdate={this.onUpdateTable}
+            /> */}
+      <ContainerDimensions>
+          {({ width, height }) => (          
+          <div
+              id="tableContainer"
+              className="tableContainer"
+              width={width}
+              height={height-50}
+            >
+              {this.state.data && this.state.data.length > 0 && view(width,height)}
+              <Pagination
+                    type="short"
+                    totalRecords = {this.totalRecords}
+                    pageLength = {this.state.pageSize}
+                    // onPageLengthChange={this.onPageLengthChange}
+                    onGotoPage = {this.onGotoPage}
+                    currentPage={this.currentPage}
+                 />
+              {/* {this.state.loadingState ? <p className="loading"> loading More Items..</p> : ""} */}            
+          </div>
+        )}
+        </ContainerDimensions>
+
+
+
         {/* <div ref={(iScroll)=>this.iScroll = iScroll} style={table_Scroll}> */}
-        <ContainerDimensions>
+        {/* <ContainerDimensions>
           {({ width, height }) => (
             <div
               id="tableContainer"
@@ -865,14 +948,14 @@ export default class DataGrid extends Toolbox {
               width={width}
               height={height}
             >
-              {this.state.data && this.state.data.length > 0 && view}
+              {this.state.data && this.state.data.length > 0 && view} */}
               {/* {this.state.loadingState ? <p className="loading"> loading More Items..</p> : ""} */}
               {/* </div>    */}
-            </div>
+            {/* </div>
           )}
-        </ContainerDimensions>
+        </ContainerDimensions> */}
         {/* {this.state.data && this.state.data.length > 0 && this.enablePagination && paginationButtonView} */}
-        {this.state.isFormVisible && this.ShowConfigForm()}
+        {this.state.isFormVisible && this.props.mode != "preview" && this.ShowConfigForm()}
       </React.Fragment>
     );
   }
