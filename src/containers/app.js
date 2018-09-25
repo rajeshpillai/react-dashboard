@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import Page from "./page.js";
 import "./app.css";
+import PageBox from "./page-box.js";
 // import PageListHeader from "../components/page-list-header.js";
 import PortalCommon from "./portal-common.js";
 import Utility from "../common/utility";
@@ -159,6 +160,26 @@ class App extends Component {
     Utility.showDeleteConfirmBox(config);    
   }
 
+  updatePageTitle(pageId,pageTitle){
+   //Todo: UPdate Page Title in DB/File
+   var app = this.state.app;
+    let page = app.pages.filter(item=>{
+      return item.id == pageId;
+    })
+    if(page.length > 0){
+      page[0].title = pageTitle;
+    }
+
+    this.setState({
+      app
+    })
+  }
+
+  // onChangePageTitle(e,pageId){
+  //   alert(pageId);
+  //   alert(e.target.value);
+  // }
+
   render() {
     //debugger;
     // var appId = this.state.app.id;
@@ -273,27 +294,25 @@ class App extends Component {
       return (
         <React.Fragment key={d.id}>         
           <div className="col-sm-3">
-            <div className="card">
+          <PageBox page={d} appId={appId} deletePage={()=>this.deletePage(appId,d)} />
+            {/* <div className="card">
               <div className="card-header">
+                <input type="text"  defaultValue={d.title} style={{textTransform: "uppercase"}} />
+                <a href="#" className="pl-2" ><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
                 <Link
                   key={d.id}
                   to={{ pathname: `/app/${appId}/pages/${d.id}`, state: d }}
-                >
+                >                  
                   <span>{d.title}</span>
-                </Link>
-                <a href="#" className="float-right ml-3" onClick={()=>this.deletePage(appId,d)}>
+                </Link>                
+                <a href="#" title="Delete" className="float-right ml-3" onClick={()=>this.deletePage(appId,d)}>
                   <i className="fa fa-times text-danger" />
                 </a>
-                {/* <Link
-                  key={d.title}
-                  to={{ pathname: `/app/${d.id}/editor`, state: d }}
-                  style={dataEditorLink}
-                  className="float-right"
-                >
-                  <i className="fa fa-edit" />
-                </Link> */}
+                <a href="#" className="float-right ml-3" title="Edit">
+                  <i className="fa fa-pencil" />
+                </a>                
               </div>             
-            </div>
+            </div> */}
           </div>
         </React.Fragment>
       );

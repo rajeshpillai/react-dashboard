@@ -800,7 +800,7 @@ export default class DataGrid extends Toolbox {
       return (
         <span  className="float-right">
           <a href="#" onClick={() => this.toggleSearch(col)}>
-            <i class="fa fa-search" aria-hidden="true"></i>
+            <i className="fa fa-search" aria-hidden="true"></i>
           </a>
         </span>
       );
