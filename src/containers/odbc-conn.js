@@ -177,8 +177,8 @@ export default class OdbcConn extends Component {
               <span
                 key={c.column_name}
                 className="list-group-item list-group-item-action"               
-                 data-toggle="list"                
-                 role="columns"                
+                //  data-toggle="list"                
+                //  role="columns"                
               >
                <input type="checkbox" name="col" checked={c.isSelected} onChange={this.onChangeCol} value={c.column_name} />{" "}
                   {c.column_name}{" "}                
