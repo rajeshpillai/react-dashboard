@@ -302,6 +302,7 @@ export default class DataModel extends Component {
         <div className="card mt-2">
           <div className="card-body">
             <div className="col-sm-12">
+            <h4>Create Table Associations</h4>
               <div className="row">
                 <div className="col-md-6">
                   <div className="form-group row">

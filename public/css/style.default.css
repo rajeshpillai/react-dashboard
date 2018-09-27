@@ -172,10 +172,10 @@ section header {
   }
 }
 
-.list-group-item {
+/* .list-group-item {
   border-right: 0;
   border-left: 0;
-}
+} */
 
 .list-group-item:first-child, .list-group-item:last-child {
   border-radius: 0;

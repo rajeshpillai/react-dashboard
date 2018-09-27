@@ -1,0 +1,5 @@
+.all-table-column-wrapper {
+    height: 40vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }

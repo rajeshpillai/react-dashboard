@@ -5,6 +5,9 @@ import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 import { join } from "path";
 import "./data-editor.css";
 import DataModel from "./data-model";
+import Modal from 'react-responsive-modal';
+// import OdbcConn from './odbc-conn';
+import DataSources from './data-sources';
 var _ = require("lodash");
 var config = require('../config');
 
@@ -12,14 +15,16 @@ export default class DataEditor extends Component {
   constructor(props) {
     super(props);
     this.fetchTables = this.fetchTables.bind(this);
-    this.onChangeFile = this.onChangeFile.bind(this);
-    this.addTable = this.addTable.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+    // this.onChangeFile = this.onChangeFile.bind(this);
+    // this.addTable = this.addTable.bind(this);
+    // this.handleChange = this.handleChange.bind(this);
     var app = props.data;
     this.state = {
       app,
       allTables: [],
-      importedColumns: []
+      //importedColumns: [],
+      open: false,
+      dataSourceType: null
     };
 
     this.serviceBaseUrl = config.serviceBaseUrl;
@@ -93,81 +98,81 @@ export default class DataEditor extends Component {
     this.fetchTables();
   }
 
-  getColumnsDatatype(e) {
-    const formData = new FormData();
-    formData.append("file", this.state.file);
-    formData.append("delimiter", this.inpDelimiter.value);
-    formData.append("tablename", this.inpTableName.value);
+  // getColumnsDatatype(e) {
+  //   const formData = new FormData();
+  //   formData.append("file", this.state.file);
+  //   formData.append("delimiter", this.inpDelimiter.value);
+  //   formData.append("tablename", this.inpTableName.value);
 
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data"
-      }
-    };
+  //   const config = {
+  //     headers: {
+  //       "content-type": "multipart/form-data"
+  //     }
+  //   };
 
-    axios
-      .post(this.serviceBaseUrl + "data/getColumnsDatatype", formData, config)
-      .then(response => {
+  //   axios
+  //     .post(this.serviceBaseUrl + "data/getColumnsDatatype", formData, config)
+  //     .then(response => {
 
-        // if(response){
-        //   if(response.Status.toLowerCase() == "success"){
-        //     let data = response.data.Data;
-        //     this.setState({
-        //       importedColumns: data
-        //     });            
-        //   } else {
-        //     alert(response.Error);
-        //   }
-        // }
+  //       // if(response){
+  //       //   if(response.Status.toLowerCase() == "success"){
+  //       //     let data = response.data.Data;
+  //       //     this.setState({
+  //       //       importedColumns: data
+  //       //     });            
+  //       //   } else {
+  //       //     alert(response.Error);
+  //       //   }
+  //       // }
 
-        if (response && response.data) {
-          this.setState({
-            importedColumns: response.data
-          });
-        }
-      })
-      .catch(function(error) {
-        console.log("error", error);
-      });
-  }
+  //       if (response && response.data) {
+  //         this.setState({
+  //           importedColumns: response.data
+  //         });
+  //       }
+  //     })
+  //     .catch(function(error) {
+  //       console.log("error", error);
+  //     });
+  // }
 
-  importTable(e) {
-    const formData = new FormData();
-    formData.append("file", this.state.file);
-    formData.append("delimiter", this.inpDelimiter.value);
-    formData.append("tablename", this.inpTableName.value);
+  // importTable(e) {
+  //   const formData = new FormData();
+  //   formData.append("file", this.state.file);
+  //   formData.append("delimiter", this.inpDelimiter.value);
+  //   formData.append("tablename", this.inpTableName.value);
 
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data"
-      }
-    };
+  //   const config = {
+  //     headers: {
+  //       "content-type": "multipart/form-data"
+  //     }
+  //   };
 
-    axios
-      .post(this.serviceBaseUrl + "data/importTable", formData, config)
-      .then(response => {
-        if(response && response.data){
-          if(response.data.Status.toLowerCase() == "success"){
+  //   axios
+  //     .post(this.serviceBaseUrl + "data/importTable", formData, config)
+  //     .then(response => {
+  //       if(response && response.data){
+  //         if(response.data.Status.toLowerCase() == "success"){
             
-          } else {
+  //         } else {
 
-          }
-        }
+  //         }
+  //       }
         
-        // var app = this.state.app;
-        // app.associations = this.associations;
-        // this.setState({
-        //    app
-        // })
-      })
-      .catch(function(error) {
-        console.log("error", error);
-      });
-  }
+  //       // var app = this.state.app;
+  //       // app.associations = this.associations;
+  //       // this.setState({
+  //       //    app
+  //       // })
+  //     })
+  //     .catch(function(error) {
+  //       console.log("error", error);
+  //     });
+  // }
 
-  onChangeFile(e) {
-    this.setState({ file: e.target.files[0] });
-  }
+  // onChangeFile(e) {
+  //   this.setState({ file: e.target.files[0] });
+  // }
 
   save(e) {
     axios
@@ -189,69 +194,83 @@ export default class DataEditor extends Component {
   //     this.setState({ app : nextProps.data })
   // }
 
-  handleChange(e, colName) {
-    //alert(e.target.value);
-    //alert(colName);
-    var importedColumns = this.state.importedColumns;
-    importedColumns = importedColumns.map(f => {
-      if (f.Name == colName) {
-        f.CType = e.target.value;
-      }
-      return f;
+  // handleChange(e, colName) {
+  //   //alert(e.target.value);
+  //   //alert(colName);
+  //   var importedColumns = this.state.importedColumns;
+  //   importedColumns = importedColumns.map(f => {
+  //     if (f.Name == colName) {
+  //       f.CType = e.target.value;
+  //     }
+  //     return f;
+  //   });
+
+  //   this.setState({
+  //     importedColumns
+  //   });
+  // }
+
+  // addData(e) {
+  //   var data = {
+  //     Columns: this.state.importedColumns,
+  //     FileName: this.state.file.name,
+  //     Delemiter: this.inpDelimiter.value,
+  //     TableName: this.inpTableName.value
+  //   };
+
+  //   console.log("ImportedFileModel", data);
+
+  //   axios
+  //     .post(this.serviceBaseUrl + "data/addData", data)
+  //     .then(response => {
+  //       if(response && response.data){
+  //         if(response.data.Status.toLowerCase() == "success"){
+  //           //Refresh the table list
+  //           this.fetchTables();
+  //           alert("Data Imported successfully !!");
+  //         } else {
+  //           alert(response.data.Error);
+  //         }
+  //       }
+  //       // var app = this.state.app;
+  //       // app.associations = this.associations;
+  //       // this.setState({
+  //       //    app
+  //       // })
+  //     })
+  //     .catch(function(error) {
+  //       console.log("error", error);
+  //     });
+  // }
+
+  onOpenModal = (type) => {
+    this.setState({ 
+      open: true,
+      dataSourceType: type 
     });
-
-    this.setState({
-      importedColumns
+  };
+ 
+  onCloseModal = () => {
+    this.setState({ 
+      open: false, 
+      dataSourceType:null 
     });
-  }
-
-  addData(e) {
-    var data = {
-      Columns: this.state.importedColumns,
-      FileName: this.state.file.name,
-      Delemiter: this.inpDelimiter.value,
-      TableName: this.inpTableName.value
-    };
-
-    console.log("ImportedFileModel", data);
-
-    axios
-      .post(this.serviceBaseUrl + "data/addData", data)
-      .then(response => {
-        if(response && response.data){
-          if(response.data.Status.toLowerCase() == "success"){
-            //Refresh the table list
-            this.fetchTables();
-            alert("Data Imported successfully !!");
-          } else {
-            alert(response.data.Error);
-          }
-        }
-        // var app = this.state.app;
-        // app.associations = this.associations;
-        // this.setState({
-        //    app
-        // })
-      })
-      .catch(function(error) {
-        console.log("error", error);
-      });
-  }
+  };
 
   render() {
-    let dataTypes = [
-      "BOOLEAN",
-      "TINYINT",
-      "INT",
-      "SMALLINT",
-      "BIGINT",
-      "STRING",
-      "DOUBLE",
-      "FLOAT",
-      "DATE",
-      "TIME",
-      "TIMESTAMP"
-    ];
+    // let dataTypes = [
+    //   "BOOLEAN",
+    //   "TINYINT",
+    //   "INT",
+    //   "SMALLINT",
+    //   "BIGINT",
+    //   "STRING",
+    //   "DOUBLE",
+    //   "FLOAT",
+    //   "DATE",
+    //   "TIME",
+    //   "TIMESTAMP"
+    // ];
 
     var app = this.state.app;
     if (!app) {
@@ -260,60 +279,55 @@ export default class DataEditor extends Component {
 
     var appId = app.id;
 
-    // var columnDataTypeListView = (value) =>{
-    //     dataTypes.map(d=>{
-    //         return (<option value={d} >{d}</option>)
-    //         })
-    // }
 
-    var columnDataTypeListView = dataTypes.map(d => {
-      return (
-        <option key={d} value={d}>
-          {d}
-        </option>
-      );
-    });
+    // var columnDataTypeListView = dataTypes.map(d => {
+    //   return (
+    //     <option key={d} value={d}>
+    //       {d}
+    //     </option>
+    //   );
+    // });
 
-    var importedColumnsView = this.state.importedColumns.map(col => {
-      return (
-        <div className="form-group row" key={col.Name}>
-          <label className="col-sm-4 col-form-label">{col.Name}</label>
-          <div className="col-sm-8">
-            <select
-              defaultValue={col.CType}
-              className="form-control"
-              onChange={e => this.handleChange(e, col.Name)}
-            >
-              {columnDataTypeListView}
-            </select>
-            {/* <input type="password" className="form-control" id="inputPassword" placeholder="Password"> */}
-          </div>
-        </div>
+    // var importedColumnsView = this.state.importedColumns.map(col => {
+    //   return (
+    //     <div className="form-group row" key={col.Name}>
+    //       <label className="col-sm-4 col-form-label">{col.Name}</label>
+    //       <div className="col-sm-8">
+    //         <select
+    //           defaultValue={col.CType}
+    //           className="form-control"
+    //           onChange={e => this.handleChange(e, col.Name)}
+    //         >
+    //           {columnDataTypeListView}
+    //         </select>
+    //         {/* <input type="password" className="form-control" id="inputPassword" placeholder="Password"> */}
+    //       </div>
+    //     </div>
 
-        // <div key={col.Name}>
-        //   <span>{col.Name}</span>
-        //   <select
-        //     defaultValue={col.CType}
-        //     onChange={e => this.handleChange(e, col.Name)}
-        //   >
-        //     {columnDataTypeListView}
-        //   </select>
-        // </div>
-      );
-    });
+    //     // <div key={col.Name}>
+    //     //   <span>{col.Name}</span>
+    //     //   <select
+    //     //     defaultValue={col.CType}
+    //     //     onChange={e => this.handleChange(e, col.Name)}
+    //     //   >
+    //     //     {columnDataTypeListView}
+    //     //   </select>
+    //     // </div>
+    //   );
+    // });
 
-    var addDataButtonView = () => {
-      if (this.state.importedColumns.length > 0) {
-        return (
-          <input
-            type="button"
-            value="Add Data"
-            className="btn btn-primary"
-            onClick={e => this.addData(e)}
-          />
-        );
-      }
-    };
+    // var addDataButtonView = () => {
+    //   if (this.state.importedColumns.length > 0) {
+    //     return (
+    //       <input
+    //         type="button"
+    //         value="Add Data"
+    //         className="btn btn-primary"
+    //         onClick={e => this.addData(e)}
+    //       />
+    //     );
+    //   }
+    // };
 
     var tableListView = app.tables.map(t => {
       return (
@@ -420,13 +434,29 @@ export default class DataEditor extends Component {
           <div className="col-sm-9">
             <div className="card mb-1">
               <div className="card-body">
-                <form
+              <div className="row">
+              <div className="col-4">
+                <div className="list-group" >
+                <h4 className="list-group-item list-group-item-action bg-primary">Data Sources</h4>
+                  <a className="list-group-item list-group-item-action" href="#"  onClick={()=>this.onOpenModal("csv")}>CSV</a>
+                  <a className="list-group-item list-group-item-action" href="#"   onClick={()=>this.onOpenModal("mysql")}>MySql</a>                  
+                </div>
+              </div>
+              </div>
+              <Modal open={this.state.open} onClose={this.onCloseModal} center>
+                <DataSources type={this.state.dataSourceType} fetchTables={this.fetchTables} onCloseModal={this.onCloseModal} />
+               {/* <OdbcConn type="mysql" /> */}
+              </Modal>
+
+
+              {/* <input type="button" value="MySql" onClick={this.onOpenModal}/> */}
+              
+                {/* <form
                   className="form-group"
                   name="frmTableUpload"
                   id="frmTableUpload"
                   method="post"
-                >
-                  {/* <input type="text" /> */}
+                >                  
                   <div className="row form-group">
                     <div className="col-sm-12">
                       <input
@@ -453,8 +483,7 @@ export default class DataEditor extends Component {
                         ref={inpTableName => (this.inpTableName = inpTableName)}
                       />
                     </div>
-                  </div>
-                  {/* <div><input type="button" value="Import" onClick={(e)=>this.importTable(e)} />  </div>                     */}
+                  </div>                  
                   <div>
                     <input
                       type="button"
@@ -466,7 +495,7 @@ export default class DataEditor extends Component {
                 </form>
 
                 {importedColumnsView}
-                {addDataButtonView()}
+                {addDataButtonView()} */}
               </div>
             </div>
             <DataModel key={appId} data={app} />
