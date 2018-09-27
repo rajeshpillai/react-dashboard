@@ -93,7 +93,7 @@ export default class OdbcConn extends Component {
 
     onChangeCol(e){        
         let columns = this.state.columns.map((item)=>{
-            if(item.COLUMN_NAME == e.target.value){
+            if(item.column_name == e.target.value){
                 item.isSelected = !item.isSelected;
             }
             return item;
@@ -114,17 +114,17 @@ export default class OdbcConn extends Component {
 
     onImport(){
         let cols =[];
-        this.state.columns.map(item=>{
-           if(item.isSelected == true){
-            cols.push(item.COLUMN_NAME);
-           }
-        })
+        // this.state.columns.map(item=>{
+        //    if(item.isSelected == true){
+        //     cols.push(item.column_name);
+        //    }
+        // })
 
         let inputData={
             ConnectionString: this.inpConnectionString.value,
             NewTableName: this.state.newTableName,
             TableName: this.selectedTableName,
-            ColumnNames: cols
+            ColumnNames: this.state.columns
         }
 
         axios
@@ -134,7 +134,7 @@ export default class OdbcConn extends Component {
           //debugger;
           if (response && response.data) {
            if(response.data.Status.toLowerCase() == "success"){
-                this.props.onCloseModal();
+                //this.props.onCloseModal();
                 //Refresh the table list
                 this.props.fetchTables();
                 let data = response.data.Data;              
@@ -175,13 +175,13 @@ export default class OdbcConn extends Component {
             //c.isSelected = false;
             return (
               <span
-                key={c.COLUMN_NAME}
+                key={c.column_name}
                 className="list-group-item list-group-item-action"               
                  data-toggle="list"                
                  role="columns"                
               >
-               <input type="checkbox" name="col" checked={c.isSelected} onChange={this.onChangeCol} value={c.COLUMN_NAME} />{" "}
-                  {c.COLUMN_NAME}{" "}                
+               <input type="checkbox" name="col" checked={c.isSelected} onChange={this.onChangeCol} value={c.column_name} />{" "}
+                  {c.column_name}{" "}                
               </span>             
             );
           });

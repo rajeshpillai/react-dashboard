@@ -534,7 +534,7 @@ export default class Filter extends Toolbox {
       );
     });
 
-    var listView = <ul style={{ listStyle: "none" }}>{lis}</ul>;
+    var listView = <ul style={{ listStyle: "none" }} className="pl-2">{lis}</ul>;
 
     var dropdownView = (
       <select
