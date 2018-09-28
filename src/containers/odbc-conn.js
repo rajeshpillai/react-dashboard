@@ -21,6 +21,20 @@ export default class OdbcConn extends Component {
             newTableName:""
         }
         this.selectedTableName ="";
+
+        this.defaultConnString = "";
+        switch(props.type){
+            case "mysql":
+                this.defaultConnString = "DSN=vizmysql;Database=classicmodels;Uid=root;Pwd=root123;";
+                break;
+            case "postgres":
+                this.defaultConnString = "DSN=vizpostgres32;Database=dvdrental;Uid=postgres;Pwd=root123;";
+                break;
+        }
+
+       // DSN=vizpostgres32;Database=dvdrental;Uid=postgres;Pwd=root123;
+
+     //"Provider=MariaDB Provider;Data Source=localhost,3306; Initial Catalog=classicmodels;User ID=root; Password=root123;Activation=SJNF-W6LE-W22Z-DRPV"
     }
 
     onConnect(){
@@ -190,14 +204,14 @@ export default class OdbcConn extends Component {
             <React.Fragment>
                 <div style={{width: "1000px", height: "550px"}}>                    
                     <div className="row">
-                        <div className="col-sm-6 card pt-3">
+                        <div className="col-sm-9 card pt-3">
                             <div className="input-group mb-3">
                                 <input
                                     ref={inpConnectionString => (this.inpConnectionString = inpConnectionString)}
                                     type="text"
                                     placeholder="Enter ConnectionString"
                                     className="form-control"
-                                    defaultValue="DSN=vizmysql;Database=classicmodels;Uid=root;Pwd=root123;"
+                                    defaultValue={this.defaultConnString}
                                 />
                                 <div className="input-group-append">
                                     <button
