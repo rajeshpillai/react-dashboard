@@ -3,7 +3,7 @@ import axios from "axios";
 import "./odbc.css";
 var config = require("../config");
 
-export default class OdbcConn extends Component {
+export default class OledbConn extends Component {
   constructor(props) {
     super(props);
     this.onConnectGetTables = this.onConnectGetTables.bind(this);
@@ -11,10 +11,10 @@ export default class OdbcConn extends Component {
     this.onChangeCol = this.onChangeCol.bind(this);
     this.onTableNameChange = this.onTableNameChange.bind(this);
     this.onImport = this.onImport.bind(this);
-    this.onDsnTypeChange = this.onDsnTypeChange.bind(this);
-    this.createOdbcConnection = this.createOdbcConnection.bind(this);
+    this.createOledbConnection = this.createOledbConnection.bind(this);
     this.loadTablesOnChangeDb = this.loadTablesOnChangeDb.bind(this);
     this.getVizDBTypeByDsn = this.getVizDBTypeByDsn.bind(this);
+    this.setSelectedProvider = this.setSelectedProvider.bind(this);
 
     this.serviceBaseUrl = config.serviceBaseUrl;
 
@@ -23,8 +23,8 @@ export default class OdbcConn extends Component {
       allTables: [],
       columns: [],
       newTableName: "",
-      allDsn: [],
-      dsnType: "SYSTEM"
+      allOledbProviders: [],
+      isProvidersLoaded: false
     };
     this.selectedTableName = "";
     this.connectionString = "";
@@ -48,19 +48,20 @@ export default class OdbcConn extends Component {
 
   componentDidMount() {
     axios
-      .get(this.serviceBaseUrl + "data/listAllDSN")
+      .get(this.serviceBaseUrl + "data/listAllOldbProviders")
       .then(response => {
         console.log("response", response);
         //debugger;
         if (response && response.data) {
           //if(response.data.Status.toLowerCase() == "success"){
-          let allDsn = response.data;
-          console.log("response.data************", allDsn);
+          let allOledbProviders = response.data;
+          console.log("response.data************", allOledbProviders);
 
           this.setState({
-            allDsn,
+            allOledbProviders,
             columns: [],
-            allTables: []
+            allTables: [],
+            isProvidersLoaded: true
           });
           // } else {
           //   alert(response.data.Error);
@@ -72,34 +73,38 @@ export default class OdbcConn extends Component {
       });
   }
 
-  setSelectedDsn(dsnName) {
-    this.connectionName.value = dsnName;
-    this.dsnName = dsnName;
+  setSelectedProvider(e) {
+    //alert(e.target.value);
+    let providerName = e.target.value;
+    this.connectionName.value = providerName;
+    this.provider = providerName;
   }
 
-  getVizDBTypeByDsn(dsnName) {
-    var dsn = this.state.allDsn.filter(dsn => {
-      return dsn.Name == dsnName;
+  getVizDBTypeByDsn(providerName) {
+    var provider = this.state.allOledbProviders.filter(pvd => {
+      return pvd.Name == providerName;
     });
 
-    return dsn && dsn.length > 0 ? dsn[0].VizDBType : null;
+    return provider && provider.length > 0 ? provider[0].VizDBType : null;
   }
 
-  createOdbcConnection() {
-    // var dsn = this.state.allDsn.filter(dsn => {
+  createOledbConnection() {
+    // var dsn = this.state.allOledbProviders.filter(dsn => {
     //   return dsn.Name == this.dsnName;
     // });
 
     let inputData = {
-      DsnName: this.dsnName,
+      Provider: this.provider,
       UserName: this.userName.value,
       Password: this.passowrd.value,
+      Datasource: this.datasource.value,
       ConnectionName: this.connectionName.value,
-      VizDBType: this.getVizDBTypeByDsn(this.dsnName)
+      VizDBType: this.getVizDBTypeByDsn(this.provider),
+      AdditionalProperties: this.additionalProperties.value
     };
 
     axios
-      .post(this.serviceBaseUrl + "data/createODBCConnection", inputData)
+      .post(this.serviceBaseUrl + "data/createOLEDBConnection", inputData)
       .then(response => {
         console.log("response", response);
         //debugger;
@@ -135,28 +140,28 @@ export default class OdbcConn extends Component {
   }
 
   onConnectGetTables() {
-    // let dsn = this.state.allDsn.filter(dsn => {
+    // let dsn = this.state.allOledbProviders.filter(dsn => {
     //   return dsn.Name == this.dsnName;
     // });
 
     this.connectionString =
-      "DSN=" +
-      this.dsnName +
-      ";Database=" +
+      "Provider=" +
+      this.provider +
+      ";Data Source=" +
+      this.datasource.value +
+      ";Initial Catalog=" +
       this.database.value +
-      ";Uid=" +
+      ";User ID=" +
       this.userName.value +
-      ";Pwd=" +
+      ";Password=" +
       this.passowrd.value +
-      ";"; //"DSN=vizmysql;Database=classicmodels;Uid=root;Pwd=root123;";
+      ";" +
+      this.additionalProperties.value;
+    ////"Provider=MariaDB Provider;Data Source=localhost,3306; Initial Catalog=classicmodels;User ID=root; Password=root123;Activation=SJNF-W6LE-W22Z-DRPV";
 
     let inputData = {
-      VizDBProviderType: "odbc",
-      //   DsnName: this.dsnName,
-      //   UserName: this.userName.value,
-      //   Password: this.passowrd.value,
-      //   ConnectionName: this.connectionName.value,
-      VizDBType: this.getVizDBTypeByDsn(this.dsnName),
+      VizDBProviderType: "oledb",
+      VizDBType: this.getVizDBTypeByDsn(this.provider),
       DatabaseName: this.database.value,
       ConnectionString: this.connectionString
     };
@@ -194,15 +199,11 @@ export default class OdbcConn extends Component {
   onTableClick(tableName) {
     this.selectedTableName = tableName;
 
-    // let dsn = this.state.allDsn.filter(dsn => {
-    //   return dsn.Name == this.dsnName;
-    // });
-
     var inputData = {
       ConnectionString: this.connectionString,
-      VizDBType: this.getVizDBTypeByDsn(this.dsnName),
+      VizDBType: this.getVizDBTypeByDsn(this.provider),
       DatabaseName: this.database.value,
-      VizDBProviderType: "odbc",
+      VizDBProviderType: "oledb",
       TableName: tableName
     };
     axios
@@ -254,14 +255,6 @@ export default class OdbcConn extends Component {
     // this.newTableName =e.target.value;
   }
 
-  onDsnTypeChange(e) {
-    this.connectionName.value = "";
-    this.dsnName = "";
-    this.setState({
-      dsnType: e.target.value
-    });
-  }
-
   onImport() {
     let cols = [];
     // this.state.columns.map(item=>{
@@ -272,9 +265,9 @@ export default class OdbcConn extends Component {
 
     let inputData = {
       ConnectionString: this.connectionString,
-      VizDBType: this.getVizDBTypeByDsn(this.dsnName),
+      VizDBType: this.getVizDBTypeByDsn(this.provider),
       DatabaseName: this.database.value,
-      VizDBProviderType: "odbc",
+      VizDBProviderType: "oledb",
       NewTableName: this.state.newTableName,
       TableName: this.selectedTableName,
       ColumnNames: this.state.columns
@@ -343,27 +336,6 @@ export default class OdbcConn extends Component {
       );
     });
 
-    var dsnListView = type => {
-      var filteredDsns = this.state.allDsn.filter(item => {
-        return item.DsnType == type;
-      });
-
-      return filteredDsns.map(dsn => {
-        return (
-          <a
-            key={dsn.Name}
-            className="list-group-item list-group-item-action"
-            href="#"
-            data-toggle="list"
-            role="dsns"
-            onClick={() => this.setSelectedDsn(dsn.Name)}
-          >
-            {dsn.Name}
-          </a>
-        );
-      });
-    };
-
     let databaseOptionView = this.state.allDbs.map(db => {
       return (
         <option key={db.dbname} value={db.dbname}>
@@ -372,63 +344,45 @@ export default class OdbcConn extends Component {
       );
     });
 
+    let providerOptionView = this.state.allOledbProviders.map(pvd => {
+      return (
+        <option key={pvd.Name} value={pvd.Name}>
+          {pvd.Description}
+        </option>
+      );
+    });
+
     return (
       <React.Fragment>
         <div style={{ width: "600px" }}>
           <div className="form-row">
-            <h3>Create new connection (ODBC)</h3>
+            <h3>Create new connection (OLEDB)</h3>
           </div>
-          <div className="row">
-            <div className="form-row col-sm-12 pt-3">
-              <div className="form-group col-md-3">
-                <input
-                  type="radio"
-                  name="dsnType"
-                  value="USER"
-                  checked={this.state.dsnType == "USER"}
-                  onChange={this.onDsnTypeChange}
-                />{" "}
-                User DSN {"    "}
-              </div>
-              <div className="form-group col-md-6">
-                <input
-                  type="radio"
-                  name="dsnType"
-                  value="SYSTEM"
-                  checked={this.state.dsnType == "SYSTEM"}
-                  onChange={this.onDsnTypeChange}
-                />{" "}
-                System DSN
-              </div>
-              {/* <div className="input-group mb-3">
-                                <input
-                                    ref={inpConnectionString => (this.inpConnectionString = inpConnectionString)}
-                                    type="text"
-                                    placeholder="Enter ConnectionString"
-                                    className="form-control"
-                                    defaultValue={this.defaultConnString}
-                                />
-                                <div className="input-group-append">
-                                    <button
-                                    className="btn btn-outline-primary"
-                                    type="button"
-                                    onClick={this.onConnect}
-                                    >
-                                    Connect
-                                    </button>            
-                                </div> 
-                            </div>*/}
+          <div className="form-row">
+            <div className="form-group col-md-12">
+              <label>Provider</label>
+              {!this.state.isProvidersLoaded && (
+                <span class="pl-3">
+                  <i class="fa fa-spinner" aria-hidden="true" />
+                </span>
+              )}
+              <select
+                className="form-control"
+                onChange={this.setSelectedProvider}
+              >
+                <option>Select Provider</option>
+                {providerOptionView}
+              </select>
             </div>
           </div>
-          <div className="row">
-            <div className="col-sm-12">
-              <div className="list-group" id="list-dsn" role="dsnlist">
-                <h4 className="list-group-item list-group-item-action bg-primary">
-                  DSNs
-                </h4>
-                {dsnListView(this.state.dsnType)}
-              </div>
-            </div>
+          <div className="form-group col-sm-12">
+            <label>Data source (file path or server name)</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Name"
+              ref={datasource => (this.datasource = datasource)}
+            />
           </div>
           <div className="form-row col-sm-12 pt-3">
             <div className="form-group col-md-6">
@@ -451,6 +405,17 @@ export default class OdbcConn extends Component {
             </div>
           </div>
           <div className="form-group col-sm-12">
+            <label>Additional connection properties</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Name"
+              ref={additionalProperties =>
+                (this.additionalProperties = additionalProperties)
+              }
+            />
+          </div>
+          <div className="form-group col-sm-12">
             <label>Connection Name</label>
             <input
               type="text"
@@ -465,7 +430,7 @@ export default class OdbcConn extends Component {
                 type="button"
                 className="btn btn-primary"
                 value="Create"
-                onClick={this.createOdbcConnection}
+                onClick={this.createOledbConnection}
               />
             </div>
             <div className="form-group col-md-2">
