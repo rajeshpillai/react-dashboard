@@ -213,8 +213,8 @@ export default class DataEditor extends Component {
                 <div className="list-group" >
                 <h4 className="list-group-item list-group-item-action bg-primary">Data Sources</h4>
                   <a className="list-group-item list-group-item-action" href="#"  onClick={()=>this.onOpenModal("csv")}>CSV</a>
-                  <a className="list-group-item list-group-item-action" href="#"   onClick={()=>this.onOpenModal("mysql")}>MySql</a>                  
-                  <a className="list-group-item list-group-item-action" href="#"   onClick={()=>this.onOpenModal("postgres")}>Postgresql</a>                  
+                  <a className="list-group-item list-group-item-action" href="#"   onClick={()=>this.onOpenModal("odbc")}>ODBC</a>                  
+                  <a className="list-group-item list-group-item-action" href="#"   onClick={()=>this.onOpenModal("oledb")}>OLEDB</a>                  
                 </div>
               </div>
               </div>

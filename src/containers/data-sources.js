@@ -20,7 +20,8 @@ export default class DataSources extends Component {
         return(
             <div>
                 {this.props.type == "csv" && <div><CsvDs {...this.props} /></div>}
-                {(this.props.type == "mysql" || this.props.type == "postgres") && <div><OdbcConn {...this.props} /></div>}
+                {(this.props.type == "odbc") && <div><OdbcConn {...this.props} /></div>}
+                {/* {(this.props.type == "mysql" || this.props.type == "postgres") && <div><OdbcConn {...this.props} /></div>} */}
             </div>
         )
       
