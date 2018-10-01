@@ -14,6 +14,7 @@ export default class OdbcConn extends Component {
     this.onDsnTypeChange = this.onDsnTypeChange.bind(this);
     this.createOdbcConnection = this.createOdbcConnection.bind(this);
     this.loadTablesOnChangeDb = this.loadTablesOnChangeDb.bind(this);
+    this.getVizDBTypeByDsn = this.getVizDBTypeByDsn.bind(this);
 
     this.serviceBaseUrl = config.serviceBaseUrl;
 
@@ -76,17 +77,25 @@ export default class OdbcConn extends Component {
     this.dsnName = dsnName;
   }
 
-  createOdbcConnection() {
+  getVizDBTypeByDsn(dsnName) {
     var dsn = this.state.allDsn.filter(dsn => {
-      return dsn.Name == this.dsnName;
+      return dsn.Name == dsnName;
     });
+
+    return dsn && dsn.length > 0 ? dsn[0].VizDBType : null;
+  }
+
+  createOdbcConnection() {
+    // var dsn = this.state.allDsn.filter(dsn => {
+    //   return dsn.Name == this.dsnName;
+    // });
 
     let inputData = {
       DsnName: this.dsnName,
       UserName: this.userName.value,
       Password: this.passowrd.value,
       ConnectionName: this.connectionName.value,
-      VizDBType: dsn && dsn.length > 0 ? dsn[0].VizDBType : null
+      VizDBType: this.getVizDBTypeByDsn(this.dsnName)
     };
 
     axios
@@ -126,33 +135,34 @@ export default class OdbcConn extends Component {
   }
 
   onConnectGetTables() {
-    var dsn = this.state.allDsn.filter(dsn => {
-      return dsn.Name == this.dsnName;
-    });
+    // let dsn = this.state.allDsn.filter(dsn => {
+    //   return dsn.Name == this.dsnName;
+    // });
 
     this.connectionString =
       "DSN=" +
-      inputData.DsnName +
+      this.dsnName +
       ";Database=" +
-      inputData.DatabaseName +
+      this.database.value +
       ";Uid=" +
-      inputData.UserName +
+      this.userName.value +
       ";Pwd=" +
-      inputData.Password +
+      this.passowrd.value +
       ";"; //"DSN=vizmysql;Database=classicmodels;Uid=root;Pwd=root123;";
 
     let inputData = {
-      DsnName: this.dsnName,
-      UserName: this.userName.value,
-      Password: this.passowrd.value,
-      ConnectionName: this.connectionName.value,
-      VizDBType: dsn && dsn.length > 0 ? dsn[0].VizDBType : null,
+      VizDBProviderType: "odbc",
+      //   DsnName: this.dsnName,
+      //   UserName: this.userName.value,
+      //   Password: this.passowrd.value,
+      //   ConnectionName: this.connectionName.value,
+      VizDBType: this.getVizDBTypeByDsn(this.dsnName),
       DatabaseName: this.database.value,
       ConnectionString: this.connectionString
     };
 
     axios
-      .post(this.serviceBaseUrl + "data/onConnectODBCGetTables", inputData)
+      .post(this.serviceBaseUrl + "data/onConnectGetTables", inputData)
       .then(response => {
         console.log("response", response);
         //debugger;
@@ -183,12 +193,20 @@ export default class OdbcConn extends Component {
 
   onTableClick(tableName) {
     this.selectedTableName = tableName;
+
+    // let dsn = this.state.allDsn.filter(dsn => {
+    //   return dsn.Name == this.dsnName;
+    // });
+
     var inputData = {
       ConnectionString: this.connectionString,
+      VizDBType: this.getVizDBTypeByDsn(this.dsnName),
+      DatabaseName: this.database.value,
+      VizDBProviderType: "odbc",
       TableName: tableName
     };
     axios
-      .post(this.serviceBaseUrl + "data/getColumnsForTableOdbc", inputData)
+      .post(this.serviceBaseUrl + "data/getColumnsForTable", inputData)
       .then(response => {
         console.log("response", response);
         //debugger;
@@ -254,13 +272,16 @@ export default class OdbcConn extends Component {
 
     let inputData = {
       ConnectionString: this.connectionString,
+      VizDBType: this.getVizDBTypeByDsn(this.dsnName),
+      DatabaseName: this.database.value,
+      VizDBProviderType: "odbc",
       NewTableName: this.state.newTableName,
       TableName: this.selectedTableName,
       ColumnNames: this.state.columns
     };
 
     axios
-      .post(this.serviceBaseUrl + "data/importDataFromMySql", inputData)
+      .post(this.serviceBaseUrl + "data/importData", inputData)
       .then(response => {
         console.log("response", response);
         //debugger;
