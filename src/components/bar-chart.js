@@ -253,7 +253,7 @@ export default class BarChart extends Toolbox {
             defaultValue={this.state.dimensions[i].Name}
             onChange={this.handleDimChange(i)}
           />
-          <div className="input-group-append">
+          {/* <div className="input-group-append">
             <a
               href="#"
               id="removeDimensionField"
@@ -262,7 +262,7 @@ export default class BarChart extends Toolbox {
             >
               <i className="fa fa-remove" />
             </a>
-          </div>
+          </div> */}
         </li>
         // <div key={i}>
         //   <label>Dimension:</label>

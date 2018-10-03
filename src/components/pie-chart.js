@@ -171,41 +171,105 @@ export default class PieChart extends Toolbox {
 
   ShowConfigForm() {
     let dims = this.state.dimensions.map((dim,i)=>{
-      return( <div  key={i}>
-        <label>Dimension:</label>
-         <input        
-           type="text"
-           placeholder="Enter Dimension"           
-           defaultValue={this.state.dimensions[i].Name}
-           onChange ={this.handleDimChange(i)}
-         />      
-       </div>)
+      return( <li key={"dim" + i} className="input-group mb-1">
+      <input
+        type="text"
+        placeholder="Enter Dimension"
+        className="form-control"
+        defaultValue={this.state.dimensions[i].Name}
+        onChange={this.handleDimChange(i)}
+      />
+      {/* <div className="input-group-append">
+        <a
+          href="#"
+          id="removeDimensionField"
+          className="btn btn-danger"
+          onClick={() => this.deleteDimension(dim)}
+        >
+          <i className="fa fa-remove" />
+        </a>
+      </div> */}
+    </li>)
        })
 
     let measures = 
          this.state.measure.map((m,i)=>{
-          return( <div key={i}>
-            <label>Measure:</label>
-             <input         
-               type="text"
-               placeholder="Enter Expression"
-               defaultValue= {this.state.measure[i].Expression} 
-               onChange ={this.handleMeasureChange(i)}
-             />   
-             <span><a href="#" onClick={() => this.addNewMeasure()}>+</a></span>  
-             <span><a href="#" onClick={() => this.deleteMeasure(m)}>X</a></span>          
-           </div>)
+          return( <li key={"measure" + i} className="input-group mb-1">
+          <input
+            type="text"
+            placeholder="Enter Expression"
+            className="form-control"
+            defaultValue={this.state.measure[i].Expression}
+            onChange={this.handleMeasureChange(i)}
+          />
+          <div className="input-group-append">
+            {/* <a href="#" id="removeMeasuresField" className="btn btn-success">
+            <i className="fa fa-save" />
+          </a> */}
+            <a
+              href="#"
+              id="removeMeasuresField"
+              className="btn btn-danger"
+              onClick={() => this.deleteMeasure(m)}
+            >
+              <i className="fa fa-remove" />
+            </a>
+          </div>
+        </li>)
       })
 
-      let save = (<div key="button"><button onClick={() =>this.saveForm()}>Apply</button> 
-                  <button onClick={(e) => this.toggleConfirmForm(e)}>Cancel</button>
-                  </div>)
+      let save = (
+         <div key="button">
+          <button className="btn btn-primary" onClick={() => this.saveForm()}>
+            Apply
+          </button>
+          &nbsp;&nbsp;{" "}
+          <button
+            className="btn btn-danger"
+            onClick={e => this.toggleConfirmForm(e)}
+          >
+            Cancel
+          </button>
+      </div>
+  );
    
       let ui= (
-        <PropertyWindow>
+          <PropertyWindow>
           <div style={this.property_window}>
-            {dims}
-            {measures}
+            <h2>
+              PROPERTIES - <i>Pie Chart</i>
+            </h2>
+            <hr />
+            <h5>
+              Dimension
+              {/* {"  "}
+              <a
+                href="#"
+                id="addDimensionField"
+                className="btn btn-xs btn-info"
+                onClick={() => this.addNewDimension()}
+              >
+                <i className="fa fa-plus" />
+              </a> */}
+            </h5>
+            <ul id="dimensions-wrapper" className="list-unstyled">
+              {dims}
+            </ul>
+
+            <h5>
+              Measures{" "}
+              <a
+                href="#"
+                id="addMeasuresField"
+                className="btn btn-xs btn-info"
+                onClick={() => this.addNewMeasure()}
+              >
+                <i className="fa fa-plus" />
+              </a>
+            </h5>
+            <ul id="measures-wrapper" className="list-unstyled">
+              {measures}
+            </ul>
             {save}
           </div>
         </PropertyWindow>
